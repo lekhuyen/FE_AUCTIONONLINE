@@ -1,9 +1,10 @@
-import React from "react";
 import { Caption, Title } from "../../router";
 import { User2 } from "../../components/hero/Hero";
 import { commonClassNameOfInput, PrimaryButton } from "../../components/common/Design";
 
 export const UserProfile = () => {
+
+
   return (
     <>
       <section className="shadow-s1 p-8 rounded-lg">
