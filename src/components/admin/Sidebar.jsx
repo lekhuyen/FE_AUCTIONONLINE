@@ -21,11 +21,10 @@ export const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const { isLoggedIn, token } = useSelector(state => state.auth)
+  const { token } = useSelector(state => state.auth)
 
   const [userInfo, setUserInfo] = useState(null)
 
-  console.log(userInfo);
   useEffect(() => {
     if (token) {
       try {
