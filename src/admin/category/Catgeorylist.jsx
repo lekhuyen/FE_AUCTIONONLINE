@@ -16,18 +16,12 @@ export const Catgeorylist = () => {
     const getCategories = async () => {
       try {
         const response = await axios.get("category")
-        console.log(response);
-        if (response.status === 0) {
+        if (response.code === 0) {
           setCategories(response.result)
         }
-
       } catch (error) {
         console.log(console.error)
       }
-
-      // if (response.code === 0) {
-      //   setCategories("")
-      // }
     }
     getCategories()
   }, [])
