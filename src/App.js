@@ -1,28 +1,28 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import {
-  LoginAsSeller,
-  Register,
-  Login,
-  UserProfile,
-  DashboardLayout,
-  Layout,
-  CreateCategory,
-  UpdateCategory,
-  Catgeorylist,
-  UpdateProductByAdmin,
-  AdminProductList,
-  Income,
-  Dashboard,
-  ProductList,
-  ProductEdit,
-  AddProduct,
-  ProductsDetailsPage,
-  Home,
-  UserList,
-  WinningBidList,
-  NotFound,
-  ScrollToTop,
-  PrivateRoute,
+    LoginAsSeller,
+    Register,
+    Login,
+    UserProfile,
+    DashboardLayout,
+    Layout,
+    CreateCategory,
+    UpdateCategory,
+    Catgeorylist,
+    UpdateProductByAdmin,
+    AdminProductList,
+    Income,
+    Dashboard,
+    ProductList,
+    ProductEdit,
+    AddProduct,
+    ProductsDetailsPage,
+    Home,
+    UserList,
+    WinningBidList,
+    NotFound,
+    ScrollToTop,
+    PrivateRoute, Contact,
 } from "./router/index.js";
 
 function App() {
@@ -230,6 +230,18 @@ function App() {
               </PrivateRoute>
             }
           />
+            <Route
+                path="/contact"
+                element={
+                    <PrivateRoute>
+                        <Layout>
+                            <DashboardLayout>
+                                <Contact />
+                            </DashboardLayout>
+                        </Layout>
+                    </PrivateRoute>
+                }
+            />
           <Route
             path="/*"
             element={
