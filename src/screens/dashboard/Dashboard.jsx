@@ -1,4 +1,3 @@
-import React from "react";
 import { Title } from "../../router";
 import { CiMedal } from "react-icons/ci";
 import { GiBarbedStar } from "react-icons/gi";
@@ -7,7 +6,9 @@ import { MdDashboard, MdOutlineCategory } from "react-icons/md";
 import { NavLink } from "react-router-dom";
 import { HiOutlineUsers } from "react-icons/hi2";
 
+
 export const Dashboard = () => {
+
   const role = "admin";
   return (
     <>
