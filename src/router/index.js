@@ -51,3 +51,5 @@ export { Register } from "../screens/auth/Register";
 export { Login } from "../screens/auth/Login";
 export { LoginAsSeller } from "../screens/auth/LoginAsSeller";
 export { UserProfile } from "../screens/auth/UserProfile";
+
+export { Contact } from "../Contact/Contact"
