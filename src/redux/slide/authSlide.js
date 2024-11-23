@@ -22,6 +22,20 @@ export const login = createAsyncThunk("auth/login", async (userDate, thunkAPI) =
     return thunkAPI.rejectWithValue(errorMessage)
   }
 })
+export const introspect = createAsyncThunk("auth/introspect", async (token, thunkAPI) => {
+  try {
+    const response = await axios.post("auth/introspect", token)
+    // console.log(response.result.valid);
+
+    return response.result.valid
+
+  } catch (error) {
+    // console.log(error);
+
+    const errorMessage = (error.response && error.response.data && error.response.data.message) || error.message || error.toString() || error
+    return thunkAPI.rejectWithValue(errorMessage)
+  }
+})
 
 const initialState = {
   // user: JSON.parse(localStorage.getItem('token')) || null,
@@ -33,6 +47,7 @@ const initialState = {
   message: "",
   token: localStorage.getItem('token') || null,
   isRegister: false,
+  // isIntrospect: localStorage.getItem('isIntrospect') || false,
 }
 
 export const authSlide = createSlice({
@@ -46,6 +61,10 @@ export const authSlide = createSlice({
       state.isRegister = false;
       state.isLoggedIn = false;
       state.message = "";
+    },
+    logout(state) {
+      localStorage.removeItem("token");
+      state.isLoggedIn = false;
     }
   },
   extraReducers: (builder) => {
@@ -79,6 +98,8 @@ export const authSlide = createSlice({
       state.isError = false;
       state.token = action.payload;
       state.message = action.payload.message;
+      // state.isIntrospect = 
+      localStorage.setItem('isIntrospect', "true");
 
     });
 
@@ -86,10 +107,30 @@ export const authSlide = createSlice({
       state.isLoading = true;
       state.isError = true;
       state.message = action.payload;
+      localStorage.setItem('isIntrospect', "false");
+    });
+
+
+    // introspect
+    builder.addCase(introspect.pending, (state) => {
+      state.isIntrospect = false;
+    });
+
+    builder.addCase(introspect.fulfilled, (state, action) => {
+      state.isLoggedIn = false;
+      // state.isIntrospect = 
+      localStorage.setItem('isIntrospect', action.payload);
+
+    });
+
+    builder.addCase(introspect.rejected, (state, action) => {
+      state.isLoggedIn = false;
+      // state.isIntrospect = 
+      localStorage.setItem('isIntrospect', action.payload);;
     });
   },
 })
 
-export const { RESET } = authSlide.actions
+export const { RESET, logout } = authSlide.actions
 
 export default authSlide.reducer

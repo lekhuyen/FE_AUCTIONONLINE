@@ -1,0 +1,36 @@
+.swal-confirm-button {
+  background-color: #28a745 !important;
+  color: white;
+  border: none;
+}
+
+.swal-confirm-button:hover {
+  background-color: #218838;
+}
+
+/* Tùy chỉnh màu sắc cho các nút của Swal */
+.swal-confirm-button {
+  background-color: #28a745; /* Màu xanh cho nút xác nhận */
+  color: white;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+}
+
+.swal-deny-button {
+  background-color: #dc3545; /* Màu đỏ cho nút hủy bỏ */
+  color: white;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+}
+
+.swal2-popup {
+  font-family: "Arial", sans-serif; /* Thêm kiểu chữ nếu cần */
+}
+
+/* Cải thiện vị trí của các nút */
+.swal2-actions {
+  display: flex;
+  justify-content: space-between;
+}
