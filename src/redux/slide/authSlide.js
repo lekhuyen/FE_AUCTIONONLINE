@@ -25,7 +25,7 @@ export const login = createAsyncThunk("auth/login", async (userDate, thunkAPI) =
 export const introspect = createAsyncThunk("auth/introspect", async (token, thunkAPI) => {
   try {
     const response = await axios.post("auth/introspect", token)
-    // console.log(response.result.valid);
+    // console.log(response);
 
     return response.result.valid
 

@@ -31,12 +31,14 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { introspect, logout } from "./redux/slide/authSlide.js";
 import Swal from "sweetalert2";
+import Loading from "./components/Loading/index.js";
 
 
 function App() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const { token } = useSelector(state => state.auth)
+  const { isLoading } = useSelector(state => state.product)
 
   const [isIntrospect, setIsIntrospect] = useState(localStorage.getItem('isIntrospect') === "true" || false);
 
@@ -51,6 +53,8 @@ function App() {
   useEffect(() => {
 
     if (!isIntrospect && !alertShown) {
+      console.log(isIntrospect);
+
       Swal.fire({
         title: "Login expired, please login again!",
         confirmButtonText: "Login",
@@ -71,7 +75,7 @@ function App() {
 
   return (
     <>
-      {/* <BrowserRouter> */}
+      {isLoading && <Loading />}
       <ToastContainer />
       <ScrollToTop />
       <Routes>
