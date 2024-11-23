@@ -7,24 +7,58 @@ import { MdOutlineDeleteOutline } from "react-icons/md";
 import { User2 } from "../../components/hero/Hero";
 import { useEffect, useState } from "react";
 import axios from '../../utils/axios'
-
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 export const Catgeorylist = () => {
   const [categories, setCategories] = useState([])
-
-  useEffect(() => {
-    const getCategories = async () => {
-      try {
-        const response = await axios.get("category")
-        if (response.code === 0) {
-          setCategories(response.result)
-        }
-      } catch (error) {
-        console.log(console.error)
+  const getCategories = async () => {
+    try {
+      const response = await axios.get("category", {
+        authRequired: true,
+      })
+      if (response.code === 0) {
+        setCategories(response.result)
       }
+    } catch (error) {
+      console.log(error)
     }
+  }
+  useEffect(() => {
+
     getCategories()
   }, [])
+
+  const handeDeleteCategory = async (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to delete this category?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await axios.delete(`category/${id}`, {
+            authRequired: true,
+          })
+          if (response.code === 0) {
+            toast.success(response.message)
+            getCategories()
+          } else {
+            toast.error("Error: Unable to delete the category!");
+          }
+        } catch (error) {
+          console.log(error);
+          toast.error("Something went wrong!");
+        }
+      }
+    });
+
+  }
+
   return (
     <>
       <section className="shadow-s1 p-8 rounded-lg">
@@ -86,10 +120,10 @@ export const Catgeorylist = () => {
                     <NavLink to="#" type="button" className="font-medium text-indigo-500">
                       <TiEyeOutline size={25} />
                     </NavLink>
-                    <NavLink to={`/category/update/1000`} className="font-medium text-green">
+                    <NavLink to={`/category/update/${category.category_id}`} className="font-medium text-green">
                       <CiEdit size={25} />
                     </NavLink>
-                    <button className="font-medium text-red-500">
+                    <button className="font-medium text-red-500" onClick={() => handeDeleteCategory(category.category_id)}>
                       <MdOutlineDeleteOutline size={25} />
                     </button>
                   </td>
