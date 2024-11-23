@@ -3,29 +3,29 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './index.css'
 import {
-  LoginAsSeller,
-  Register,
-  Login,
-  UserProfile,
-  DashboardLayout,
-  Layout,
-  CreateCategory,
-  UpdateCategory,
-  Catgeorylist,
-  UpdateProductByAdmin,
-  AdminProductList,
-  Income,
-  Dashboard,
-  ProductList,
-  ProductEdit,
-  AddProduct,
-  ProductsDetailsPage,
-  Home,
-  UserList,
-  WinningBidList,
-  NotFound,
-  ScrollToTop,
-  PrivateRoute,
+    LoginAsSeller,
+    Register,
+    Login,
+    UserProfile,
+    DashboardLayout,
+    Layout,
+    CreateCategory,
+    UpdateCategory,
+    Catgeorylist,
+    UpdateProductByAdmin,
+    AdminProductList,
+    Income,
+    Dashboard,
+    ProductList,
+    ProductEdit,
+    AddProduct,
+    ProductsDetailsPage,
+    Home,
+    UserList,
+    WinningBidList,
+    NotFound,
+    ScrollToTop,
+    PrivateRoute, Contact,
 } from "./router/index.js";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -258,13 +258,13 @@ function App() {
                   <CreateCategory />
                 </DashboardLayout>
               </Layout>
+
             </PrivateRoute>
           }
         />
-        <Route
-          path="/category/update/:id"
-          element={
-            <PrivateRoute>
+          <Route
+            path="/*"
+            element={
               <Layout>
                 <DashboardLayout>
                   <UpdateCategory />
