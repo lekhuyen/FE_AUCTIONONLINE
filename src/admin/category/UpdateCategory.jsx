@@ -37,7 +37,6 @@ export const UpdateCategory = () => {
         categoryUpdate,
         { authRequired: true },
       )
-      console.log(response);
       if (response.code === 0) {
         toast.success(response.message)
         setCategoryUpdate({
