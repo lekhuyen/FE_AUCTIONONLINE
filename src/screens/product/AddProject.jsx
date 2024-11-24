@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
 import { createProduct } from "../../redux/slide/productSlide";
 import { toast } from "react-toastify";
+import { validateForm } from "../../utils/validation";
 
 const initialState = {
   item_name: "",
@@ -14,18 +15,20 @@ const initialState = {
   start_date: "",
   end_date: "",
   bid_step: "",
-  userId: "",
   category_id: "",
 };
 
 export const AddProduct = () => {
   // const { token } = useSelector(state => state.auth)
-  const [userInfo, setUserInfo] = useState(localStorage.getItem('token') || null);
+  const [userId, setUserId] = useState(null);
   const [productValue, setProductValue] = useState(initialState)
   const { item_name, description, starting_price, start_date, end_date, bid_step } = productValue
   const [imageFile, setImageFile] = useState([]);
   const [categories, setCategories] = useState([])
   const [selectedCategory, setSelectedCategory] = useState(null)
+
+  const [invalidFields, setInvalidFields] = useState([])
+  const [invlidImages, setInvlidImages] = useState(false)
 
   const dispatch = useDispatch()
   const { message, code, isLoading } = useSelector(state => state.product)
@@ -74,19 +77,24 @@ export const AddProduct = () => {
     setProductValue({ ...productValue, [name]: value })
   }
 
-  const handleCreateProduct = (e) => {
-    e.preventDefault()
-    if (userInfo) {
-      console.log('cos token');
-
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (token) {
       try {
-        const tokenInfo = jwtDecode(userInfo);
-        setProductValue(prev => ({ ...prev, userId: tokenInfo.userid }))
-        // setProductValue({ ...productValue, userId: tokenInfo.userid })
+        const tokenInfo = jwtDecode(token)
+        // setProductValue({ ...productValue, userInfo: tokenInfo.userid })
+        setUserId(tokenInfo.userid)
       } catch (error) {
-        console.log(error.message);
+        console.error("Error decoding token:", error.message);
       }
     }
+  }, [])
+
+  const handleCreateProduct = (e) => {
+    e.preventDefault()
+
+    const invalids = validateForm(productValue, setInvalidFields)
+
     const formData = new FormData()
 
     formData.append('item_name', productValue.item_name)
@@ -96,24 +104,30 @@ export const AddProduct = () => {
     formData.append('start_date', productValue.start_date)
     formData.append('end_date', productValue.end_date)
     formData.append('bid_step', productValue.bid_step)
-    formData.append('userId', productValue.userId)
+    formData.append('userId', userId)
 
-    for (let i = 0; i < imageFile.length; i++) {
-      formData.append('images', imageFile[i])
 
+    if (imageFile.length > 0) {
+      for (let i = 0; i < imageFile.length; i++) {
+        formData.append('images', imageFile[i])
+      }
+      setInvlidImages(false)
+    } else {
+      setInvlidImages(true)
     }
-    dispatch(createProduct(formData));
-
+    if (invalids === 0 && userId) {
+      dispatch(createProduct(formData));
+    }
     if (code === 0) {
       toast.success(message);
       setProductValue(initialState)
       setImageFile([])
     }
+
   }
 
   return (
     <>
-      {/* <Loading /> */}
       <section className="bg-white shadow-s1 p-8 rounded-xl">
         <Title level={5} className=" font-normal mb-5">
           Create Product
@@ -123,6 +137,11 @@ export const AddProduct = () => {
           <div className="w-full">
             <Caption className="mb-2">Name *</Caption>
             <input type="text" name="item_name" value={item_name} onChange={handleChangeAuction} className={`${commonClassNameOfInput}`} placeholder="Name" />
+
+            {
+              invalidFields?.some(el => el.name === "item_name") && productValue.item_name === '' &&
+              <small style={{ color: 'red' }}>{invalidFields?.find(el => el.name === "item_name").message}</small>
+            }
           </div>
           <div className="py-5">
             <Caption className="mb-2">Category *</Caption>
@@ -139,20 +158,36 @@ export const AddProduct = () => {
             <div className="w-1/2">
               <Caption className="mb-2">Start price </Caption>
               <input type="number" name="starting_price" value={starting_price} onChange={handleChangeAuction} placeholder="Start price" className={`${commonClassNameOfInput}`} />
+              {
+                invalidFields?.some(el => el.name === "starting_price") &&
+                <small style={{ color: 'red' }}>{invalidFields?.find(el => el.name === "starting_price").message}</small>
+              }
             </div>
             <div className="w-1/2">
               <Caption className="mb-2">Start date </Caption>
-              <input type="date" name="start_date" value={start_date} onChange={handleChangeAuction} placeholder="Start date" className={`${commonClassNameOfInput}`} />
+              <input onFocus={() => setInvalidFields([])} type="date" name="start_date" value={start_date} onChange={handleChangeAuction} placeholder="Start date" className={`${commonClassNameOfInput}`} />
+              {
+                invalidFields?.some(el => el.name === "start_date") &&
+                <small style={{ color: 'red' }}>{invalidFields?.find(el => el.name === "start_date").message}</small>
+              }
             </div>
           </div>
           <div className="flex items-center gap-5 my-4">
             <div className="w-1/2">
               <Caption className="mb-2">Bid step</Caption>
-              <input type="text" name="bid_step" value={bid_step} onChange={handleChangeAuction} placeholder="Bid step" className={commonClassNameOfInput} />
+              <input type="number" name="bid_step" value={bid_step} onChange={handleChangeAuction} placeholder="Bid step" className={commonClassNameOfInput} />
+              {
+                invalidFields?.some(el => el.name === "bid_step") &&
+                <small style={{ color: 'red' }}>{invalidFields?.find(el => el.name === "bid_step").message}</small>
+              }
             </div>
             <div className="w-1/2">
               <Caption className="mb-2">End date </Caption>
-              <input type="date" name="end_date" value={end_date} onChange={handleChangeAuction} placeholder="End date" className={`${commonClassNameOfInput}`} />
+              <input onFocus={() => setInvalidFields([])} type="date" name="end_date" value={end_date} onChange={handleChangeAuction} placeholder="End date" className={`${commonClassNameOfInput}`} />
+              {
+                invalidFields?.some(el => el.name === "end_date") &&
+                <small style={{ color: 'red' }}>{invalidFields?.find(el => el.name === "end_date").message}</small>
+              }
             </div>
           </div>
           {/* <div className="flex items-center gap-5 mt-4">
@@ -170,10 +205,18 @@ export const AddProduct = () => {
           <div>
             <Caption className="mb-2">Description *</Caption>
             <textarea name="description" value={description} onChange={handleChangeAuction} className={`${commonClassNameOfInput}`} cols="30" rows="5"></textarea>
+            {
+              invalidFields?.some(el => el.name === "description") && productValue.description === '' &&
+              <small style={{ color: 'red' }}>{invalidFields?.find(el => el.name === "description").message}</small>
+            }
           </div>
           <div>
             <Caption className="mb-2">Image </Caption>
             <input type="file" multiple="multiple" onChange={handleImagesChange} className={`${commonClassNameOfInput}`} name="images" />
+            {
+              invlidImages &&
+              <small style={{ color: 'red' }}>This fields is invalid</small>
+            }
           </div>
           <PrimaryButton type="submit" className="rounded-none my-5">
             CREATE
