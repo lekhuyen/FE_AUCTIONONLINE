@@ -11,7 +11,10 @@ export const CreateCategory = () => {
     e.preventDefault();
     try {
       const category_name = categoryname
-      const response = await axios.post("category", category_name)
+      const response = await axios.post("category",
+        category_name,
+        { authRequired: true },
+      )
       if (response.code === 0) {
         toast.success(response.message)
         setCategoryname("")
