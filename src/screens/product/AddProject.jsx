@@ -2,10 +2,9 @@ import { CategoryDropDown, Caption, PrimaryButton, Title } from "../../router";
 import axios from '../../utils/axios'
 import { commonClassNameOfInput } from "../../components/common/Design";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { jwtDecode } from "jwt-decode";
 import { createProduct } from "../../redux/slide/productSlide";
-import { toast } from "react-toastify";
 import { validateForm } from "../../utils/validation";
 
 const initialState = {
@@ -31,7 +30,6 @@ export const AddProduct = () => {
   const [invlidImages, setInvlidImages] = useState(false)
 
   const dispatch = useDispatch()
-  const { message, code, isLoading } = useSelector(state => state.product)
 
   const getCategories = async () => {
     try {
@@ -115,15 +113,11 @@ export const AddProduct = () => {
     } else {
       setInvlidImages(true)
     }
-    if (invalids === 0 && userId) {
+    if (invalids === 0 && userId && imageFile.length > 0) {
       dispatch(createProduct(formData));
-    }
-    if (code === 0) {
-      toast.success(message);
       setProductValue(initialState)
       setImageFile([])
     }
-
   }
 
   return (
