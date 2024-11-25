@@ -2,8 +2,43 @@ import { TiEyeOutline } from "react-icons/ti";
 import { CiEdit } from "react-icons/ci";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { NavLink } from "react-router-dom";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteProduct, getAllProduct } from "../redux/slide/productSlide";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 export const Table = () => {
+  const dispatch = useDispatch()
+  const { products } = useSelector(state => state.product)
+  useEffect(() => {
+    dispatch(getAllProduct())
+  }, [dispatch])
+
+
+  const handleDeleteProduct = id => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to delete this item?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const res = await dispatch(deleteProduct(id))
+          if (res.payload.code === 0) {
+            dispatch(getAllProduct())
+          }
+        } catch (error) {
+          toast.error("Something went wrong!");
+        }
+      }
+    });
+  }
+
   return (
     <>
       <div className="relative overflow-x-auto rounded-lg">
@@ -11,19 +46,37 @@ export const Table = () => {
           <thead className="text-xs text-gray-700 uppercase bg-gray-100">
             <tr>
               <th scope="col" className="px-6 py-5">
-                Title
+                Name
               </th>
               <th scope="col" className="px-6 py-3">
-                Bidding ID
+                Start price
               </th>
               <th scope="col" className="px-6 py-3">
-                Bid Amount(USD)
+                Bid step
               </th>
               <th scope="col" className="px-6 py-3">
-                Image
+                Category
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Start date
+              </th>
+              <th scope="col" className="px-6 py-3">
+                End date
+              </th>
+              <th scope="col" className="px-6 py-3">
+                isSell
               </th>
               <th scope="col" className="px-6 py-3">
                 Status
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Screator
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Images
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Soldout
               </th>
               <th scope="col" className="px-6 py-3">
                 Action
@@ -31,30 +84,44 @@ export const Table = () => {
             </tr>
           </thead>
           <tbody>
-            <tr className="bg-white border-b hover:bg-gray-50">
-              <td className="px-6 py-4">Auction Title 01</td>
-              <td className="px-6 py-4">Bidding_HvO253gT</td>
-              <td className="px-6 py-4">1222.8955</td>
-              <td className="px-6 py-4">
-                <img className="w-10 h-10" src="https://bidout-react.vercel.app/images/bg/order1.png" alt="Jeseimage" />
-              </td>
-              <td className="px-6 py-4">
-                <div className="flex items-center">
-                  <div className="h-2.5 w-2.5 rounded-full bg-green me-2"></div> Success
-                </div>
-              </td>
-              <td className="px-6 py-4 text-center flex items-center gap-3 mt-1">
-                <NavLink to="#" type="button" className="font-medium text-indigo-500">
-                  <TiEyeOutline size={25} />
-                </NavLink>
-                <NavLink to="/update-product" type="button" className="font-medium text-green">
-                  <CiEdit size={25} />
-                </NavLink>
-                <button className="font-medium text-red-500">
-                  <MdOutlineDeleteOutline size={25} />
-                </button>
-              </td>
-            </tr>
+            {
+              products?.length > 0 && products?.map((product, index) => (
+                <tr key={product.item_id} className="bg-white border-b hover:bg-gray-50">
+                  <td className="px-6 py-4">{product.item_name}</td>
+                  <td className="px-6 py-4">{product.starting_price}</td>
+                  <td className="px-6 py-4">{product.bid_step}</td>
+                  <td className="px-6 py-4">{product.category.category_name}</td>
+                  <td className="px-6 py-4">{product.start_date}</td>
+                  <td className="px-6 py-4">{product.end_date}</td>
+                  <td className="px-6 py-4">{product.sell ? "SOLD" : "NOT YET"}</td>
+                  <td className="px-6 py-4">{product.status ? "Ok" : "NO"}</td>
+                  <td className="px-6 py-4">{product.user.name}</td>
+                  <td className="px-6 py-4">
+                    {product?.images.map((img, index) => (
+                      <img key={index} className="w-10 h-10" src={img} alt="Jeseimage" />
+                    ))}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center">
+                      <div className={`h-2.5 w-2.5 rounded-full  me-2 ${product.soldout ? "bg-green" : "bg-red-600"}`}></div>
+                      {product.soldout ? "Success" : "NOT YET"}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-center flex items-center gap-3 mt-1">
+                    <NavLink to="#" type="button" className="font-medium text-indigo-500">
+                      <TiEyeOutline size={25} />
+                    </NavLink>
+                    <NavLink to={`/product/update/${product.item_id}`} type="button" className="font-medium text-green">
+                      <CiEdit size={25} />
+                    </NavLink>
+                    <button className="font-medium text-red-500" onClick={() => handleDeleteProduct(product.item_id)}>
+                      <MdOutlineDeleteOutline size={25} />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            }
+
           </tbody>
         </table>
       </div>

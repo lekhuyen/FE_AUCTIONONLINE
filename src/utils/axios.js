@@ -2,17 +2,23 @@ import axios from "axios";
 
 const instance = axios.create({
   baseURL: 'http://localhost:8080/api/',
-  timeout: 1000,
+  timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
+    // 'Content-Type': 'multipart/form-data',
+
   },
 });
 
 instance.interceptors.request.use(function (config) {
   const token = localStorage.getItem('token');
 
-  if (token) {
+  if (config.authRequired && token) {
     config.headers.Authorization = 'Bearer ' + token;
+  }
+
+  if (config.multipart) {
+    config.headers["Content-Type"] = "multipart/form-data";
   }
 
   return config;
