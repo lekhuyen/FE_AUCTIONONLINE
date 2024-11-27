@@ -15,7 +15,7 @@ import { useLoginExpired } from "../utils/helper";
 export const Table = () => {
   const dispatch = useDispatch()
   const { products } = useSelector(state => state.product)
-  console.log(products);
+  // console.log(products);
 
   const [isLogin, setIsLogin] = useState(localStorage.getItem('isIntrospect') || false)
   const { triggerLoginExpired } = useLoginExpired();
@@ -91,6 +91,9 @@ export const Table = () => {
           <thead className="text-xs text-gray-700 uppercase bg-gray-100">
             <tr>
               <th scope="col" className="px-6 py-5">
+                No
+              </th>
+              <th scope="col" className="px-6 py-5">
                 Name
               </th>
               <th scope="col" className="px-6 py-3">
@@ -133,8 +136,9 @@ export const Table = () => {
           </thead>
           <tbody>
             {
-              products?.length > 0 && products?.map((product, index) => (
+              products?.data?.length > 0 && products?.data?.map((product, index) => (
                 <tr key={product.item_id} className="bg-white border-b hover:bg-gray-50">
+                  <td className="px-6 py-4">{(products.currentPage - 1) * products.pageSize + index + 1}</td>
                   <td className="px-6 py-4">{product.item_name}</td>
                   <td className="px-6 py-4">{product.starting_price}</td>
                   <td className="px-6 py-4">{product.bid_step}</td>

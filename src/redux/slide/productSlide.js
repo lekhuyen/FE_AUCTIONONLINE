@@ -21,9 +21,16 @@ export const updateProduct = createAsyncThunk("product/update", async (product, 
     return thunkAPI.rejectWithValue(errorMessage)
   }
 })
-export const getAllProduct = createAsyncThunk("product/getallproduct", async (product, thunkAPI) => {
+export const getAllProduct = createAsyncThunk("product/getallproduct", async (paginate, thunkAPI) => {
   try {
-    const response = await axios.get("/auction", product, { authRequired: true })
+    const response = await axios.get("/auction", {
+      params: {
+        page: paginate.page,
+        size: paginate.size,
+      },
+      headers: { authRequired: true }
+    })
+
     return response
   } catch (error) {
     // console.log(error.response.data.message);
