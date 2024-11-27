@@ -26,12 +26,9 @@ export const introspect = createAsyncThunk("auth/introspect", async (token, thun
   try {
     const response = await axios.post("auth/introspect", token)
     // console.log(response);
-
     return response.result.valid
-
   } catch (error) {
     // console.log(error);
-
     const errorMessage = (error.response && error.response.data && error.response.data.message) || error.message || error.toString() || error
     return thunkAPI.rejectWithValue(errorMessage)
   }

@@ -11,7 +11,7 @@ import { TbCurrencyDollar } from "react-icons/tb";
 import { FiUser } from "react-icons/fi";
 import { FaPlusCircle } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { RESET } from "../../redux/slide/authSlide";
 import React, { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
@@ -21,7 +21,9 @@ export const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const { token } = useSelector(state => state.auth)
+  // const { token } = useSelector(state => state.auth)
+  const [isLogin, setIsLogin] = useState(localStorage.getItem('isIntrospect') || false)
+  const [token, setToken] = useState(localStorage.getItem('token') || null)
 
   const [userInfo, setUserInfo] = useState(null)
 
@@ -39,11 +41,9 @@ export const Sidebar = () => {
   }, [token])
 
   const logoutUser = () => {
-    // console.log("isLoggedIn", isLoggedIn);
-    // console.log("token", token);
     if (token !== null) {
-
       localStorage.removeItem("token")
+      localStorage.removeItem("isIntrospect");
       dispatch(RESET())
       navigate("/login")
     }
@@ -55,14 +55,15 @@ export const Sidebar = () => {
   return (
     <>
       <section className="sidebar flex flex-col justify-between h-full">
-        <div className="profile flex items-center text-center justify-center gap-8 flex-col mb-8">
-          <img src={User1} alt="" className="w-32 h-32 rounded-full object-cover" />
-          <div>
-            <Title className="capitalize">{userInfo?.username}</Title>
-            <Caption>{userInfo?.sub}</Caption>
+        {isLogin &&
+          <div className="profile flex items-center text-center justify-center gap-8 flex-col mb-8">
+            <img src={User1} alt="" className="w-32 h-32 rounded-full object-cover" />
+            <div>
+              <Title className="capitalize">{isLogin && userInfo?.username}</Title>
+              <Caption>{userInfo?.sub}</Caption>
+            </div>
           </div>
-        </div>
-
+        }
         <div>
           <CustomNavLink href="/dashboard" isActive={location.pathname === "/dashboard"} className={className}>
             <span>
@@ -70,7 +71,6 @@ export const Sidebar = () => {
             </span>
             <span>Dashboard</span>
           </CustomNavLink>
-
           {(role === "seller" || role === "admin") && (
             <>
               <CustomNavLink href="/product" isActive={location.pathname === "/product"} className={className}>
@@ -139,13 +139,15 @@ export const Sidebar = () => {
             </span>
             <span>Personal Profile</span>
           </CustomNavLink>
-
-          <button onClick={logoutUser} className="flex items-center w-full gap-3 mt-4 bg-red-500 mb-3 hover:text-white p-4 rounded-full text-white">
-            <span>
-              <IoIosLogOut size={22} />
-            </span>
-            <span>Log Out</span>
-          </button>
+          {
+            isLogin &&
+            <button onClick={logoutUser} className="flex items-center w-full gap-3 mt-4 bg-red-500 mb-3 hover:text-white p-4 rounded-full text-white">
+              <span>
+                <IoIosLogOut size={22} />
+              </span>
+              <span>Log Out</span>
+            </button>
+          }
         </div>
       </section>
     </>

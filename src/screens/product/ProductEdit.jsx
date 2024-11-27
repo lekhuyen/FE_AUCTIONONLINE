@@ -1,50 +1,58 @@
 import { PrimaryButton, Caption, Title } from "../../router";
 import { commonClassNameOfInput } from "../../components/common/Design";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import axios from '../../utils/axios'
 import { jwtDecode } from "jwt-decode";
 import { validateForm } from "../../utils/validation";
 import { updateProduct } from "../../redux/slide/productSlide";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+import { logout } from "../../redux/slide/authSlide";
+import { useLoginExpired } from "../../utils/helper";
 
 export const ProductEdit = () => {
   const { id } = useParams()
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
   const [productUpdate, setProductUpdate] = useState({})
   const [userId, setUserId] = useState(null);
   const [imageFile, setImageFile] = useState([]);
 
   const [invalidFields, setInvalidFields] = useState([])
   const [invlidImages, setInvlidImages] = useState(false)
-
-  const dispatch = useDispatch()
-
-
+  const [isLogin, setIsLogin] = useState(localStorage.getItem('isIntrospect') || false)
+  const { triggerLoginExpired } = useLoginExpired();
   useEffect(() => {
     const getProduct = async () => {
-      try {
-        const response = await axios.get(`auction/${id}`,
-          { authRequired: true },
-        )
-        if (response.code === 0) {
-          const product = {
-            item_id: response.result.item_id,
-            item_name: response.result.item_name,
-            description: response.result.description,
-            starting_price: response.result.starting_price,
-            start_date: response.result.start_date,
-            end_date: response.result.end_date,
-            bid_step: response.result.bid_step,
+      if (isLogin) {
+        try {
+          const response = await axios.get(`auction/${id}`,
+            { authRequired: true },
+          )
+          if (response.code === 0) {
+            const product = {
+              item_id: response.result.item_id,
+              item_name: response.result.item_name,
+              description: response.result.description,
+              starting_price: response.result.starting_price,
+              start_date: response.result.start_date,
+              end_date: response.result.end_date,
+              bid_step: response.result.bid_step,
+            }
+            setImageFile(response.result.images)
+            setProductUpdate(product)
           }
-          setImageFile(response.result.images)
-          setProductUpdate(product)
+        } catch (error) {
+          console.log(error);
         }
-      } catch (error) {
-        console.log(error);
+      } else {
+        triggerLoginExpired()
       }
     }
     getProduct()
-  }, [id])
+  }, [id, isLogin, dispatch, navigate])
 
 
 
@@ -216,9 +224,12 @@ export const ProductEdit = () => {
                 })}
             </div>
           </div>
-          <PrimaryButton type="submit" className="rounded-none my-5">
-            UPDATE
-          </PrimaryButton>
+          {
+            isLogin &&
+            <PrimaryButton type="submit" className="rounded-none my-5">
+              UPDATE
+            </PrimaryButton>
+          }
         </form>
       </section>
     </>

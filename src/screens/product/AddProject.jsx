@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { jwtDecode } from "jwt-decode";
 import { createProduct } from "../../redux/slide/productSlide";
 import { validateForm } from "../../utils/validation";
+import { useLoginExpired } from "../../utils/helper";
 
 const initialState = {
   item_name: "",
@@ -18,7 +19,6 @@ const initialState = {
 };
 
 export const AddProduct = () => {
-  // const { token } = useSelector(state => state.auth)
   const [userId, setUserId] = useState(null);
   const [productValue, setProductValue] = useState(initialState)
   const { item_name, description, starting_price, start_date, end_date, bid_step } = productValue
@@ -28,21 +28,26 @@ export const AddProduct = () => {
 
   const [invalidFields, setInvalidFields] = useState([])
   const [invlidImages, setInvlidImages] = useState(false)
-
+  const [isLogin, setIsLogin] = useState(localStorage.getItem('isIntrospect') || false)
+  const { triggerLoginExpired } = useLoginExpired();
   const dispatch = useDispatch()
 
   const getCategories = async () => {
-    try {
-      const response = await axios.get("category", {
-        authRequired: true,
-      })
-
-      if (response.code === 0) {
-        setCategories(response.result)
+    if (isLogin) {
+      try {
+        const response = await axios.get("category", {
+          authRequired: true,
+        })
+        if (response.code === 0) {
+          setCategories(response.result)
+        }
+      } catch (error) {
+        console.log(error)
       }
-    } catch (error) {
-      console.log(error)
+    } else {
+      triggerLoginExpired()
     }
+
   }
   useEffect(() => {
     const categoryOptions = categories.map((category) => ({
@@ -104,7 +109,6 @@ export const AddProduct = () => {
     formData.append('bid_step', productValue.bid_step)
     formData.append('userId', userId)
 
-
     if (imageFile.length > 0) {
       for (let i = 0; i < imageFile.length; i++) {
         formData.append('images', imageFile[i])
@@ -113,7 +117,7 @@ export const AddProduct = () => {
     } else {
       setInvlidImages(true)
     }
-    if (invalids === 0 && userId && imageFile.length > 0) {
+    if (invalids === 0 && userId && imageFile.length > 0 && isLogin) {
       dispatch(createProduct(formData));
       setProductValue(initialState)
       setImageFile([])
@@ -131,7 +135,6 @@ export const AddProduct = () => {
           <div className="w-full">
             <Caption className="mb-2">Name *</Caption>
             <input type="text" name="item_name" value={item_name} onChange={handleChangeAuction} className={`${commonClassNameOfInput}`} placeholder="Name" />
-
             {
               invalidFields?.some(el => el.name === "item_name") && productValue.item_name === '' &&
               <small style={{ color: 'red' }}>{invalidFields?.find(el => el.name === "item_name").message}</small>
@@ -212,9 +215,12 @@ export const AddProduct = () => {
               <small style={{ color: 'red' }}>This fields is invalid</small>
             }
           </div>
-          <PrimaryButton type="submit" className="rounded-none my-5">
-            CREATE
-          </PrimaryButton>
+          {
+            isLogin &&
+            <PrimaryButton type="submit" className="rounded-none my-5">
+              CREATE
+            </PrimaryButton>
+          }
         </form>
       </section>
     </>

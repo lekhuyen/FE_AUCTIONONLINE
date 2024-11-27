@@ -53,8 +53,6 @@ function App() {
   useEffect(() => {
 
     if (!isIntrospect && !alertShown) {
-      console.log(isIntrospect);
-
       Swal.fire({
         title: "Login expired, please login again!",
         confirmButtonText: "Login",
