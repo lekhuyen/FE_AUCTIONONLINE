@@ -183,7 +183,6 @@ function App() {
           path="/product/admin"
           element={
             <PrivateRoute>
-
               <Layout>
                 <DashboardLayout>
                   <AdminProductList />

@@ -23,3 +23,9 @@ export const useLoginExpired = () => {
 
   return { triggerLoginExpired };
 }
+
+export const generateRange = (start, end) => {
+  const length = (end + 1) - start;
+  return Array.from({ length }, (_, index) => start + index)
+}
+// [3,4,5,6] => lenght = 4 phan tu

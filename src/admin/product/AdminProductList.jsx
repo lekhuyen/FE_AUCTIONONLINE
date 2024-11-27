@@ -1,5 +1,6 @@
 import { Title } from "../../router";
 import { Table } from "../../components/Table";
+import Pagination from "../../components/common/layout/Pagination";
 
 export const AdminProductList = () => {
   return (
@@ -12,6 +13,9 @@ export const AdminProductList = () => {
         </div>
         <hr className="my-5" />
         <Table />
+        <div className="mt-8 flex justify-end">
+          <Pagination />
+        </div>
       </section>
     </>
   );
