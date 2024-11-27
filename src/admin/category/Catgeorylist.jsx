@@ -88,9 +88,9 @@ export const Catgeorylist = () => {
                 <th scope="col" className="px-6 py-5">
                   S.N
                 </th>
-                <th scope="col" className="px-20 py-5">
+                {/* <th scope="col" className="px-20 py-5">
                   User
-                </th>
+                </th> */}
                 <th scope="col" className="px-6 py-5">
                   Name
                 </th>
@@ -106,7 +106,7 @@ export const Catgeorylist = () => {
               {categories?.length && categories?.map((category, index) => (
                 <tr key={category.category_id} className="bg-white border-b hover:bg-gray-50">
                   <td className="px-6 py-4">{index += 1}</td>
-                  <td className="px-6 py-4">
+                  {/* <td className="px-6 py-4">
                     <div className="flex items-center px-6 text-gray-900 whitespace-nowrap">
                       <div>
                         <ProfileCard>
@@ -118,7 +118,7 @@ export const Catgeorylist = () => {
                         <div className="font-normal text-gray-500"> example@gmail.com</div>
                       </div>
                     </div>
-                  </td>
+                  </td> */}
                   <td className="px-6 py-4">{category.category_name}</td>
                   {/* <td className="px-6 py-4">Dec 10 2020</td> */}
 

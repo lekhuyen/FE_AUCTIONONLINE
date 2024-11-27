@@ -15,6 +15,8 @@ import { useLoginExpired } from "../utils/helper";
 export const Table = () => {
   const dispatch = useDispatch()
   const { products } = useSelector(state => state.product)
+  console.log(products);
+
   const [isLogin, setIsLogin] = useState(localStorage.getItem('isIntrospect') || false)
   const { triggerLoginExpired } = useLoginExpired();
   useEffect(() => {

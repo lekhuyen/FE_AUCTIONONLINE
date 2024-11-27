@@ -20,7 +20,6 @@ export const UserList = () => {
   //get all user
   const getAllUsers = async () => {
     const response = await axios.get('users', { authRequired: true })
-    console.log(response);
     if (response.code === 0) {
       setUserList(response.result)
     }
