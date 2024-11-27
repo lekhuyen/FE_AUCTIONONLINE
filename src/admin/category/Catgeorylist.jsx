@@ -9,9 +9,13 @@ import { useEffect, useState } from "react";
 import axios from '../../utils/axios'
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import { useLoginExpired } from "../../utils/helper";
 
 export const Catgeorylist = () => {
   const [categories, setCategories] = useState([])
+  const [isLogin, setIsLogin] = useState(localStorage.getItem('isIntrospect') || false)
+  const { triggerLoginExpired } = useLoginExpired();
+
   const getCategories = async () => {
     try {
       const response = await axios.get("category", {
@@ -25,38 +29,40 @@ export const Catgeorylist = () => {
     }
   }
   useEffect(() => {
-
     getCategories()
   }, [])
 
   const handeDeleteCategory = async (id) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "Do you want to delete this category?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!"
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          const response = await axios.delete(`category/${id}`, {
-            authRequired: true,
-          })
-          if (response.code === 0) {
-            toast.success(response.message)
-            getCategories()
-          } else {
-            toast.error("Error: Unable to delete the category!");
+    if (!isLogin) {
+      triggerLoginExpired()
+    } else {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "Do you want to delete this category?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            const response = await axios.delete(`category/${id}`, {
+              authRequired: true,
+            })
+            if (response.code === 0) {
+              toast.success(response.message)
+              getCategories()
+            } else {
+              toast.error("Error: Unable to delete the category!");
+            }
+          } catch (error) {
+            console.log(error);
+            toast.error("Something went wrong!");
           }
-        } catch (error) {
-          console.log(error);
-          toast.error("Something went wrong!");
         }
-      }
-    });
-
+      });
+    }
   }
 
   return (

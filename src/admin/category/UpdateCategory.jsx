@@ -4,27 +4,34 @@ import { useEffect, useState } from "react";
 import axios from "../../utils/axios";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
+import { useLoginExpired } from "../../utils/helper";
 
 export const UpdateCategory = () => {
   const { id } = useParams();
+  const [isLogin, setIsLogin] = useState(localStorage.getItem('isIntrospect') || false)
+  const { triggerLoginExpired } = useLoginExpired();
   const [categoryUpdate, setCategoryUpdate] = useState({
     category_id: "",
     category_name: "",
   })
 
-  useEffect(() => {
-    const getCategory = async () => {
-      try {
-        const response = await axios.get(`category/${id}`,
-          { authRequired: true },
-        )
-        setCategoryUpdate(response)
-      } catch (error) {
-        console.log(error);
+  const getCategory = async () => {
+    try {
+      const response = await axios.get(`category/${id}`,
+        { authRequired: true },
+      )
+      setCategoryUpdate(response)
+    } catch (error) {
+      console.log(error);
 
-      }
     }
-    getCategory()
+  }
+  useEffect(() => {
+    if (isLogin) {
+      getCategory()
+    } else {
+      triggerLoginExpired()
+    }
   }, [id])
 
 

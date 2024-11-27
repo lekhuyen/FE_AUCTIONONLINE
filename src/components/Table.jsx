@@ -2,41 +2,84 @@ import { TiEyeOutline } from "react-icons/ti";
 import { CiEdit } from "react-icons/ci";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { NavLink } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteProduct, getAllProduct } from "../redux/slide/productSlide";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import { FaCheck } from "react-icons/fa6";
+import { FaXmark } from "react-icons/fa6";
+import axios from '../../utils/../src/utils/axios'
+import { useLoginExpired } from "../utils/helper";
 
 export const Table = () => {
   const dispatch = useDispatch()
   const { products } = useSelector(state => state.product)
+  const [isLogin, setIsLogin] = useState(localStorage.getItem('isIntrospect') || false)
+  const { triggerLoginExpired } = useLoginExpired();
   useEffect(() => {
     dispatch(getAllProduct())
   }, [dispatch])
 
-
   const handleDeleteProduct = id => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "Do you want to delete this item?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!"
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          const res = await dispatch(deleteProduct(id))
-          if (res.payload.code === 0) {
-            dispatch(getAllProduct())
+    if (isLogin) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "Do you want to delete this item?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            const res = await dispatch(deleteProduct(id))
+            if (res.payload.code === 0) {
+              dispatch(getAllProduct())
+            }
+          } catch (error) {
+            toast.error("Something went wrong!");
           }
-        } catch (error) {
-          toast.error("Something went wrong!");
         }
-      }
-    });
+      });
+    } else {
+      triggerLoginExpired()
+    }
+  }
+
+  //update status
+  const handleUpdateStatus = (id) => {
+    if (isLogin) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "Do you want to update this category status?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Update"
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            const response = await axios.put(`auction/status/${id}`, {
+              authRequired: true,
+            })
+            if (response.code === 0) {
+              toast.success(response.message)
+              dispatch(getAllProduct())
+            } else {
+              toast.error("Error: Unable to delete the category!");
+            }
+          } catch (error) {
+            console.log(error);
+            toast.error("Something went wrong!");
+          }
+        }
+      });
+    } else {
+      triggerLoginExpired();
+    }
   }
 
   return (
@@ -63,9 +106,9 @@ export const Table = () => {
               <th scope="col" className="px-6 py-3">
                 End date
               </th>
-              <th scope="col" className="px-6 py-3">
+              {/* <th scope="col" className="px-6 py-3">
                 isSell
-              </th>
+              </th> */}
               <th scope="col" className="px-6 py-3">
                 Status
               </th>
@@ -73,10 +116,13 @@ export const Table = () => {
                 Screator
               </th>
               <th scope="col" className="px-6 py-3">
-                Images
+                Selling
               </th>
               <th scope="col" className="px-6 py-3">
                 Soldout
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Images
               </th>
               <th scope="col" className="px-6 py-3">
                 Action
@@ -93,19 +139,24 @@ export const Table = () => {
                   <td className="px-6 py-4">{product.category.category_name}</td>
                   <td className="px-6 py-4">{product.start_date}</td>
                   <td className="px-6 py-4">{product.end_date}</td>
-                  <td className="px-6 py-4">{product.sell ? "SOLD" : "NOT YET"}</td>
-                  <td className="px-6 py-4">{product.status ? "Ok" : "NO"}</td>
+                  {/* <td className={`${product.sell ? "text-green" : "text-red-600"} px-6 py-4`}>{product.isSell ? "SOLD" : "NOT YET"}</td> */}
+                  <td className="px-6 py-4">
+                    <p onClick={() => handleUpdateStatus(product.item_id)} className={`${product.status ? "text-green" : "text-red-600"} cursor-pointer`}>
+                      {product.status ? <FaCheck size={22} /> : <FaXmark size={22} />}
+                    </p>
+                  </td>
                   <td className="px-6 py-4">{product.user.name}</td>
+                  <td className={`${product.sell ? "text-green" : "text-red-600"} px-6 py-4`}>{product.sell ? "SELLING" : "NOT YET"}</td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center">
+                      {/* <div className={`h-2.5 w-2.5 rounded-full  me-2 ${product.soldout ? "bg-green" : "bg-red-600"}`}></div> */}
+                      <p className={`${product.soldout ? "text-green" : "text-red-600"} px-6 py-4`}>{product.soldout ? "Success" : "NOT YET"}</p>
+                    </div>
+                  </td>
                   <td className="px-6 py-4">
                     {product?.images.map((img, index) => (
                       <img key={index} className="w-10 h-10" src={img} alt="Jeseimage" />
                     ))}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center">
-                      <div className={`h-2.5 w-2.5 rounded-full  me-2 ${product.soldout ? "bg-green" : "bg-red-600"}`}></div>
-                      {product.soldout ? "Success" : "NOT YET"}
-                    </div>
                   </td>
                   <td className="px-6 py-4 text-center flex items-center gap-3 mt-1">
                     <NavLink to="#" type="button" className="font-medium text-indigo-500">
@@ -121,7 +172,6 @@ export const Table = () => {
                 </tr>
               ))
             }
-
           </tbody>
         </table>
       </div>
