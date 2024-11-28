@@ -9,7 +9,7 @@ const usePanigation = (totalProductCount, currentPage, siblingCount = 1) => {
     const pageSize = process.env.REACT_APP_SIZE_ELEMENT || 3
 
     //so luong page
-    const paginationCount = Math.ceil(totalProductCount / +pageSize)
+    const paginationCount = Math.ceil(totalProductCount / pageSize)
 
     const totalPaginationItem = siblingCount + 5
     if (paginationCount <= totalPaginationItem) return generateRange(1, paginationCount)
@@ -42,7 +42,6 @@ const usePanigation = (totalProductCount, currentPage, siblingCount = 1) => {
     }
 
   }, [totalProductCount, currentPage, siblingCount])
-
   return paginationArray
 }
 

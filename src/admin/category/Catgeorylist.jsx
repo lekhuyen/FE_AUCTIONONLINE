@@ -1,5 +1,5 @@
 import { AiOutlinePlus } from "react-icons/ai";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import { Title, PrimaryButton, ProfileCard } from "../../router";
 import { TiEyeOutline } from "react-icons/ti";
 import { CiEdit } from "react-icons/ci";
@@ -10,27 +10,23 @@ import axios from '../../utils/axios'
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { useLoginExpired } from "../../utils/helper";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllCategory } from "../../redux/slide/productSlide";
+import Pagination from "../../components/common/layout/Pagination";
 
 export const Catgeorylist = () => {
-  const [categories, setCategories] = useState([])
+  const dispatch = useDispatch()
+  const navigate = useNavigate();
+  // const [searchParams] = useSearchParams();
+  // const page = parseInt(searchParams.get('page')) || 1;
+
+  const { categories } = useSelector(state => state.product)
   const [isLogin, setIsLogin] = useState(localStorage.getItem('isIntrospect') || false)
   const { triggerLoginExpired } = useLoginExpired();
 
-  const getCategories = async () => {
-    try {
-      const response = await axios.get("category", {
-        authRequired: true,
-      })
-      if (response.code === 0) {
-        setCategories(response.result)
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
   useEffect(() => {
-    getCategories()
-  }, [])
+    dispatch(getAllCategory())
+  }, [dispatch])
 
   const handeDeleteCategory = async (id) => {
     if (!isLogin) {
@@ -52,7 +48,12 @@ export const Catgeorylist = () => {
             })
             if (response.code === 0) {
               toast.success(response.message)
-              getCategories()
+              await dispatch(getAllCategory(
+                {
+                  page: categories.currentPage,
+                  size: categories.pageSize
+                }
+              ))
             } else {
               toast.error("Error: Unable to delete the category!");
             }
@@ -64,6 +65,15 @@ export const Catgeorylist = () => {
       });
     }
   }
+  useEffect(() => {
+    if (categories?.data?.length === 0 && categories?.currentPage > 1) {
+      navigate(`?page=${categories?.currentPage - 1}`);
+      dispatch(getAllCategory({
+        page: categories.currentPage - 1,
+        size: categories.pageSize
+      }));
+    }
+  }, [categories, dispatch, navigate])
 
   return (
     <>
@@ -103,9 +113,9 @@ export const Catgeorylist = () => {
               </tr>
             </thead>
             <tbody>
-              {categories?.length && categories?.map((category, index) => (
+              {categories?.data?.length && categories?.data?.map((category, index) => (
                 <tr key={category.category_id} className="bg-white border-b hover:bg-gray-50">
-                  <td className="px-6 py-4">{index += 1}</td>
+                  <td className="px-6 py-4">{(categories?.currentPage - 1) * categories?.pageSize + index + 1}</td>
                   {/* <td className="px-6 py-4">
                     <div className="flex items-center px-6 text-gray-900 whitespace-nowrap">
                       <div>
@@ -120,8 +130,6 @@ export const Catgeorylist = () => {
                     </div>
                   </td> */}
                   <td className="px-6 py-4">{category.category_name}</td>
-                  {/* <td className="px-6 py-4">Dec 10 2020</td> */}
-
                   <td className="px-6 py-4 text-center flex items-center justify-end gap-3 mt-1">
                     <NavLink to="#" type="button" className="font-medium text-indigo-500">
                       <TiEyeOutline size={25} />
@@ -135,9 +143,15 @@ export const Catgeorylist = () => {
                   </td>
                 </tr>
               ))}
-
             </tbody>
           </table>
+        </div>
+        <div className="mt-8 flex justify-end">
+          <Pagination
+            listItem={categories}
+            to={"/category"}
+            methodCallApi={getAllCategory}
+          />
         </div>
       </section>
     </>
