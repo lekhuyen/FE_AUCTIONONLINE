@@ -11,22 +11,20 @@ import { toast } from "react-toastify";
 import { useLoginExpired } from "../utils/helper";
 import { CiEdit } from "react-icons/ci";
 import { MdOutlineDeleteOutline } from "react-icons/md";
+import Pagination from "../components/common/layout/Pagination";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllUsers } from "../redux/slide/authSlide";
 
 export const UserList = () => {
-  const [usersList, setUserList] = useState([])
+  const dispatch = useDispatch()
+  const navigate = useNavigate();
+  const { users } = useSelector(state => state.auth)
   const [isLogin, setIsLogin] = useState(localStorage.getItem('isIntrospect') || false)
   const { triggerLoginExpired } = useLoginExpired();
 
-  //get all user
-  const getAllUsers = async () => {
-    const response = await axios.get('users', { authRequired: true })
-    if (response.code === 0) {
-      setUserList(response.result)
-    }
-  }
   useEffect(() => {
-    getAllUsers()
-  }, [])
+    dispatch(getAllUsers())
+  }, [dispatch])
 
   //update status
   const handleUpdateStatus = (id) => {
@@ -47,7 +45,12 @@ export const UserList = () => {
             })
             if (response.code === 0) {
               toast.success(response.message)
-              getAllUsers()
+              await dispatch(getAllUsers(
+                {
+                  page: users.currentPage,
+                  size: users.pageSize
+                }
+              ))
             } else {
               toast.error("Error: Unable to update the user status!");
             }
@@ -80,7 +83,12 @@ export const UserList = () => {
             })
             if (response.code === 0) {
               toast.success(response.message)
-              getAllUsers()
+              await dispatch(getAllUsers(
+                {
+                  page: users.currentPage,
+                  size: users.pageSize
+                }
+              ))
             } else {
               toast.error("Error: Unable to delete the user status!");
             }
@@ -93,6 +101,17 @@ export const UserList = () => {
       triggerLoginExpired();
     }
   }
+
+  useEffect(() => {
+    if (users?.data?.length === 0 && users?.currentPage > 1) {
+      navigate(`?page=${users?.currentPage - 1}`);
+      dispatch(getAllUsers({
+        page: users.currentPage - 1,
+        size: users.pageSize
+      }));
+    }
+  }, [users, dispatch, navigate])
+
 
   return (
     <section className="shadow-s1 p-8 rounded-lg">
@@ -137,9 +156,9 @@ export const UserList = () => {
           </thead>
           <tbody>
             {
-              usersList?.length > 0 && usersList?.map((user, index) => (
+              users?.data?.length > 0 && users?.data?.map((user, index) => (
                 <tr key={user.id} className="bg-white border-b hover:bg-gray-50">
-                  <td className="px-6 py-4">{index += 1}</td>
+                  <td className="px-6 py-4">{(users?.currentPage - 1) * users.pageSize + index + 1}</td>
                   <td className="px-6 py-4 capitalize">{user.name}</td>
                   <td className="px-6 py-4">{user.email}</td>
                   <td className="px-6 py-4 capitalize">
@@ -176,6 +195,13 @@ export const UserList = () => {
             }
           </tbody>
         </table>
+      </div>
+      <div className="mt-8 flex justify-end">
+        <Pagination
+          listItem={users}
+          to={"/userlist"}
+          methodCallApi={getAllUsers}
+        />
       </div>
     </section>
   );

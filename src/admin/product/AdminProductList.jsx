@@ -13,9 +13,9 @@ export const AdminProductList = () => {
         </div>
         <hr className="my-5" />
         <Table />
-        <div className="mt-8 flex justify-end">
+        {/* <div className="mt-8 flex justify-end">
           <Pagination />
-        </div>
+        </div> */}
       </section>
     </>
   );

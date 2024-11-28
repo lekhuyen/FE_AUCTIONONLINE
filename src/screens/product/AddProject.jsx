@@ -1,8 +1,8 @@
 import { CategoryDropDown, Caption, PrimaryButton, Title } from "../../router";
 import axios from '../../utils/axios'
 import { commonClassNameOfInput } from "../../components/common/Design";
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
 import { createProduct } from "../../redux/slide/productSlide";
 import { validateForm } from "../../utils/validation";
@@ -31,6 +31,8 @@ export const AddProduct = () => {
   const [isLogin, setIsLogin] = useState(localStorage.getItem('isIntrospect') || false)
   const { triggerLoginExpired } = useLoginExpired();
   const dispatch = useDispatch()
+  const fileInputRef = useRef(null);
+
 
   const getCategories = async () => {
     if (isLogin) {
@@ -39,7 +41,7 @@ export const AddProduct = () => {
           authRequired: true,
         })
         if (response.code === 0) {
-          setCategories(response.result)
+          setCategories(response.result.data)
         }
       } catch (error) {
         console.log(error)
@@ -121,6 +123,9 @@ export const AddProduct = () => {
       dispatch(createProduct(formData));
       setProductValue(initialState)
       setImageFile([])
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   }
 
@@ -144,10 +149,11 @@ export const AddProduct = () => {
             <Caption className="mb-2">Category *</Caption>
             <CategoryDropDown
               value={selectedCategory}
-              options={categories.map((category) => ({
+              options={categories?.map((category) => ({
                 label: category.category_name,
                 value: category.category_id,
               }))}
+              placeholder="Select a category"
               handleCategoryChange={handleCategoryChange}
               className={`${commonClassNameOfInput}`} />
           </div>
@@ -209,7 +215,13 @@ export const AddProduct = () => {
           </div>
           <div>
             <Caption className="mb-2">Image </Caption>
-            <input type="file" multiple="multiple" onChange={handleImagesChange} className={`${commonClassNameOfInput}`} name="images" />
+            <input type="file"
+              multiple="multiple"
+              onChange={handleImagesChange}
+              className={`${commonClassNameOfInput}`}
+              name="images"
+              ref={fileInputRef}
+            />
             {
               invlidImages &&
               <small style={{ color: 'red' }}>This fields is invalid</small>
