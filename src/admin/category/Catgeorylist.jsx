@@ -1,5 +1,5 @@
 import { AiOutlinePlus } from "react-icons/ai";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import { Title, PrimaryButton, ProfileCard } from "../../router";
 import { TiEyeOutline } from "react-icons/ti";
 import { CiEdit } from "react-icons/ci";
@@ -9,55 +9,71 @@ import { useEffect, useState } from "react";
 import axios from '../../utils/axios'
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import { useLoginExpired } from "../../utils/helper";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllCategory } from "../../redux/slide/productSlide";
+import Pagination from "../../components/common/layout/Pagination";
 
 export const Catgeorylist = () => {
-  const [categories, setCategories] = useState([])
-  const getCategories = async () => {
-    try {
-      const response = await axios.get("category", {
-        authRequired: true,
-      })
-      if (response.code === 0) {
-        setCategories(response.result)
-      }
-    } catch (error) {
-      console.log(error)
+  const dispatch = useDispatch()
+  const navigate = useNavigate();
+  // const [searchParams] = useSearchParams();
+  // const page = parseInt(searchParams.get('page')) || 1;
+
+  const { categories } = useSelector(state => state.product)
+  const [isLogin, setIsLogin] = useState(localStorage.getItem('isIntrospect') || false)
+  const { triggerLoginExpired } = useLoginExpired();
+
+  useEffect(() => {
+    dispatch(getAllCategory())
+  }, [dispatch])
+
+  const handeDeleteCategory = async (id) => {
+    if (!isLogin) {
+      triggerLoginExpired()
+    } else {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "Do you want to delete this category?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            const response = await axios.delete(`category/${id}`, {
+              authRequired: true,
+            })
+            if (response.code === 0) {
+              toast.success(response.message)
+              await dispatch(getAllCategory(
+                {
+                  page: categories.currentPage,
+                  size: categories.pageSize
+                }
+              ))
+            } else {
+              toast.error("Error: Unable to delete the category!");
+            }
+          } catch (error) {
+            console.log(error);
+            toast.error("Something went wrong!");
+          }
+        }
+      });
     }
   }
   useEffect(() => {
-
-    getCategories()
-  }, [])
-
-  const handeDeleteCategory = async (id) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "Do you want to delete this category?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!"
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          const response = await axios.delete(`category/${id}`, {
-            authRequired: true,
-          })
-          if (response.code === 0) {
-            toast.success(response.message)
-            getCategories()
-          } else {
-            toast.error("Error: Unable to delete the category!");
-          }
-        } catch (error) {
-          console.log(error);
-          toast.error("Something went wrong!");
-        }
-      }
-    });
-
-  }
+    if (categories?.data?.length === 0 && categories?.currentPage > 1) {
+      navigate(`?page=${categories?.currentPage - 1}`);
+      dispatch(getAllCategory({
+        page: categories.currentPage - 1,
+        size: categories.pageSize
+      }));
+    }
+  }, [categories, dispatch, navigate])
 
   return (
     <>
@@ -82,9 +98,9 @@ export const Catgeorylist = () => {
                 <th scope="col" className="px-6 py-5">
                   S.N
                 </th>
-                <th scope="col" className="px-20 py-5">
+                {/* <th scope="col" className="px-20 py-5">
                   User
-                </th>
+                </th> */}
                 <th scope="col" className="px-6 py-5">
                   Name
                 </th>
@@ -97,10 +113,10 @@ export const Catgeorylist = () => {
               </tr>
             </thead>
             <tbody>
-              {categories?.length && categories?.map((category, index) => (
+              {categories?.data?.length && categories?.data?.map((category, index) => (
                 <tr key={category.category_id} className="bg-white border-b hover:bg-gray-50">
-                  <td className="px-6 py-4">{index += 1}</td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4">{(categories?.currentPage - 1) * categories?.pageSize + index + 1}</td>
+                  {/* <td className="px-6 py-4">
                     <div className="flex items-center px-6 text-gray-900 whitespace-nowrap">
                       <div>
                         <ProfileCard>
@@ -112,10 +128,8 @@ export const Catgeorylist = () => {
                         <div className="font-normal text-gray-500"> example@gmail.com</div>
                       </div>
                     </div>
-                  </td>
+                  </td> */}
                   <td className="px-6 py-4">{category.category_name}</td>
-                  {/* <td className="px-6 py-4">Dec 10 2020</td> */}
-
                   <td className="px-6 py-4 text-center flex items-center justify-end gap-3 mt-1">
                     <NavLink to="#" type="button" className="font-medium text-indigo-500">
                       <TiEyeOutline size={25} />
@@ -129,9 +143,15 @@ export const Catgeorylist = () => {
                   </td>
                 </tr>
               ))}
-
             </tbody>
           </table>
+        </div>
+        <div className="mt-8 flex justify-end">
+          <Pagination
+            listItem={categories}
+            to={"/category"}
+            methodCallApi={getAllCategory}
+          />
         </div>
       </section>
     </>

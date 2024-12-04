@@ -7,6 +7,8 @@ import { toast } from "react-toastify";
 export const CreateCategory = () => {
 
   const [categoryname, setCategoryname] = useState("")
+  const [isLogin, setIsLogin] = useState(localStorage.getItem('isIntrospect') || false)
+
   const handleSubmitCreateCategory = async (e) => {
     e.preventDefault();
     try {
@@ -39,10 +41,12 @@ export const CreateCategory = () => {
             <Caption className="mb-2">Title *</Caption>
             <input type="text" value={categoryname} onChange={e => setCategoryname(e.target.value)} className={`${commonClassNameOfInput}`} placeholder="Title" required />
           </div>
-
-          <PrimaryButton type="submit" className="rounded-none my-5">
-            CREATE
-          </PrimaryButton>
+          {
+            isLogin &&
+            <PrimaryButton type="submit" className="rounded-none my-5">
+              CREATE
+            </PrimaryButton>
+          }
         </form>
       </section>
     </>
