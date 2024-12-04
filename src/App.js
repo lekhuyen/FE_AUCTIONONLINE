@@ -40,6 +40,17 @@ function App() {
               </Layout>
             }
           />
+
+            <Route
+                path="/contact"
+                element={
+                    <Layout>
+                        <Contact />
+                    </Layout>
+                }
+            />
+
+
           <Route
             path="/login"
             element={
@@ -230,18 +241,7 @@ function App() {
               </PrivateRoute>
             }
           />
-            <Route
-                path="/contact"
-                element={
-                    <PrivateRoute>
-                        <Layout>
-                            <DashboardLayout>
-                                <Contact />
-                            </DashboardLayout>
-                        </Layout>
-                    </PrivateRoute>
-                }
-            />
+
           <Route
             path="/*"
             element={
