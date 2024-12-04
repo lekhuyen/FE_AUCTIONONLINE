@@ -1,0 +1,260 @@
+/* Container and form section */
+.contact-container {
+    margin-top: 5rem;
+}
+
+.contact-text-center {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.contact-text-center h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+.contact-text-center p {
+    font-size: 1.2rem;
+    color: #555;
+}
+
+/* Form Section */
+.contact-form {
+    margin-bottom: 3rem;
+}
+
+/* Row for name and email */
+.contact-row {
+    display: flex;
+    gap: 1rem;
+}
+
+.contact-col {
+    flex: 1;
+}
+
+.contact-col input {
+    width: 100%;
+    border: 1px solid #ddd;  /* Border added */
+    border-radius: 5px;      /* Rounded corners */
+    padding: 0.75rem;        /* Padding inside the input */
+    font-size: 1rem;         /* Font size inside the input */
+}
+
+.contact-col input:focus {
+    outline: none;
+    border-color: #007bff;  /* Focused input border color */
+}
+
+/* Row for phone number and interested in */
+.contact-phone-interested {
+    display: flex;
+    gap: 1rem;
+}
+
+.contact-phone-interested .contact-col {
+    flex: 1;
+}
+
+/* Phone Input Wrapper */
+.phone-input-wrapper {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;  /* Border for the whole phone input */
+    border-radius: 5px;      /* Rounded corners */
+}
+
+/* Country Code Select */
+.contact-select.country-code-select {
+    border: none;
+    padding: 0.75rem;
+    font-size: 1rem;
+    width: 130px;  /* Set width for the country code select */
+    border-radius: 5px 0 0 5px;  /* Rounded left corners */
+    appearance: none;  /* Remove default select styling */
+    background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 12 12%22%3E%3Cpath fill=%22%23000000%22 d=%22M3.5 4L6 6.5 8.5 4%22/%3E%3C/svg%3E'); /* Custom dropdown arrow */
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 12px;
+}
+
+/* Phone Number Input */
+.contact-input.phone-input {
+
+    padding: 0.75rem;
+    font-size: 1rem;
+    width: 100%; /* Take up remaining space */
+    border-radius: 0 5px 5px 0; /* Rounded right corners */
+}
+
+/* Focus states for the inputs */
+.contact-select:focus,
+.contact-input.phone-input:focus {
+    outline: none;
+    border-color: #007bff; /* Change border color on focus */
+}
+
+.contact-select:focus {
+    border-color: #007bff;  /* Focus border color for the select */
+}
+
+/* Select and input styling for interested in */
+.contact-select,
+.contact-input {
+    width: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .contact-phone-interested {
+        flex-direction: column;
+    }
+
+    .contact-phone-interested .contact-col {
+        flex: none;
+        width: 100%;
+    }
+}
+
+
+/* Select and input styling */
+.contact-select,
+.contact-input {
+    width: 100%;
+    border: 1px solid #ddd;  /* Border added */
+    border-radius: 5px;      /* Rounded corners */
+    padding: 0.75rem;        /* Padding inside the input */
+    font-size: 1rem;         /* Font size inside the select/input */
+}
+
+.contact-select:focus,
+.contact-input:focus {
+    outline: none;
+    border-color: #007bff;  /* Focused input/select border color */
+}
+
+.contact-select {
+    padding-right: 30px;  /* Space for custom arrow */
+}
+
+/* Message Textarea */
+.contact-textarea {
+    width: 100%;
+    height: 120px;
+    border: 1px solid #ddd;  /* Border added */
+    border-radius: 5px;      /* Rounded corners */
+    padding: 0.75rem;        /* Padding inside the textarea */
+    font-size: 1rem;         /* Font size inside the textarea */
+}
+
+.contact-textarea:focus {
+    outline: none;
+    border-color: #007bff;  /* Focused textarea border color */
+}
+
+/* Custom Styles for Contact Form */
+.contact-submit-btn {
+    padding: 8px 20px;
+    font-size: 14px;
+    border-radius: 50px;
+    min-width: 120px;
+    border: 2px solid #28a745;
+    background-color: #28a745;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+    display: block;
+    margin: 20px auto; /* Center horizontally */
+}
+
+.contact-submit-btn:hover {
+    background-color: #218838; /* Darker green background on hover */
+    border-color: #218838; /* Darker green border on hover */
+}
+
+.contact-submit-btn:focus {
+    outline: none; /* Remove focus outline */
+}
+
+.contact-terms {
+    font-size: 12px; /* Smaller font size for terms */
+    color: #666; /* Text color for terms */
+    text-align: center; /* Center-align terms text */
+    margin-top: 10px;
+    line-height: 1.4; /* Add line height for readability */
+    border-top: 1px solid #ddd; /* Subtle border above the terms text */
+    padding-top: 10px; /* Padding to separate text from the border */
+}
+
+
+
+
+/* Map and Contact Info Section */
+.contact-map-container {
+    margin-bottom: 2rem;
+}
+
+.contact-info-container {
+    padding: 2rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.contact-info-container h5 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.contact-info-container ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.contact-info-container li {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Social Media Links */
+.contact-social-media a {
+    font-size: 1.25rem;
+    padding: 0.5rem;
+    margin-right: 0.5rem;
+    color: #555;
+    border-radius: 50%;
+}
+
+.contact-social-media a:hover {
+    color: #007bff;
+}
+
+/* Style for social media icons */
+.contact-social-media .fab {
+    font-size: 1.5rem;
+}
+
+/* Custom select dropdown arrow */
+.contact-select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 12 12%22%3E%3Cpath fill=%22%23000000%22 d=%22M3.5 4L6 6.5 8.5 4%22/%3E%3C/svg%3E');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 12px;
+}
+
+.contact-select:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .contact-row {
+        flex-direction: column;
+    }
+
+    .contact-phone-interested {
+        flex-direction: column;
+    }
+}
