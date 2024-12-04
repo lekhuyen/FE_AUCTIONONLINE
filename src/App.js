@@ -95,6 +95,14 @@ function App() {
           }
         />
         <Route
+            path="/contact"
+            element={
+              <Layout>
+                <Contact />
+              </Layout>
+            }
+        />
+        <Route
           path="/seller/login"
           element={
             <PrivateRoute>
