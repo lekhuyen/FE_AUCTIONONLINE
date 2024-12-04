@@ -10,10 +10,44 @@ import { CgProductHunt } from "react-icons/cg";
 import { TbCurrencyDollar } from "react-icons/tb";
 import { FiUser } from "react-icons/fi";
 import { FaPlusCircle } from "react-icons/fa";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { RESET } from "../../redux/slide/authSlide";
+import React, { useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
+
 
 export const Sidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  // const { token } = useSelector(state => state.auth)
+  const [isLogin, setIsLogin] = useState(localStorage.getItem('isIntrospect') || false)
+  const [token, setToken] = useState(localStorage.getItem('token') || null)
+
+  const [userInfo, setUserInfo] = useState(null)
+
+  useEffect(() => {
+    if (token) {
+      try {
+        const tokenInfo = jwtDecode(token);
+        setUserInfo(tokenInfo)
+      } catch (error) {
+        console.log(error.message);
+      }
+    } else {
+      setUserInfo(null)
+    }
+  }, [token])
+
+  const logoutUser = () => {
+    if (token !== null) {
+      localStorage.removeItem("token")
+      localStorage.removeItem("isIntrospect");
+      dispatch(RESET())
+      navigate("/login")
+    }
+  }
 
   const role = "admin";
   const className = "flex items-center gap-3 mb-2 p-4 rounded-full";
@@ -21,22 +55,22 @@ export const Sidebar = () => {
   return (
     <>
       <section className="sidebar flex flex-col justify-between h-full">
-        <div className="profile flex items-center text-center justify-center gap-8 flex-col mb-8">
-          <img src={User1} alt="" className="w-32 h-32 rounded-full object-cover" />
-          <div>
-            <Title className="capitalize">Sunil B.K</Title>
-            <Caption>example@gmail.com</Caption>
+        {isLogin &&
+          <div className="profile flex items-center text-center justify-center gap-8 flex-col mb-8">
+            <img src={User1} alt="" className="w-32 h-32 rounded-full object-cover" />
+            <div>
+              <Title className="capitalize">{isLogin && userInfo?.username}</Title>
+              <Caption>{userInfo?.sub}</Caption>
+            </div>
           </div>
-        </div>
-
+        }
         <div>
           <CustomNavLink href="/dashboard" isActive={location.pathname === "/dashboard"} className={className}>
             <span>
               <CiGrid41 size={22} />
             </span>
-            <span>Dashbaord</span>
+            <span>Dashboard</span>
           </CustomNavLink>
-
           {(role === "seller" || role === "admin") && (
             <>
               <CustomNavLink href="/product" isActive={location.pathname === "/product"} className={className}>
@@ -105,13 +139,15 @@ export const Sidebar = () => {
             </span>
             <span>Personal Profile</span>
           </CustomNavLink>
-
-          <button className="flex items-center w-full gap-3 mt-4 bg-red-500 mb-3 hover:text-white p-4 rounded-full text-white">
-            <span>
-              <IoIosLogOut size={22} />
-            </span>
-            <span>Log Out</span>
-          </button>
+          {
+            isLogin &&
+            <button onClick={logoutUser} className="flex items-center w-full gap-3 mt-4 bg-red-500 mb-3 hover:text-white p-4 rounded-full text-white">
+              <span>
+                <IoIosLogOut size={22} />
+              </span>
+              <span>Log Out</span>
+            </button>
+          }
         </div>
       </section>
     </>
