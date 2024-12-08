@@ -1,6 +1,22 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import axios from '../../utils/axios'
 
+export const getAllUsers = createAsyncThunk("auth/getAllUsers", async (paginate, thunkAPI) => {
+  try {
+    const response = await axios.get("/users", {
+      params: {
+        page: paginate.page,
+        size: paginate.size,
+      },
+      headers: { authRequired: true }
+    })
+    return response.result
+  } catch (error) {
+    // console.log(error.response.data.message);
+    const errorMessage = (error.response && error.response.data && error.response.data.message) || error.message || error.toString() || error
+    return thunkAPI.rejectWithValue(errorMessage)
+  }
+})
 export const register = createAsyncThunk("auth/register", async (userDate, thunkAPI) => {
   try {
     const response = await axios.post("/users", userDate)
@@ -26,12 +42,9 @@ export const introspect = createAsyncThunk("auth/introspect", async (token, thun
   try {
     const response = await axios.post("auth/introspect", token)
     // console.log(response);
-
     return response.result.valid
-
   } catch (error) {
     // console.log(error);
-
     const errorMessage = (error.response && error.response.data && error.response.data.message) || error.message || error.toString() || error
     return thunkAPI.rejectWithValue(errorMessage)
   }
@@ -68,6 +81,23 @@ export const authSlide = createSlice({
     }
   },
   extraReducers: (builder) => {
+
+    //getAll users
+    builder.addCase(getAllUsers.pending, (state) => {
+      state.isLoading = true;
+    });
+
+    builder.addCase(getAllUsers.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.users = action.payload;
+    });
+
+    builder.addCase(getAllUsers.rejected, (state, action) => {
+      state.isLoading = true;
+      state.users = action.payload;
+    });
+
+    //register
     builder.addCase(register.pending, (state) => {
       state.isLoading = true;
     });
@@ -84,7 +114,6 @@ export const authSlide = createSlice({
       state.isLoading = true;
       state.isError = true;
       state.message = action.payload;
-      // toast.error(action.payload)
     });
 
     //login

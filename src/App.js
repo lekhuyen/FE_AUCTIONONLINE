@@ -39,6 +39,7 @@ function App() {
   const dispatch = useDispatch()
   const { token } = useSelector(state => state.auth)
   const { isLoading } = useSelector(state => state.product)
+  const { isLoading: isLoadingUser } = useSelector(state => state.auth)
 
   const [isIntrospect, setIsIntrospect] = useState(localStorage.getItem('isIntrospect') === "true" || false);
 
@@ -53,8 +54,6 @@ function App() {
   useEffect(() => {
 
     if (!isIntrospect && !alertShown) {
-      console.log(isIntrospect);
-
       Swal.fire({
         title: "Login expired, please login again!",
         confirmButtonText: "Login",
@@ -94,6 +93,14 @@ function App() {
               <Login />
             </Layout>
           }
+        />
+        <Route
+            path="/contact"
+            element={
+              <Layout>
+                <Contact />
+              </Layout>
+            }
         />
         <Route
           path="/seller/login"
@@ -185,7 +192,6 @@ function App() {
           path="/product/admin"
           element={
             <PrivateRoute>
-
               <Layout>
                 <DashboardLayout>
                   <AdminProductList />

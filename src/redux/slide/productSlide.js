@@ -21,9 +21,16 @@ export const updateProduct = createAsyncThunk("product/update", async (product, 
     return thunkAPI.rejectWithValue(errorMessage)
   }
 })
-export const getAllProduct = createAsyncThunk("product/getallproduct", async (product, thunkAPI) => {
+export const getAllProduct = createAsyncThunk("product/getallproduct", async (paginate, thunkAPI) => {
   try {
-    const response = await axios.get("/auction", product, { authRequired: true })
+    const response = await axios.get("/auction", {
+      params: {
+        page: paginate.page,
+        size: paginate.size,
+      },
+      headers: { authRequired: true }
+    })
+
     return response
   } catch (error) {
     // console.log(error.response.data.message);
@@ -42,12 +49,31 @@ export const deleteProduct = createAsyncThunk("product/deleteproduct", async (id
   }
 })
 
+//getAllCategory
+export const getAllCategory = createAsyncThunk("category/getallcategory", async (paginate, thunkAPI) => {
+  try {
+    const response = await axios.get("/category", {
+      params: {
+        page: paginate.page,
+        size: paginate.size,
+      },
+      headers: { authRequired: true }
+    })
+    return response.result
+  } catch (error) {
+    // console.log(error.response.data.message);
+    const errorMessage = (error.response && error.response.data && error.response.data.message) || error.message || error.toString() || error
+    return thunkAPI.rejectWithValue(errorMessage)
+  }
+})
+
 
 const initialState = {
   code: null,
   message: '',
   isLoading: false,
-  products: []
+  products: [],
+  categories: [],
 }
 
 export const productSlide = createSlice({
@@ -98,13 +124,11 @@ export const productSlide = createSlice({
 
     builder.addCase(getAllProduct.fulfilled, (state, action) => {
       state.isLoading = false;
-      // state.code = action.payload.code;
       state.products = action.payload.result;
     });
 
     builder.addCase(getAllProduct.rejected, (state, action) => {
       state.isLoading = true;
-      // state.code = action.payload.code;
       state.products = action.payload.result;
     });
 
@@ -116,7 +140,6 @@ export const productSlide = createSlice({
     builder.addCase(deleteProduct.fulfilled, (state, action) => {
       state.isLoading = false;
       toast.success(action.payload.message)
-
     });
 
     builder.addCase(deleteProduct.rejected, (state, action) => {
@@ -125,6 +148,22 @@ export const productSlide = createSlice({
     });
 
 
+
+    //getCategory
+    builder.addCase(getAllCategory.pending, (state) => {
+      state.isLoading = true;
+      state.categories = [];
+    });
+
+    builder.addCase(getAllCategory.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.categories = action.payload;
+    });
+
+    builder.addCase(getAllCategory.rejected, (state, action) => {
+      state.isLoading = true;
+      state.categories = action.payload;
+    });
 
   },
 })
