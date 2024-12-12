@@ -53,3 +53,4 @@ export { LoginAsSeller } from "../screens/auth/LoginAsSeller";
 export { UserProfile } from "../screens/auth/UserProfile";
 
 export { Contact } from "../Contact/Contact"
+export {AboutUsComponents} from "../Contact/AboutUsComponents"

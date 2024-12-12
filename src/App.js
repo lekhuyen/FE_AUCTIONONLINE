@@ -3,29 +3,29 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './index.css'
 import {
-  LoginAsSeller,
-  Register,
-  Login,
-  UserProfile,
-  DashboardLayout,
-  Layout,
-  CreateCategory,
-  UpdateCategory,
-  Catgeorylist,
-  UpdateProductByAdmin,
-  AdminProductList,
-  Income,
-  Dashboard,
-  ProductList,
-  ProductEdit,
-  AddProduct,
-  ProductsDetailsPage,
-  Home,
-  UserList,
-  WinningBidList,
-  NotFound,
-  ScrollToTop,
-  PrivateRoute, Contact,
+    LoginAsSeller,
+    Register,
+    Login,
+    UserProfile,
+    DashboardLayout,
+    Layout,
+    CreateCategory,
+    UpdateCategory,
+    Catgeorylist,
+    UpdateProductByAdmin,
+    AdminProductList,
+    Income,
+    Dashboard,
+    ProductList,
+    ProductEdit,
+    AddProduct,
+    ProductsDetailsPage,
+    Home,
+    UserList,
+    WinningBidList,
+    NotFound,
+    ScrollToTop,
+    PrivateRoute, Contact, AboutUsComponents,
 } from "./router/index.js";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -34,6 +34,12 @@ import Swal from "sweetalert2";
 import Loading from "./components/Loading/index.js";
 import Chat from "./components/chat/chat.js";
 import { getAllProduct } from "./redux/slide/productSlide.js";
+
+
+
+
+
+
 
 
 function App() {
@@ -113,6 +119,20 @@ function App() {
               <Chat />
             </Layout>
           }
+            path="/contact"
+            element={
+              <Layout>
+                <Contact />
+              </Layout>
+            }
+        />
+        <Route
+            path="/test"
+            element={
+              <Layout>
+                <AboutUsComponents />
+              </Layout>
+            }
         />
         <Route
           path="/seller/login"
