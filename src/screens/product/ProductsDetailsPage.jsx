@@ -2,14 +2,63 @@ import { Body, Caption, Container, Title } from "../../router";
 import { IoIosStar, IoIosStarHalf, IoIosStarOutline } from "react-icons/io";
 import { commonClassNameOfInput } from "../../components/common/Design";
 import { AiOutlinePlus } from "react-icons/ai";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { NavLink, useParams } from "react-router-dom";
+import axios from '../../utils/axios'
+import { jwtDecode } from "jwt-decode";
 
 export const ProductsDetailsPage = () => {
+  const { id } = useParams()
+  const [userId, setUserId] = useState(null);
+  const [productDetail, setProductDetail] = useState({})
+  const [imageFile, setImageFile] = useState([]);
+
+  useEffect(() => {
+    const getProduct = async () => {
+      try {
+        const response = await axios.get(`auction/${id}`,
+          { authRequired: true },
+        )
+
+        if (response.code === 0) {
+          const product = {
+            item_id: response.result.item_id,
+            item_name: response.result.item_name,
+            description: response.result.description,
+            starting_price: response.result.starting_price,
+            start_date: response.result.start_date,
+            end_date: response.result.end_date,
+            bid_step: response.result.bid_step,
+            buyerId: response.result.user.id
+          }
+          setImageFile(response.result.images)
+          setProductDetail(product)
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    getProduct()
+  }, [id])
+
   const [activeTab, setActiveTab] = useState("description");
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (token) {
+
+      try {
+        const tokenInfo = jwtDecode(token)
+        setUserId(tokenInfo.userid)
+      } catch (error) {
+        console.error("Error decoding token:", error.message);
+      }
+    }
+  }, [])
   return (
     <>
       <section className="pt-24 px-8">
@@ -17,12 +66,12 @@ export const ProductsDetailsPage = () => {
           <div className="flex justify-between gap-8">
             <div className="w-1/2">
               <div className="h-[70vh]">
-                <img src="https://bidout-wp.b-cdn.net/wp-content/uploads/2022/10/Image-14.jpg" alt="" className="w-full h-full object-cover rounded-xl" />
+                <img src={imageFile[0]} alt="" className="w-full h-full object-cover rounded-xl" />
               </div>
             </div>
             <div className="w-1/2">
               <Title level={2} className="capitalize">
-                Couple Wedding Ring
+                {productDetail.item_name}
               </Title>
               <div className="flex gap-5">
                 <div className="flex text-green ">
@@ -70,11 +119,20 @@ export const ProductsDetailsPage = () => {
                 Timezone: <Caption>UTC 0</Caption>
               </Title>
               <Title className="flex items-center gap-2 my-5">
-                Price:<Caption>$200 </Caption>
+                Price:<Caption>${productDetail.starting_price}</Caption>
               </Title>
               <Title className="flex items-center gap-2">
                 Current bid:<Caption className="text-3xl">$500 </Caption>
               </Title>
+              {
+                userId !== productDetail.buyerId && (
+                  <div className="w-[200px] h-[40px] bg-green border rounded-md flex justify-center items-center">
+                    <NavLink to={`/chat?item_id=${productDetail.item_id}&buyerId=${productDetail.buyerId}`} type="button" className="font-medium text-white">
+                      Chat now
+                    </NavLink>
+                  </div>
+                )
+              }
               <div className="p-5 px-10 shadow-s3 py-8">
                 <form className="flex gap-3 justify-between">
                   <input className={commonClassNameOfInput} type="number" name="price" />

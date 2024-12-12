@@ -19,7 +19,7 @@ export const Table = () => {
   const { products, isLoading } = useSelector(state => state.product)
 
 
-  const [isLogin, setIsLogin] = useState(localStorage.getItem('isIntrospect') || false)
+  const [isLogin] = useState(localStorage.getItem('isIntrospect') || false)
   const { triggerLoginExpired } = useLoginExpired();
   useEffect(() => {
     dispatch(getAllProduct())

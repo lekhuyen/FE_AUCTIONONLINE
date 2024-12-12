@@ -1,8 +1,11 @@
+import { useSelector } from "react-redux";
 import { Container, Heading } from "../../router";
-import { productlists } from "../../utils/data";
+// import { productlists } from "../../utils/data";
 import { ProductCard } from "../cards/ProductCard";
 
 export const ProductList = () => {
+  const { products } = useSelector(state => state.product)
+
   return (
     <>
       <section className="product-home">
@@ -13,7 +16,7 @@ export const ProductList = () => {
           />
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 my-8">
-            {productlists?.slice(0, 12)?.map((item, index) => (
+            {products?.data?.length > 0 && products?.data?.slice(0, 12)?.map((item, index) => (
               <ProductCard item={item} key={index + 1} />
             ))}
           </div>

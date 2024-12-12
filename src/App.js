@@ -32,6 +32,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { introspect, logout } from "./redux/slide/authSlide.js";
 import Swal from "sweetalert2";
 import Loading from "./components/Loading/index.js";
+import Chat from "./components/chat/chat.js";
+import { getAllProduct } from "./redux/slide/productSlide.js";
 
 
 function App() {
@@ -39,7 +41,16 @@ function App() {
   const dispatch = useDispatch()
   const { token } = useSelector(state => state.auth)
   const { isLoading } = useSelector(state => state.product)
-  const { isLoading: isLoadingUser } = useSelector(state => state.auth)
+  // const { isLoading: isLoadingUser } = useSelector(state => state.auth)
+
+
+  useEffect(() => {
+    dispatch(getAllProduct({
+      page: 0,
+      size: 0
+    }));
+  }, [dispatch])
+
 
   const [isIntrospect, setIsIntrospect] = useState(localStorage.getItem('isIntrospect') === "true" || false);
 
@@ -91,6 +102,15 @@ function App() {
           element={
             <Layout>
               <Login />
+            </Layout>
+          }
+        />
+        <Route
+          path="/chat"
+          // path="/chat/:id"
+          element={
+            <Layout>
+              <Chat />
             </Layout>
           }
         />
