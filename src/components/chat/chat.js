@@ -21,8 +21,8 @@ const Chat = () => {
   const productId = searchParams.get('item_id');
   const sellerId = searchParams.get('buyerId');
 
-
   const [userId, setUserId] = useState(null);
+
   const [roomChatInfo, setRoomChatInfo] = useState(null)
   const [listChatOfSeller, setListChatOfSeller] = useState([])
 
@@ -30,13 +30,8 @@ const Chat = () => {
   const [content, setContent] = useState('');
   const [roomId, setRoomId] = useState('');
   const [stompClient, setStompClient] = useState(null);
-  const [room, setRoom] = useState({
-    roomId: '',
-    date: ''
-  });
-
   // create room
-  const getProduct = async () => {
+  const createRoom = async () => {
     try {
       if (sellerId !== userId) {
         const response = await axios.post(`chatroom/room/${productId}`, {
@@ -44,12 +39,13 @@ const Chat = () => {
         },
           { authRequired: true },
         )
-        setRoom(prevRoom => {
-          if (prevRoom.roomId !== response.id || prevRoom !== response.date) {
-            return { roomId: response.id, date: response.date }
-          }
-          return prevRoom
-        })
+        if (response) setListChatOfSeller(prev => [response, ...prev])
+        // setRoom(prevRoom => {
+        //   if (prevRoom.roomId !== response.id || prevRoom !== response.date) {
+        //     return { roomId: response.id, date: response.date }
+        //   }
+        //   return prevRoom
+        // })
       }
 
     } catch (error) {
@@ -58,7 +54,7 @@ const Chat = () => {
   }
   useEffect(() => {
     if (productId && userId) {
-      getProduct();
+      createRoom();
     }
   }, [productId, userId])
 
@@ -81,8 +77,6 @@ const Chat = () => {
     }
   }, [])
 
-
-
   // getAllRoomBySeller
   useEffect(() => {
     const getAllRoomBySeller = async () => {
@@ -91,6 +85,8 @@ const Chat = () => {
           const response = await axios.get(`chatroom/room/${userId}`,
             { authRequired: true },
           )
+          console.log(response);
+
           setListChatOfSeller(response);
         }
       } catch (error) {
@@ -100,12 +96,11 @@ const Chat = () => {
     if (userId) {
       getAllRoomBySeller();
     }
-  }, [userId, productId])
+  }, [userId])
 
   useEffect(() => {
     const token = localStorage.getItem('token')
     if (token) {
-
       try {
         const tokenInfo = jwtDecode(token)
         setUserId(tokenInfo.userid)
@@ -115,11 +110,11 @@ const Chat = () => {
     }
   }, [])
 
-  const handleClickUserChat = (item) => {
+  const handleClickUserChat = (item, userChat) => {
     setRoomId(item.roomId)
-    setRoomChatInfo(sellerId === item?.userId ? item?.sellerName : item?.buyerName);
     const newPath = `/chat?item_id=${item.item_id}&buyerId=${item.userId}`;
     navigate(newPath)
+    setRoomChatInfo(userChat);
   }
 
   useEffect(() => {
@@ -219,13 +214,13 @@ const Chat = () => {
             <div className=" mt-3">
               {
                 listChatOfSeller?.length > 0 && listChatOfSeller?.map((item, index) => (
-                  <div onClick={() => handleClickUserChat(item)} key={index} className="flex justify-between h-[85px] items-center border-b-[1px] cursor-pointer">
+                  <div onClick={() => handleClickUserChat(item, userId !== item?.userId ? item?.sellerName : item?.buyerName)} key={index} className="flex justify-between h-[85px] items-center border-b-[1px] cursor-pointer">
                     <div className="flex ">
                       <div className="w-[46px]">
                         <img alt="" src="https://cdn-icons-png.flaticon.com/512/6596/6596121.png" />
                       </div>
                       <div>
-                        <p className="text-sm">{userId === item?.userId ? item?.sellerName : item?.buyerName}</p>
+                        <p className="text-sm">{userId !== item?.userId ? item?.sellerName : item?.buyerName}</p>
                         <span className="text-[12px] text-[#9B9B9B]">{item?.item_name}</span>
                       </div>
                     </div>
