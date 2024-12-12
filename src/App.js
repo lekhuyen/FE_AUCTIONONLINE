@@ -119,6 +119,7 @@ function App() {
               <Chat />
             </Layout>
           }
+
         />
         <Route
           path="/contact"
