@@ -19,7 +19,7 @@ export const Login = () => {
   const [formData, setFormData] = useState(inittialState)
   const { email, password } = formData
 
-  const { isLoggedIn, message, isError, token } = useSelector(state => state.auth)
+  const { isLoggedIn, message, isError } = useSelector(state => state.auth)
 
   // const [userInfo, setUserInfo] = useState(null)
 

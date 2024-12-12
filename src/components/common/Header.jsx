@@ -7,6 +7,7 @@ import { IoSearchOutline } from "react-icons/io5";
 import { Container, CustomNavLink, CustomNavLinkList, ProfileCard } from "../../router";
 import { User1 } from "../hero/Hero";
 import { menulists } from "../../utils/data";
+import { MdOutlineMessage } from "react-icons/md";
 
 export const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -73,6 +74,10 @@ export const Header = () => {
                     Become a Seller
                   </CustomNavLink>
                 )}
+                <CustomNavLink href="/chat" className={`${isScrolled || !isHomePage ? "text-black" : "text-white"}`}>
+                  <MdOutlineMessage />
+                </CustomNavLink>
+
                 <CustomNavLink href="/login" className={`${isScrolled || !isHomePage ? "text-black" : "text-white"}`}>
                   Sign in
                 </CustomNavLink>
