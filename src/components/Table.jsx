@@ -69,7 +69,6 @@ export const Table = () => {
   }, [products, dispatch, navigate])
 
 
-
   //update status
   const handleUpdateStatus = (id) => {
     if (isLogin) {
