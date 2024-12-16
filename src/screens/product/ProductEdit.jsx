@@ -7,9 +7,6 @@ import axios from '../../utils/axios'
 import { jwtDecode } from "jwt-decode";
 import { validateForm } from "../../utils/validation";
 import { updateProduct } from "../../redux/slide/productSlide";
-import { toast } from "react-toastify";
-import Swal from "sweetalert2";
-import { logout } from "../../redux/slide/authSlide";
 import { useLoginExpired } from "../../utils/helper";
 
 export const ProductEdit = () => {
@@ -22,7 +19,7 @@ export const ProductEdit = () => {
 
   const [invalidFields, setInvalidFields] = useState([])
   const [invlidImages, setInvlidImages] = useState(false)
-  const [isLogin, setIsLogin] = useState(localStorage.getItem('isIntrospect') || false)
+  const [isLogin] = useState(localStorage.getItem('isIntrospect') || false)
   const { triggerLoginExpired } = useLoginExpired();
   useEffect(() => {
     const getProduct = async () => {
@@ -52,7 +49,7 @@ export const ProductEdit = () => {
       }
     }
     getProduct()
-  }, [id, isLogin, dispatch, navigate])
+  }, [id, isLogin, dispatch, navigate, triggerLoginExpired])
 
 
 

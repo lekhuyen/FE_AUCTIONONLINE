@@ -3,35 +3,37 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './index.css'
 import {
-    LoginAsSeller,
-    Register,
-    Login,
-    UserProfile,
-    DashboardLayout,
-    Layout,
-    CreateCategory,
-    UpdateCategory,
-    Catgeorylist,
-    UpdateProductByAdmin,
-    AdminProductList,
-    Income,
-    Dashboard,
-    ProductList,
-    ProductEdit,
-    AddProduct,
-    ProductsDetailsPage,
-    Home,
-    UserList,
-    WinningBidList,
-    NotFound,
-    ScrollToTop,
-    PrivateRoute, Contact, AboutUsComponents,
+  LoginAsSeller,
+  Register,
+  Login,
+  UserProfile,
+  DashboardLayout,
+  Layout,
+  CreateCategory,
+  UpdateCategory,
+  Catgeorylist,
+  UpdateProductByAdmin,
+  AdminProductList,
+  Income,
+  Dashboard,
+  ProductList,
+  ProductEdit,
+  AddProduct,
+  ProductsDetailsPage,
+  Home,
+  UserList,
+  WinningBidList,
+  NotFound,
+  ScrollToTop,
+  PrivateRoute, Contact, AboutUsComponents,
 } from "./router/index.js";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { introspect, logout } from "./redux/slide/authSlide.js";
 import Swal from "sweetalert2";
 import Loading from "./components/Loading/index.js";
+import Chat from "./components/chat/chat.js";
+import { getAllProduct } from "./redux/slide/productSlide.js";
 
 
 
@@ -45,7 +47,16 @@ function App() {
   const dispatch = useDispatch()
   const { token } = useSelector(state => state.auth)
   const { isLoading } = useSelector(state => state.product)
-  const { isLoading: isLoadingUser } = useSelector(state => state.auth)
+  // const { isLoading: isLoadingUser } = useSelector(state => state.auth)
+
+
+  useEffect(() => {
+    dispatch(getAllProduct({
+      page: 0,
+      size: 0
+    }));
+  }, [dispatch])
+
 
   const [isIntrospect, setIsIntrospect] = useState(localStorage.getItem('isIntrospect') === "true" || false);
 
@@ -101,20 +112,30 @@ function App() {
           }
         />
         <Route
-            path="/contact"
-            element={
-              <Layout>
-                <Contact />
-              </Layout>
-            }
+          path="/chat"
+          // path="/chat/:id"
+          element={
+            <Layout>
+              <Chat />
+            </Layout>
+          }
+
         />
         <Route
-            path="/test"
-            element={
-              <Layout>
-                <AboutUsComponents />
-              </Layout>
-            }
+          path="/contact"
+          element={
+            <Layout>
+              <Contact />
+            </Layout>
+          }
+        />
+        <Route
+          path="/test"
+          element={
+            <Layout>
+              <AboutUsComponents />
+            </Layout>
+          }
         />
         <Route
           path="/seller/login"
