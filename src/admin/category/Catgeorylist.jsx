@@ -17,9 +17,6 @@ import Pagination from "../../components/common/layout/Pagination";
 export const Catgeorylist = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate();
-  // const [searchParams] = useSearchParams();
-  // const page = parseInt(searchParams.get('page')) || 1;
-
   const { categories } = useSelector(state => state.product)
   const [isLogin, setIsLogin] = useState(localStorage.getItem('isIntrospect') || false)
   const { triggerLoginExpired } = useLoginExpired();

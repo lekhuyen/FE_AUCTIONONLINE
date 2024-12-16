@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 // design
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
@@ -7,12 +7,17 @@ import { IoSearchOutline } from "react-icons/io5";
 import { Container, CustomNavLink, CustomNavLinkList, ProfileCard } from "../../router";
 import { User1 } from "../hero/Hero";
 import { menulists } from "../../utils/data";
-import { MdOutlineMessage } from "react-icons/md";
+import { MdOutlineMessage, MdKeyboardArrowUp, MdOutlineKeyboardArrowDown } from "react-icons/md";
+import { getAllCategory } from "../../redux/slide/productSlide";
+import { useDispatch, useSelector } from "react-redux";
 
 export const Header = () => {
+  const dispatch = useDispatch()
+  const { categories } = useSelector(state => state.product)
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
+  const [isShowCategory, setIsShowCategory] = useState(false)
 
   const menuRef = useRef(null);
 
@@ -43,6 +48,13 @@ export const Header = () => {
   const isHomePage = location.pathname === "/";
 
   const role = "buyer";
+  useEffect(() => {
+    dispatch(getAllCategory({
+      page: 0,
+      size: 0
+    }))
+  }, [dispatch])
+
   return (
     <>
       <header className={isHomePage ? `header py-1 bg-primary ${isScrolled ? "scrolled" : ""}` : `header bg-white shadow-s1 ${isScrolled ? "scrolled" : ""}`}>
@@ -56,12 +68,44 @@ export const Header = () => {
                   <img src="../images/common/header-logo2.png" alt="LogoImg" className="h-11" />
                 )}
               </div>
-              <div className="hidden lg:flex items-center justify-between gap-8">
+              <div className="hidden lg:flex items-center justify-between gap-8 relative">
                 {menulists.map((list) => (
-                  <li key={list.id} className="capitalize list-none">
-                    <CustomNavLinkList href={list.path} isActive={location.pathname === list.path} className={`${isScrolled || !isHomePage ? "text-black" : "text-white"}`}>
+                  <li key={list.id} className="capitalize list-none" onMouseOver={() => {
+                    if (list.children) setIsShowCategory(true)
+                  }}
+                    onMouseOut={() => {
+                      if (list.children) setIsShowCategory(false)
+                    }}
+                  >
+                    <CustomNavLinkList href={list.path} isActive={location.pathname === list.path}
+                      className={`${isScrolled || !isHomePage ? "text-black" : "text-white"} flex items-center`}>
                       {list.link}
+                      {list.children && (
+                        <span className="">
+                          {
+                            isShowCategory ?
+                              <MdKeyboardArrowUp className="text-white" size={25} />
+                              :
+                              <MdOutlineKeyboardArrowDown className="text-white" size={25} />
+                          }
+                        </span>
+                      )}
                     </CustomNavLinkList>
+                    {
+                      list.children && isShowCategory && (
+                        <div className=" top-[25px] absolute bg-white shadow-lg rounded-sm">
+                          <ul className="">
+                            {
+                              categories?.data?.length > 0 && categories?.data?.map(category => (
+                                <li key={category?.category_id} className="border-b-[1px] p-1 cursor-pointer">
+                                  <Link to="#">{category?.category_name}</Link>
+                                </li>
+                              ))
+                            }
+                          </ul>
+                        </div>
+                      )
+                    }
                   </li>
                 ))}
               </div>

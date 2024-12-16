@@ -16,7 +16,6 @@ const Pagination = ({ listItem, to, methodCallApi }) => {
   })
   const totalElements = listItem?.totalElements || 0;
   const pagination = usePanigation(totalElements, currentPage)
-
   useEffect(() => {
     if (typeof methodCallApi === 'function') {
       dispatch(methodCallApi(paginate));
