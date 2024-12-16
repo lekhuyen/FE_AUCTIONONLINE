@@ -31,7 +31,7 @@ const AboutUsCard = () => {
             <div style={styles.body}>
                 <h2 style={styles.title}>Title</h2>
                 <p style={styles.bodyText}>
-                    Body text for whatever you’d like to say. Add main takeaway points, quotes, anecdotes, or even a very very short story.
+                    Body text  whatever you’d like to say. Add main takeaway points, quotes, anecdotes, or even a very very short story.
                 </p>
             </div>
         </div>

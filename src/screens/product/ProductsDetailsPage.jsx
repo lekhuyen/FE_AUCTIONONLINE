@@ -6,12 +6,16 @@ import { useEffect, useState } from "react";
 import { NavLink, useParams } from "react-router-dom";
 import axios from '../../utils/axios'
 import { jwtDecode } from "jwt-decode";
+import { calculateTimeLeft } from "../../utils/helper";
+
 
 export const ProductsDetailsPage = () => {
   const { id } = useParams()
   const [userId, setUserId] = useState(null);
   const [productDetail, setProductDetail] = useState({})
   const [imageFile, setImageFile] = useState([]);
+  const [timeLeft, setTimeLeft] = useState(null);
+  const [isDuration, setIsDuration] = useState(false)
 
   useEffect(() => {
     const getProduct = async () => {
@@ -59,6 +63,16 @@ export const ProductsDetailsPage = () => {
       }
     }
   }, [])
+
+  useEffect(() => {
+    if (productDetail?.end_date) {
+      const updateTime = () => calculateTimeLeft(productDetail?.end_date, setTimeLeft, setIsDuration)
+      updateTime()
+      const timer = setInterval(updateTime, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [productDetail?.end_date]);
+
   return (
     <>
       <section className="pt-24 px-8">
@@ -94,19 +108,19 @@ export const ProductsDetailsPage = () => {
               <br />
               <div className="flex gap-8 text-center">
                 <div className="p-5 px-10 shadow-s1">
-                  <Title level={4}>149</Title>
+                  <Title level={4}>{timeLeft?.days || 0}</Title>
                   <Caption>Days</Caption>
                 </div>
                 <div className="p-5 px-10 shadow-s1">
-                  <Title level={4}>12</Title>
+                  <Title level={4}>{timeLeft?.hours || 0}</Title>
                   <Caption>Hours</Caption>
                 </div>
                 <div className="p-5 px-10 shadow-s1">
-                  <Title level={4}>36</Title>
+                  <Title level={4}>{timeLeft?.minutes || 0}</Title>
                   <Caption>Minutes</Caption>
                 </div>
                 <div className="p-5 px-10 shadow-s1">
-                  <Title level={4}>51</Title>
+                  <Title level={4}>{timeLeft?.seconds || 0}</Title>
                   <Caption>Seconds</Caption>
                 </div>
               </div>
