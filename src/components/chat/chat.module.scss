@@ -24,23 +24,29 @@
 }
 
 .chatBox_write {
+  display: flex;
+  align-items: flex-end;
   .chat_box_input {
     display: flex;
     align-items: center;
     border: 1px solid #ccc;
     border-radius: 5px;
     padding: 5px;
+    width: 100%;
+    border-radius: 3px;
 
     textarea {
       flex: 1;
       border: none;
       outline: none;
-      padding: 5px;
+      padding-left: 10px;
+      padding-right: 10px;
+      padding-top: 5px;
       border-radius: 5px;
       background-color: #f0f0f0;
       resize: none;
       font-size: 14px;
-      line-height: 20px;
+      line-height: 10px;
       overflow-y: hidden;
       &:focus {
         border-color: #1f7f67;
@@ -65,5 +71,3 @@
     }
   }
 }
-
-// comm
