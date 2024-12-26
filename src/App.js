@@ -36,12 +36,6 @@ import Chat from "./components/chat/chat.js";
 import { getAllProduct } from "./redux/slide/productSlide.js";
 
 
-
-
-
-
-
-
 function App() {
   const navigate = useNavigate()
   const dispatch = useDispatch()

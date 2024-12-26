@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
+import styles from '../chat/chat.module.scss'
 
 // design
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
@@ -10,14 +11,31 @@ import { menulists } from "../../utils/data";
 import { MdOutlineMessage, MdKeyboardArrowUp, MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { getAllCategory } from "../../redux/slide/productSlide";
 import { useDispatch, useSelector } from "react-redux";
+import { IoMdNotificationsOutline } from "react-icons/io";
+import axios from '../../utils/axios'
+import { jwtDecode } from "jwt-decode";
+import { useLoginExpired } from "../../utils/helper";
+import { BsDot } from "react-icons/bs";
+
+
+import clsx from "clsx";
+import moment from "moment";
+
+
 
 export const Header = () => {
   const dispatch = useDispatch()
-  const { categories } = useSelector(state => state.product)
+  const { categories, notification } = useSelector(state => state.product)
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const [isShowCategory, setIsShowCategory] = useState(false)
+  const [userId, setUserId] = useState(null);
+  const [isLogin, setIsLogin] = useState(localStorage.getItem('isIntrospect') || false)
+  const { triggerLoginExpired } = useLoginExpired();
+  const [notifications, setNotifications] = useState([])
+  const [showNotification, setShowNotification] = useState(false)
+  // console.log(notification);
 
   const menuRef = useRef(null);
 
@@ -54,6 +72,69 @@ export const Header = () => {
       size: 0
     }))
   }, [dispatch])
+
+  //get notification
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (token) {
+
+      try {
+        const tokenInfo = jwtDecode(token)
+        setUserId(tokenInfo.userid)
+      } catch (error) {
+        console.error("Error decoding token:", error.message);
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (isLogin) {
+      getNotification()
+    }
+  }, [userId])
+  const getNotification = async () => {
+    if (isLogin) {
+      try {
+        const response = await axios.get("bidding/notification/" + userId, { authRequired: true })
+        if (response.code === 0) {
+          setNotifications(response.result)
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      triggerLoginExpired()
+    }
+  }
+
+  useEffect(() => {
+    setNotifications(prev => [notification, ...prev])
+  }, [notification])
+
+  const hanldeReadedNotification = async (id) => {
+    if (isLogin) {
+      const token = localStorage.getItem('token');
+      try {
+        const response = await axios.put(
+          `/bidding/notification/status/${id}/${userId}`,
+          null,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (response.code === 0) {
+          setShowNotification(false)
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      triggerLoginExpired()
+    }
+  }
 
   return (
     <>
@@ -121,7 +202,81 @@ export const Header = () => {
                 <CustomNavLink href="/chat" className={`${isScrolled || !isHomePage ? "text-black" : "text-white"}`}>
                   <MdOutlineMessage />
                 </CustomNavLink>
-
+                <div onClick={() => setShowNotification(!showNotification)} className="relative cursor-pointer">
+                  <IoMdNotificationsOutline size={20} />
+                  {
+                    notifications.filter(notification => notification.sellerIsRead === false && notification.sellerId === userId).length > 0 && (
+                      <div className="absolute top-[-10px] right-[-10px] w-5 h-5 border rounded-full bg-red-600 
+                    flex items-center justify-center text-white text-[13px]">
+                        {notifications.filter(notification => notification.sellerIsRead === false && notification.sellerId === userId).length}
+                      </div>
+                    )
+                  }
+                  {
+                    notifications.filter(notification => notification.buyerIsRead === false && notification.buyerId === userId).length > 0 && (
+                      <div className="absolute top-[-10px] right-[-10px] w-5 h-5 border rounded-full bg-red-600 
+                    flex items-center justify-center text-white text-[13px]">
+                        {notifications.filter(notification => notification.buyerIsRead === false && notification.buyerId === userId).length}
+                      </div>
+                    )
+                  }
+                  {/* notification */}
+                  {
+                    showNotification && (
+                      <div className="absolute w-[360px] top-[30px] overflow-hidden bg-white shadow-lg rounded-sm p-2">
+                        <div className="w-full"><h3 className="text-[24px]">Thong bao</h3></div>
+                        <div className={clsx(styles.custom_scroll, 'overflow-y-auto max-h-[300px]')}>
+                          {notifications?.length > 0 && notifications?.map((notifi, index) => (
+                            <NavLink to={`/details/${notifi?.productId}`}
+                              onClick={() => hanldeReadedNotification(notifi.id)} key={index} className="flex gap-2 items-center bottom-1 padding-2">
+                              {
+                                // check if the user is the seller
+                                notifi.sellerId === userId && (
+                                  <>
+                                    <div className="w-[50px]"><img className="w-full" alt="" src="https://cdn-icons-png.flaticon.com/512/6596/6596121.png" /></div>
+                                    <div>
+                                      <p className="whitespace-normal overflow-hidden text-ellipsis text-[14px]">
+                                        <span className="font-bold">{notifi.buyerName} </span>
+                                        da dau gia san pham <span className="font-bold">{notifi.productName} </span>
+                                        cua ban voi muc gia {notifi.price}
+                                      </p>
+                                      <p className="text-blue-500 text-[12px]">{moment(notifi.timestamp).fromNow()}</p>
+                                    </div>
+                                    {
+                                      notifi.sellerIsRead === false && (
+                                        <div className="pr-3.5"><BsDot size={27} className="text-blue-500" /></div>
+                                      )
+                                    }
+                                  </>
+                                )
+                              }
+                              {
+                                // check if the user is the buyer
+                                notifi.buyerId === userId && (
+                                  <>
+                                    <div className="w-[50px]"><img className="w-full" alt="" src="https://cdn-icons-png.flaticon.com/512/6596/6596121.png" /></div>
+                                    <div>
+                                      <p className="whitespace-normal overflow-hidden text-ellipsis text-[15px]">
+                                        <span className="font-bold">Ban </span>
+                                        da dau gia thanh cong san pham <span className="font-bold">{notifi.productName}</span> voi muc gia {notifi.price}
+                                      </p>
+                                      <p className="text-blue-500 text-[12px]">{moment(notifi.timestamp).fromNow()}</p>
+                                    </div>
+                                    {
+                                      notifi.buyerIsRead === false && (
+                                        <div className="pr-3.5"><BsDot size={27} className="text-blue-500" /></div>
+                                      )
+                                    }
+                                  </>
+                                )
+                              }
+                            </NavLink>
+                          ))}
+                        </div>
+                      </div>
+                    )
+                  }
+                </div>
                 <CustomNavLink href="/login" className={`${isScrolled || !isHomePage ? "text-black" : "text-white"}`}>
                   Sign in
                 </CustomNavLink>
