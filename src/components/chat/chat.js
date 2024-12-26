@@ -1,7 +1,7 @@
 import classNames from 'classnames/bind';
 import styles from './chat.module.scss'
 import { BsFillSendFill } from "react-icons/bs";
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from '../../utils/axios'
 import { useEffect, useRef, useState } from 'react';
 import { jwtDecode } from "jwt-decode";
@@ -370,7 +370,7 @@ const Chat = () => {
                   </div>
                 </div>
                 {/* content chat */}
-                <div className={cx("custom-scroll")}>
+                <div className={cx("custom_scroll")}>
                   {
                     messages?.length > 0 && messages?.map((item, index) => {
                       return (

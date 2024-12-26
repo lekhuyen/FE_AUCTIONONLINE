@@ -74,12 +74,16 @@ const initialState = {
   isLoading: false,
   products: [],
   categories: [],
+  notification: {}
 }
 
 export const productSlide = createSlice({
   name: 'product',
   initialState,
   reducers: {
+    addNotification: (state, action) => {
+      state.notification = action.payload
+    },
 
   },
   extraReducers: (builder) => {
@@ -168,6 +172,6 @@ export const productSlide = createSlice({
   },
 })
 
-// export const { } = productSlide.actions
+export const { addNotification } = productSlide.actions
 
 export default productSlide.reducer
