@@ -6,12 +6,28 @@ import { useEffect, useState } from "react";
 import { NavLink, useParams } from "react-router-dom";
 import axios from '../../utils/axios'
 import { jwtDecode } from "jwt-decode";
+import { calculateTimeLeft, useLoginExpired } from "../../utils/helper";
+import { toast } from "react-toastify";
+import SockJS from "sockjs-client";
+import { Stomp } from "@stomp/stompjs";
+import { useDispatch } from "react-redux";
+import { addNotification } from "../../redux/slide/productSlide";
+
 
 export const ProductsDetailsPage = () => {
   const { id } = useParams()
+  const dispatch = useDispatch()
   const [userId, setUserId] = useState(null);
   const [productDetail, setProductDetail] = useState({})
   const [imageFile, setImageFile] = useState([]);
+  const [timeLeft, setTimeLeft] = useState(null);
+  const [isDuration, setIsDuration] = useState(false)
+  const [isLogin, setIsLogin] = useState(localStorage.getItem('isIntrospect') || false)
+  const { triggerLoginExpired } = useLoginExpired();
+  const [priceBidding, setPriceBidding] = useState('')
+  const [currentPrice, setCurrentPrice] = useState(0)
+  const [stompClient, setStompClient] = useState(null);
+  const [notification, setNotification] = useState('')
 
   useEffect(() => {
     const getProduct = async () => {
@@ -19,6 +35,7 @@ export const ProductsDetailsPage = () => {
         const response = await axios.get(`auction/${id}`,
           { authRequired: true },
         )
+        // console.log(response);
 
         if (response.code === 0) {
           const product = {
@@ -59,6 +76,127 @@ export const ProductsDetailsPage = () => {
       }
     }
   }, [])
+
+  useEffect(() => {
+    if (productDetail?.end_date) {
+      const updateTime = () => calculateTimeLeft(productDetail?.end_date, setTimeLeft, setIsDuration)
+      updateTime()
+      const timer = setInterval(updateTime, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [productDetail?.end_date]);
+
+
+  // bidding 
+  //get bidding of product
+  useEffect(() => {
+    const getBiddingOfProduct = async () => {
+      try {
+        const response = await axios.get("bidding/" + id)
+        setCurrentPrice(response)
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    getBiddingOfProduct()
+  }, [id])
+
+
+  // const onSubmitBidding = async (e) => {
+  //   e.preventDefault()
+  //   if (isLogin) {
+  //     const bidding = {
+  //       price: +priceBidding,
+  //       productId: productDetail.item_id,
+  //       userId: userId
+  //     }
+  //     try {
+  //       const response = await axios.post("bidding", bidding, { authRequired: true })
+  //       console.log(response);
+  //     } catch (error) {
+  //       toast.error(error.response.data.message)
+  //       console.log(error.response.data.message);
+  //     }
+  //   } else {
+  //     triggerLoginExpired()
+  //   }
+  // }
+
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const socketFactory = () => {
+      return new SockJS('http://localhost:8080/ws', null, {
+        withCredentials: true,
+      });
+    };
+
+    const client = Stomp.over(socketFactory);
+
+    client.connect({ Authorization: `Bearer ${token}` }, () => {
+      // console.log("Connected to WebSocket");
+
+      client.subscribe('/topic/newbidding', (message) => {
+        const newCategory = JSON.parse(message.body);
+        setCurrentPrice(newCategory);
+      });
+      client.subscribe('/topic/notification', (message) => {
+        const newCategory = JSON.parse(message.body);
+        setNotification(newCategory);
+      });
+    }, (error) => {
+      console.error("WebSocket connection error:", error);
+    });
+
+    setStompClient(client);
+
+    return () => {
+      if (client.connected) {
+        client.disconnect(() => {
+          console.log("Disconnected from WebSocket");
+        });
+      }
+    };
+
+
+  }, [])
+
+  const onSubmitBidding = async (e) => {
+    e.preventDefault()
+    const token = localStorage.getItem('token');
+    if (priceBidding <= productDetail.starting_price) {
+      toast.error("Price must be greater than current price")
+      return
+    }
+    if (priceBidding <= currentPrice.price) {
+      toast.error("Price must be greater than current price")
+      return
+    }
+
+    if (!token) {
+      triggerLoginExpired()
+    }
+    if (stompClient && stompClient.connected) {
+      const bidding = {
+        price: +priceBidding,
+        productId: productDetail.item_id,
+        userId: userId,
+        seller: productDetail.buyerId
+      }
+      stompClient.send("/app/create", { Authorization: `Bearer ${token}` }, JSON.stringify(bidding));
+      setPriceBidding('')
+    } else {
+      console.error("WebSocket is not connected");
+    }
+
+  }
+
+  useEffect(() => {
+    if (notification) {
+      dispatch(addNotification(notification))
+    }
+  }, [dispatch, notification])
+
   return (
     <>
       <section className="pt-24 px-8">
@@ -94,19 +232,19 @@ export const ProductsDetailsPage = () => {
               <br />
               <div className="flex gap-8 text-center">
                 <div className="p-5 px-10 shadow-s1">
-                  <Title level={4}>149</Title>
+                  <Title level={4}>{timeLeft?.days || 0}</Title>
                   <Caption>Days</Caption>
                 </div>
                 <div className="p-5 px-10 shadow-s1">
-                  <Title level={4}>12</Title>
+                  <Title level={4}>{timeLeft?.hours || 0}</Title>
                   <Caption>Hours</Caption>
                 </div>
                 <div className="p-5 px-10 shadow-s1">
-                  <Title level={4}>36</Title>
+                  <Title level={4}>{timeLeft?.minutes || 0}</Title>
                   <Caption>Minutes</Caption>
                 </div>
                 <div className="p-5 px-10 shadow-s1">
-                  <Title level={4}>51</Title>
+                  <Title level={4}>{timeLeft?.seconds || 0}</Title>
                   <Caption>Seconds</Caption>
                 </div>
               </div>
@@ -122,7 +260,7 @@ export const ProductsDetailsPage = () => {
                 Price:<Caption>${productDetail.starting_price}</Caption>
               </Title>
               <Title className="flex items-center gap-2">
-                Current bid:<Caption className="text-3xl">$500 </Caption>
+                Current bid:<Caption className="text-3xl">${currentPrice.price || 0} </Caption>
               </Title>
               {
                 userId !== productDetail.buyerId && (
@@ -133,17 +271,21 @@ export const ProductsDetailsPage = () => {
                   </div>
                 )
               }
-              <div className="p-5 px-10 shadow-s3 py-8">
-                <form className="flex gap-3 justify-between">
-                  <input className={commonClassNameOfInput} type="number" name="price" />
-                  <button type="button" className="bg-gray-100 rounded-md px-5 py-3">
-                    <AiOutlinePlus />
-                  </button>
-                  <button type="submit" className={`py-3 px-8 rounded-lg ${"bg-gray-400 text-gray-700 cursor-not-allowed"}`}>
-                    Submit
-                  </button>
-                </form>
-              </div>
+              {
+                userId !== productDetail.buyerId &&
+                <div className="p-5 px-10 shadow-s3 py-8">
+                  <form onSubmit={onSubmitBidding} className="flex gap-3 justify-between">
+                    <input className={commonClassNameOfInput} value={priceBidding} onChange={e => setPriceBidding(e.target.value)} type="number" name="price" />
+                    <button type="button" className="bg-gray-100 rounded-md px-5 py-3">
+                      <AiOutlinePlus />
+                    </button>
+                    {/* cursor-not-allowed */}
+                    <button type="submit" className={`py-3 px-8 rounded-lg ${"bg-gray-400 text-gray-700"}`}>
+                      Submit
+                    </button>
+                  </form>
+                </div>
+              }
             </div>
           </div>
           <div className="details mt-8">

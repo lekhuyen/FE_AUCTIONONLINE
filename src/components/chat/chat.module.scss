@@ -1,46 +1,52 @@
 // mt-3 overflow-y-auto
 
-.custom-scroll {
-  max-height: 80vh;
+.custom_scroll {
+  max-height: 50vh;
   margin-top: 3px;
   overflow-y: auto;
 }
 
-.custom-scroll::-webkit-scrollbar {
+.custom_scroll::-webkit-scrollbar {
   width: 8px;
 }
 
-.custom-scroll::-webkit-scrollbar-track {
+.custom_scroll::-webkit-scrollbar-track {
   background: #f4f4f4;
 }
 
-.custom-scroll::-webkit-scrollbar-thumb {
+.custom_scroll::-webkit-scrollbar-thumb {
   background: #9b9b9b;
   border-radius: 10px;
 }
 
-.custom-scroll::-webkit-scrollbar-thumb:hover {
+.custom_scroll::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
 
 .chatBox_write {
+  display: flex;
+  align-items: flex-end;
   .chat_box_input {
     display: flex;
     align-items: center;
     border: 1px solid #ccc;
     border-radius: 5px;
     padding: 5px;
+    width: 100%;
+    border-radius: 3px;
 
     textarea {
       flex: 1;
       border: none;
       outline: none;
-      padding: 5px;
+      padding-left: 10px;
+      padding-right: 10px;
+      padding-top: 5px;
       border-radius: 5px;
       background-color: #f0f0f0;
       resize: none;
       font-size: 14px;
-      line-height: 20px;
+      line-height: 10px;
       overflow-y: hidden;
       &:focus {
         border-color: #1f7f67;
@@ -65,5 +71,3 @@
     }
   }
 }
-
-// comm
