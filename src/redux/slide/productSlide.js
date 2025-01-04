@@ -68,13 +68,26 @@ export const getAllCategory = createAsyncThunk("category/getallcategory", async 
 })
 
 
+export const auctionsuccess = createAsyncThunk("category/auctionsuccess", async (data, thunkAPI) => {
+  try {
+    const response = await axios.post(`/bidding/success/${data.productId}/${data.sellerId}`, null, { authRequired: true })
+    // console.log(response);
+
+    return response
+  } catch (error) {
+    // console.log(error.response.data.message);
+    const errorMessage = (error.response && error.response.data && error.response.data.message) || error.message || error.toString() || error
+    return thunkAPI.rejectWithValue(errorMessage)
+  }
+})
+
 const initialState = {
   code: null,
   message: '',
   isLoading: false,
   products: [],
   categories: [],
-  notification: {}
+  notification: {},
 }
 
 export const productSlide = createSlice({
@@ -169,6 +182,19 @@ export const productSlide = createSlice({
       state.categories = action.payload;
     });
 
+
+    //chot dau gia
+    builder.addCase(auctionsuccess.pending, (state) => {
+      state.isLoading = true;
+    });
+
+    builder.addCase(auctionsuccess.fulfilled, (state, action) => {
+      state.isLoading = false;
+    });
+
+    builder.addCase(auctionsuccess.rejected, (state, action) => {
+      state.isLoading = true;
+    });
   },
 })
 

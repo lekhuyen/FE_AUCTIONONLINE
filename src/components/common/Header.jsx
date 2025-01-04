@@ -135,6 +135,7 @@ export const Header = () => {
       triggerLoginExpired()
     }
   }
+  // console.log(notifications);
 
   return (
     <>
@@ -225,7 +226,7 @@ export const Header = () => {
                     showNotification && (
                       <div className="absolute w-[360px] top-[30px] overflow-hidden bg-white shadow-lg rounded-sm p-2">
                         <div className="w-full"><h3 className="text-[24px]">Thong bao</h3></div>
-                        <div className={clsx(styles.custom_scroll, 'overflow-y-auto max-h-[300px]')}>
+                        <div className={clsx(styles.custom_scroll, 'overflow-y-auto max-h-[400px]')}>
                           {notifications?.length > 0 && notifications?.map((notifi, index) => (
                             <NavLink to={`/details/${notifi?.productId}`}
                               onClick={() => hanldeReadedNotification(notifi.id)} key={index} className="flex gap-2 items-center bottom-1 padding-2">
@@ -233,13 +234,28 @@ export const Header = () => {
                                 // check if the user is the seller
                                 notifi.sellerId === userId && (
                                   <>
-                                    <div className="w-[50px]"><img className="w-full" alt="" src="https://cdn-icons-png.flaticon.com/512/6596/6596121.png" /></div>
+                                    <div className="w-[50px]  flex-shrink-0"><img className="w-full" alt="" src="https://cdn-icons-png.flaticon.com/512/6596/6596121.png" /></div>
                                     <div>
-                                      <p className="whitespace-normal overflow-hidden text-ellipsis text-[14px]">
-                                        <span className="font-bold">{notifi.buyerName} </span>
-                                        da dau gia san pham <span className="font-bold">{notifi.productName} </span>
-                                        cua ban voi muc gia {notifi.price}
-                                      </p>
+                                      {
+                                        notifi.auction === true ? (
+                                          <>
+                                            <p className="whitespace-normal overflow-hidden text-ellipsis text-[14px]">
+                                              <span className="font-bold">San pham <span className="font-bold">{notifi.productName}</span> cua ban </span>
+                                              da duoc dau gia thanh cong cua ban voi muc gia {notifi.price}
+                                            </p>
+                                          </>
+                                        )
+                                          :
+                                          (
+                                            <>
+                                              <p className="whitespace-normal overflow-hidden text-ellipsis text-[14px]">
+                                                <span className="font-bold">{notifi.buyerName} </span>
+                                                da dau gia san pham <span className="font-bold">{notifi.productName} </span>
+                                                cua ban voi muc gia {notifi.price}
+                                              </p>
+                                            </>
+                                          )
+                                      }
                                       <p className="text-blue-500 text-[12px]">{moment(notifi.timestamp).fromNow()}</p>
                                     </div>
                                     {
@@ -250,16 +266,32 @@ export const Header = () => {
                                   </>
                                 )
                               }
+
                               {
                                 // check if the user is the buyer
                                 notifi.buyerId === userId && (
                                   <>
-                                    <div className="w-[50px]"><img className="w-full" alt="" src="https://cdn-icons-png.flaticon.com/512/6596/6596121.png" /></div>
+                                    <div className="w-[50px] flex-shrink-0"><img className="w-full" alt="" src="https://cdn-icons-png.flaticon.com/512/6596/6596121.png" /></div>
                                     <div>
-                                      <p className="whitespace-normal overflow-hidden text-ellipsis text-[15px]">
-                                        <span className="font-bold">Ban </span>
-                                        da dau gia thanh cong san pham <span className="font-bold">{notifi.productName}</span> voi muc gia {notifi.price}
-                                      </p>
+                                      {
+                                        notifi.auction === true ? (
+                                          <>
+                                            <p className="whitespace-normal overflow-hidden text-ellipsis text-[15px]">
+                                              <span className="font-bold">Chúc mừng bạn </span>
+                                              da dau gia thanh cong san pham <span className="font-bold">{notifi.productName}</span> voi muc gia {notifi.price}
+                                            </p>
+                                          </>
+                                        )
+                                          :
+                                          (
+                                            <>
+                                              <p className="whitespace-normal overflow-hidden text-ellipsis text-[15px]">
+                                                <span className="font-bold">Ban </span>
+                                                da dau gia thanh cong san pham <span className="font-bold">{notifi.productName}</span> voi muc gia {notifi.price}
+                                              </p>
+                                            </>
+                                          )
+                                      }
                                       <p className="text-blue-500 text-[12px]">{moment(notifi.timestamp).fromNow()}</p>
                                     </div>
                                     {
