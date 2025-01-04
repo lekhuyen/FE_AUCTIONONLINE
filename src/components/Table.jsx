@@ -106,6 +106,44 @@ export const Table = () => {
     }
   }
 
+
+  //update sell
+  const handleUpdateSell = (id) => {
+    if (isLogin) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "Do you want to update this category status?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Update"
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            const response = await axios.put(`auction/issell/${id}`, {
+              authRequired: true,
+            })
+            if (response) {
+              toast.success(response.message)
+              await dispatch(getAllProduct({
+                page: products.currentPage,
+                size: products.pageSize
+              }));
+            } else {
+              toast.error("Error: Unable to delete the category!");
+            }
+          } catch (error) {
+            console.log(error);
+            toast.error("Something went wrong!");
+          }
+        }
+      });
+    } else {
+      triggerLoginExpired();
+    }
+  }
+
   return (
     <>
       <div className="relative overflow-x-auto rounded-lg">
@@ -174,7 +212,7 @@ export const Table = () => {
                     </p>
                   </td>
                   <td className="px-6 py-4">{product.user.name}</td>
-                  <td className={`${product.sell ? "text-green" : "text-red-600"} px-6 py-4`}>{product.sell ? "SELLING" : "NOT YET"}</td>
+                  <td onClick={() => handleUpdateSell(product.item_id)} className={`${product.sell ? "text-green" : "text-red-600"} px-6 py-4 cursor-pointer`}>{product.sell ? <FaCheck size={22} /> : <FaXmark size={22} />}</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center">
                       {/* <div className={`h-2.5 w-2.5 rounded-full  me-2 ${product.soldout ? "bg-green" : "bg-red-600"}`}></div> */}

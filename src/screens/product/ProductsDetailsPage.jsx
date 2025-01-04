@@ -10,8 +10,8 @@ import { calculateTimeLeft, useLoginExpired } from "../../utils/helper";
 import { toast } from "react-toastify";
 import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
-import { useDispatch } from "react-redux";
-import { addNotification } from "../../redux/slide/productSlide";
+import { useDispatch, useSelector } from "react-redux";
+import { addNotification, auctionsuccess } from "../../redux/slide/productSlide";
 
 
 export const ProductsDetailsPage = () => {
@@ -29,32 +29,34 @@ export const ProductsDetailsPage = () => {
   const [stompClient, setStompClient] = useState(null);
   const [notification, setNotification] = useState('')
 
-  useEffect(() => {
-    const getProduct = async () => {
-      try {
-        const response = await axios.get(`auction/${id}`,
-          { authRequired: true },
-        )
-        // console.log(response);
+  const getProduct = async () => {
+    try {
+      const response = await axios.get(`auction/${id}`,
+        { authRequired: true },
+      )
+      // console.log(response);
 
-        if (response.code === 0) {
-          const product = {
-            item_id: response.result.item_id,
-            item_name: response.result.item_name,
-            description: response.result.description,
-            starting_price: response.result.starting_price,
-            start_date: response.result.start_date,
-            end_date: response.result.end_date,
-            bid_step: response.result.bid_step,
-            buyerId: response.result.user.id
-          }
-          setImageFile(response.result.images)
-          setProductDetail(product)
+      if (response.code === 0) {
+        const product = {
+          item_id: response.result.item_id,
+          item_name: response.result.item_name,
+          description: response.result.description,
+          starting_price: response.result.starting_price,
+          start_date: response.result.start_date,
+          end_date: response.result.end_date,
+          bid_step: response.result.bid_step,
+          buyerId: response.result.user.id,
+          isSell: response.result.sell,
+          isSoldOut: response.result.soldout
         }
-      } catch (error) {
-        console.log(error);
+        setImageFile(response.result.images)
+        setProductDetail(product)
       }
+    } catch (error) {
+      console.log(error);
     }
+  }
+  useEffect(() => {
     getProduct()
   }, [id])
 
@@ -79,7 +81,7 @@ export const ProductsDetailsPage = () => {
 
   useEffect(() => {
     if (productDetail?.end_date) {
-      const updateTime = () => calculateTimeLeft(productDetail?.end_date, setTimeLeft, setIsDuration)
+      const updateTime = () => calculateTimeLeft(productDetail?.start_date, setTimeLeft, setIsDuration)
       updateTime()
       const timer = setInterval(updateTime, 1000);
       return () => clearInterval(timer);
@@ -141,8 +143,10 @@ export const ProductsDetailsPage = () => {
         setCurrentPrice(newCategory);
       });
       client.subscribe('/topic/notification', (message) => {
-        const newCategory = JSON.parse(message.body);
-        setNotification(newCategory);
+        const newNotification = JSON.parse(message.body);
+        // console.log(newNotification);
+
+        setNotification(newNotification);
       });
     }, (error) => {
       console.error("WebSocket connection error:", error);
@@ -197,6 +201,35 @@ export const ProductsDetailsPage = () => {
     }
   }, [dispatch, notification])
 
+
+  //call api khi countdown = 0
+  useEffect(() => {
+    const sellingProduct = async () => {
+      if (isDuration) {
+        await axios.put(`auction/issell/${id}`)
+      }
+    }
+    sellingProduct()
+  }, [id, isDuration])
+
+  //chot gia
+  const handleAuctionSuccess = async (id) => {
+    if (isLogin) {
+      try {
+        // const response = await axios.post(`bidding/success/${productDetail.item_id}/${userId}`, null, { authRequired: true })
+        dispatch(auctionsuccess({ productId: id, sellerId: userId }))
+
+        toast.success("Ban da cho qua thanh cong")
+
+        getProduct()
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      triggerLoginExpired()
+    }
+  }
+
   return (
     <>
       <section className="pt-24 px-8">
@@ -208,9 +241,14 @@ export const ProductsDetailsPage = () => {
               </div>
             </div>
             <div className="w-1/2">
-              <Title level={2} className="capitalize">
-                {productDetail.item_name}
-              </Title>
+              <div className="flex items-center">
+                <Title level={2} className="capitalize">
+                  {productDetail.item_name}
+                </Title>
+                {
+                  productDetail.isSoldOut === true && <div><p className="text-red-700 font-bold">soldout*</p></div>
+                }
+              </div>
               <div className="flex gap-5">
                 <div className="flex text-green ">
                   <IoIosStar size={20} />
@@ -259,11 +297,11 @@ export const ProductsDetailsPage = () => {
               <Title className="flex items-center gap-2 my-5">
                 Price:<Caption>${productDetail.starting_price}</Caption>
               </Title>
-              <Title className="flex items-center gap-2">
+              <Title className={`flex items-center gap-2 ${productDetail.isSoldOut ? 'text-red-700' : ''}`}>
                 Current bid:<Caption className="text-3xl">${currentPrice.price || 0} </Caption>
               </Title>
               {
-                userId !== productDetail.buyerId && (
+                (userId !== productDetail.buyerId && productDetail.isSoldOut === false) && (
                   <div className="w-[200px] h-[40px] bg-green border rounded-md flex justify-center items-center">
                     <NavLink to={`/chat?item_id=${productDetail.item_id}&buyerId=${productDetail.buyerId}`} type="button" className="font-medium text-white">
                       Chat now
@@ -272,8 +310,17 @@ export const ProductsDetailsPage = () => {
                 )
               }
               {
-                userId !== productDetail.buyerId &&
-                <div className="p-5 px-10 shadow-s3 py-8">
+                userId === productDetail.buyerId && (productDetail.isSoldOut === false) && (productDetail.isSell === true) && (
+                  <div onClick={() => handleAuctionSuccess(productDetail?.item_id)} className="w-[200px] cursor-pointer h-[40px] bg-green border rounded-md flex justify-center items-center">
+                    <button className="font-medium text-white">
+                      This price
+                    </button>
+                  </div>
+                )
+              }
+              {
+                userId !== productDetail.buyerId && productDetail.isSell && (productDetail.isSoldOut === false) &&
+                <div div className="p-5 px-10 shadow-s3 py-8">
                   <form onSubmit={onSubmitBidding} className="flex gap-3 justify-between">
                     <input className={commonClassNameOfInput} value={priceBidding} onChange={e => setPriceBidding(e.target.value)} type="number" name="price" />
                     <button type="button" className="bg-gray-100 rounded-md px-5 py-3">
@@ -396,7 +443,7 @@ export const ProductsDetailsPage = () => {
             </div>
           </div>
         </Container>
-      </section>
+      </section >
     </>
   );
 };

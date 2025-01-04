@@ -12,7 +12,7 @@ export const ProductCard = ({ item }) => {
 
   useEffect(() => {
     if (item?.end_date) {
-      const updateTime = () => calculateTimeLeft(item?.end_date, setTimeLeft)
+      const updateTime = () => calculateTimeLeft(item?.start_date, setTimeLeft)
       updateTime()
       const timer = setInterval(updateTime, 1000);
       return () => clearInterval(timer);
