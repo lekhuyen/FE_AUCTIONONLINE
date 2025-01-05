@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 // import { getAllProduct } from '../../../redux/slide/productSlide';
 
-const Pagination = ({ listItem, to, methodCallApi }) => {
+const Pagination = ({ listItem, to, methodCallApi, tosearch }) => {
   // console.log(listItem);
 
   // const { products } = useSelector(state => state.product)
@@ -17,6 +17,10 @@ const Pagination = ({ listItem, to, methodCallApi }) => {
     page: currentPage,
     size: process.env.REACT_APP_SIZE_ELEMENT,
   })
+
+  //con log ra nhìu lần 
+  // console.log(paginate);
+
   const totalElements = listItem?.totalElements || 0;
   const pagination = usePanigation(totalElements, currentPage)
   useEffect(() => {
@@ -27,9 +31,21 @@ const Pagination = ({ listItem, to, methodCallApi }) => {
 
 
   const handleClickPage = page => {
+    // const urlStart = to.split("?")[0] + "?" + to.split("?")[1]  ///search?name=""
+    // const urlEnd = to.split("?")[1].split("=")[0] + "="   //name=
+
     if (!Number.isInteger(page)) return;
     setPaginate(prev => ({ ...prev, page }))
-    navigate(`${to}?page=${page}`);
+    // if (urlEnd === "name=") {
+    //   navigate(`${urlStart}&page=${page}`);
+    // } else {
+    // }
+    if (tosearch) {
+      navigate(`${tosearch}&page=${page}`);
+    }
+    if (to) {
+      navigate(`${to}?page=${page}`);
+    }
   }
 
   return (

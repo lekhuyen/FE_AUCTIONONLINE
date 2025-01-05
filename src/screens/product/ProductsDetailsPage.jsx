@@ -10,7 +10,7 @@ import { calculateTimeLeft, useLoginExpired } from "../../utils/helper";
 import { toast } from "react-toastify";
 import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { addNotification, auctionsuccess } from "../../redux/slide/productSlide";
 
 
@@ -229,7 +229,6 @@ export const ProductsDetailsPage = () => {
       triggerLoginExpired()
     }
   }
-  // console.log(productDetail);
 
   return (
     <>
