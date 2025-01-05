@@ -14,6 +14,7 @@ instance.interceptors.request.use(function (config) {
   const token = localStorage.getItem('token');
 
   if (config.authRequired && token) {
+
     config.headers.Authorization = 'Bearer ' + token;
   }
 

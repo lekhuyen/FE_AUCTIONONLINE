@@ -68,13 +68,49 @@ export const getAllCategory = createAsyncThunk("category/getallcategory", async 
 })
 
 
+export const auctionsuccess = createAsyncThunk("category/auctionsuccess", async (data, thunkAPI) => {
+  try {
+    const response = await axios.post(`/bidding/success/${data.productId}/${data.sellerId}`, null, { authRequired: true })
+    // console.log(response);
+
+    return response
+  } catch (error) {
+    // console.log(error.response.data.message);
+    const errorMessage = (error.response && error.response.data && error.response.data.message) || error.message || error.toString() || error
+    return thunkAPI.rejectWithValue(errorMessage)
+  }
+})
+
+//get product by category
+export const getAllProductByCategory = createAsyncThunk("product/getallproductbycategory", async (paginate, thunkAPI) => {
+  try {
+    if (paginate.productId) {
+
+      const response = await axios.get(`/auction/category/${paginate.productId}`, {
+        params: {
+          page: paginate.page,
+          size: paginate.size,
+        },
+      })
+      return response.result
+    }
+
+    // console.log(response);
+  } catch (error) {
+    // console.log(error.response.data.message);
+    const errorMessage = (error.response && error.response.data && error.response.data.message) || error.message || error.toString() || error
+    return thunkAPI.rejectWithValue(errorMessage)
+  }
+})
+
 const initialState = {
   code: null,
   message: '',
   isLoading: false,
   products: [],
+  productsbycategory: [],
   categories: [],
-  notification: {}
+  notification: {},
 }
 
 export const productSlide = createSlice({
@@ -169,6 +205,36 @@ export const productSlide = createSlice({
       state.categories = action.payload;
     });
 
+
+    //chot dau gia
+    builder.addCase(auctionsuccess.pending, (state) => {
+      state.isLoading = true;
+    });
+
+    builder.addCase(auctionsuccess.fulfilled, (state, action) => {
+      state.isLoading = false;
+    });
+
+    builder.addCase(auctionsuccess.rejected, (state, action) => {
+      state.isLoading = true;
+    });
+
+
+    //get all product by category
+    builder.addCase(getAllProductByCategory.pending, (state) => {
+      // state.isLoading = true;
+      state.productsbycategory = [];
+    });
+
+    builder.addCase(getAllProductByCategory.fulfilled, (state, action) => {
+      // state.isLoading = false;
+      state.productsbycategory = action.payload;
+    });
+
+    builder.addCase(getAllProductByCategory.rejected, (state, action) => {
+      // state.isLoading = true;
+      state.productsbycategory = action.payload;
+    });
   },
 })
 

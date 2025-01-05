@@ -36,6 +36,7 @@ export const generateRange = (start, end) => {
 //count down
 export const calculateTimeLeft = (end_date, setTimeLeft, setIsDuration = () => { }) => {
   const now = new Date();
+
   const endDateArray = end_date;
   // console.log(end_date);
 
