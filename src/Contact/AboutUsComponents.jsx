@@ -1,5 +1,6 @@
 import React from 'react';
 
+// Main title component
 const AboutUsMainTitle = () => {
     return (
         <div style={styles.container}>
@@ -8,36 +9,53 @@ const AboutUsMainTitle = () => {
     );
 };
 
-// AboutUsDescription Component (the new component for the description)
+// Description component
 const AboutUsDescription = () => {
     return (
         <div style={styles.descriptionContainer}>
             <p style={styles.descriptionText}>
-                We are a passionate team committed to providing exceptional services and delivering results that exceed expectations. Our mission is to innovate, inspire, and make a lasting impact through our work.
+                Welcome to <strong>Bit Out</strong>, the leading online auction platform where buyers and sellers come
+                together to participate in thrilling bidding experiences. We are a passionate team dedicated to
+                revolutionizing the way people engage in auctions, providing a seamless, secure, and exciting platform
+                for all types of items—whether you're looking to acquire unique collectibles, rare antiques, or the
+                latest tech gadgets.
+            </p>
+            <p style={styles.descriptionText}>
+                Our mission is to empower individuals and businesses alike by offering a transparent, user-friendly
+                environment where users can bid on products they love while ensuring that every transaction is smooth
+                and reliable. We take pride in providing an innovative, inspiring platform that fosters competition,
+                excitement, and fairness, making it accessible to both first-time bidders and seasoned auction
+                enthusiasts.
+            </p>
+            <p style={styles.descriptionText}>
+                At <strong>Bit Out</strong>, we understand the thrill of the auction experience, and we're committed to
+                delivering exceptional customer service, cutting-edge technology, and secure payment options. Our team
+                works tirelessly to bring you the most exciting, diverse range of auctions, ensuring you never miss out
+                on an opportunity to get your hands on something extraordinary. Join us today and experience the future
+                of online auctions!
             </p>
         </div>
     );
 };
 
-
-const AboutUsCard = () => {
+// AboutUsCard Component with image and text
+const AboutUsCard = ({ title, bodyText, imageUrl }) => {
     return (
         <div style={styles.card}>
             <img
-                src="https://dashboard.codeparrot.ai/api/assets/Z1adTowTRzcMVVyT"
-                alt="Placeholder"
+                src={imageUrl}
+                alt={title}
                 style={styles.image}
             />
             <div style={styles.body}>
-                <h2 style={styles.title}>Title</h2>
-                <p style={styles.bodyText}>
-                    Body text for whatever you’d like to say. Add main takeaway points, quotes, anecdotes, or even a very very short story.
-                </p>
+                <h3 style={styles.cardTitle}>{title}</h3> {/* Changed to h3 and updated style */}
+                <p style={styles.bodyText}>{bodyText}</p>
             </div>
         </div>
     );
 };
 
+// Accordion Item for FAQ section
 const AccordionItem = ({ title, content }) => {
     const [isOpen, setIsOpen] = React.useState(false);
 
@@ -50,7 +68,9 @@ const AccordionItem = ({ title, content }) => {
             <div onClick={toggleAccordion} style={accordionStyles.title}>
                 <span>{title}</span>
                 <img
-                    src={isOpen ? 'https://dashboard.codeparrot.ai/api/assets/Z1adTowTRzcMVVyU' : 'https://dashboard.codeparrot.ai/api/assets/Z1adTowTRzcMVVyV'}
+                    src={isOpen
+                        ? 'https://fonts.gstatic.com/s/i/materialiconsoutlined/keyboard_arrow_down/v7/24px.svg'  // Downward arrow when open
+                        : 'https://fonts.gstatic.com/s/i/materialiconsoutlined/keyboard_arrow_up/v7/24px.svg'}  // Upward arrow when closed
                     alt="Toggle"
                     width="20"
                     height="20"
@@ -65,11 +85,12 @@ const AccordionItem = ({ title, content }) => {
     );
 };
 
+
+// AboutUsComponents to render the whole About Us section
 export const AboutUsComponents = () => {
     return (
         <div style={pageStyles.container}>
             <AboutUsMainTitle />
-
             <AboutUsDescription />
 
             <div style={pageStyles.imageRow}>
@@ -79,26 +100,50 @@ export const AboutUsComponents = () => {
 
             <h2 style={pageStyles.subheading}>Why Choose Us?</h2>
             <div style={pageStyles.cardRow}>
-                <AboutUsCard />
-                <AboutUsCard />
-                <AboutUsCard />
+                <AboutUsCard
+                    title="Secure & Reliable"
+                    bodyText="We provide a secure and trustworthy environment for bidding, ensuring that your personal information and transactions are always protected."
+                    imageUrl="/images/AboutUs/security.png"
+                />
+                <AboutUsCard
+                    title="Exciting Bidding Experience"
+                    bodyText="Our dynamic auction platform delivers an exciting and engaging experience for all users, whether you're new to bidding or an experienced pro."
+                    imageUrl="/images/AboutUs/bidding.png"
+                />
+                <AboutUsCard
+                    title="Variety of Items"
+                    bodyText="From collectibles to the latest tech, Bit Out offers a wide range of auction categories to fit your interests and needs."
+                    imageUrl="/images/AboutUs/item.png"
+                />
             </div>
             <div style={pageStyles.cardRow}>
-                <AboutUsCard />
-                <AboutUsCard />
-                <AboutUsCard />
+                <AboutUsCard
+                    title="Transparent Process"
+                    bodyText="We maintain a transparent auction process with clear guidelines and no hidden fees, so you always know exactly what you're bidding on."
+                    imageUrl="/images/AboutUs/process.png"
+                />
+                <AboutUsCard
+                    title="24/7 Customer Support"
+                    bodyText="Our customer support team is always available to help with any questions or issues you may encounter during your auction experience."
+                    imageUrl="/images/AboutUs/customer.png"
+                />
+                <AboutUsCard
+                    title="Community Engagement"
+                    bodyText="Join a vibrant community of auction enthusiasts, share tips, and learn from fellow bidders while engaging in exciting auctions."
+                    imageUrl="/images/AboutUs/community.jpg"
+                />
             </div>
+
             <div style={pageStyles.accordionSection}>
-                <AccordionItem title="Title" content="Answer the frequently asked question in a simple sentence, a longish paragraph, or even in a list." />
-                <AccordionItem title="Title" content="" />
-                <AccordionItem title="Title" content="" />
-                <AccordionItem title="Title" content="" />
-                <AccordionItem title="Title" content="" />
+                <AccordionItem title="What types of auctions can I participate in?" content="We offer a wide variety of auctions, from collectibles to electronics, and much more!" />
+                <AccordionItem title="How can I place a bid?" content="Bidding is easy! Simply sign up, browse auctions, and place your bid on any item you're interested in." />
+                <AccordionItem title="Is my payment information secure?" content="Yes! We use top-tier security measures to ensure all your personal and payment details are kept safe." />
             </div>
         </div>
     );
 };
 
+// Styling
 const styles = {
     container: {
         display: 'flex',
@@ -106,15 +151,12 @@ const styles = {
         alignItems: 'center',
         height: '230px',
         backgroundColor: '#f5f5f5',
-
-
     },
     descriptionContainer: {
-
         alignItems: 'center',
         paddingLeft: '200px',
         paddingRight: '200px',
-        paddingBottom: '50px'
+        paddingBottom: '50px',
     },
     descriptionText: {
         fontSize: '1.2rem',
@@ -128,7 +170,6 @@ const styles = {
         letterSpacing: '-2.16px',
         textAlign: 'center',
         lineHeight: '120%',
-
     },
     card: {
         display: 'flex',
@@ -156,6 +197,13 @@ const styles = {
         fontWeight: 400,
         color: '#757575',
         lineHeight: '140%',
+    },
+    cardTitle: {
+        fontSize: '24px',  // Smaller font size for the card title
+        fontWeight: 600,   // Medium font weight
+        color: '#1e1e1e',
+        textAlign: 'center',
+        marginBottom: '16px',
     },
 };
 
@@ -218,4 +266,3 @@ const pageStyles = {
         marginTop: '32px',
     },
 };
-
