@@ -35,13 +35,14 @@ export const Header = () => {
   const { triggerLoginExpired } = useLoginExpired();
   const [notifications, setNotifications] = useState([])
   const [showNotification, setShowNotification] = useState(false)
-  // console.log(notification);
+
+  const { isLoggedIn } = useSelector(state => state.auth)
 
   const menuRef = useRef(null);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
-  };
+  }
 
   const closeMenuOutside = (event) => {
     if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -88,23 +89,23 @@ export const Header = () => {
     }
   }, [])
 
+  //sửa lỗi khi login xong vẫn chưa hiện thông báo
   useEffect(() => {
     if (isLogin) {
       getNotification()
     }
   }, [userId])
   const getNotification = async () => {
-    if (isLogin) {
+    if (isLogin && userId) {
       try {
         const response = await axios.get("bidding/notification/" + userId, { authRequired: true })
+
         if (response.code === 0) {
           setNotifications(response.result)
         }
       } catch (error) {
         console.log(error);
       }
-    } else {
-      triggerLoginExpired()
     }
   }
 
@@ -135,7 +136,7 @@ export const Header = () => {
       triggerLoginExpired()
     }
   }
-  // console.log(notifications);
+
 
   return (
     <>
@@ -178,8 +179,8 @@ export const Header = () => {
                         <div className=" top-[25px] absolute bg-white shadow-lg rounded-sm">
                           <ul className="">
                             {
-                              categories?.data?.length > 0 && categories?.data?.map(category => (
-                                <Link to={`/product-list/${category?.category_id}`}>
+                              categories?.data?.length > 0 && categories?.data?.map((category, index) => (
+                                <Link key={index} to={`/product-list/${category?.category_id}`}>
                                   <li key={category?.category_id} className="border-b-[1px] p-1 cursor-pointer">
                                     {category?.category_name}
                                   </li>
@@ -202,12 +203,16 @@ export const Header = () => {
                     Become a Seller
                   </CustomNavLink>
                 )}
-                <CustomNavLink href="/chat" className={`${isScrolled || !isHomePage ? "text-black" : "text-white"}`}>
-                  <MdOutlineMessage />
-                </CustomNavLink>
+                {
+                  isLoggedIn && (
+                    <CustomNavLink href="/chat" className={`${isScrolled || !isHomePage ? "text-black" : "text-white"}`}>
+                      <MdOutlineMessage />
+                    </CustomNavLink>
+                  )
+                }
+
                 <div onClick={() => setShowNotification(!showNotification)} className="relative cursor-pointer">
-                  <IoMdNotificationsOutline size={20} />
-                  {
+                  {isLoggedIn && <IoMdNotificationsOutline size={20} />}                  {
                     notifications.filter(notification => notification.sellerIsRead === false && notification.sellerId === userId).length > 0 && (
                       <div className="absolute top-[-10px] right-[-10px] w-5 h-5 border rounded-full bg-red-600 
                     flex items-center justify-center text-white text-[13px]">
@@ -317,11 +322,15 @@ export const Header = () => {
                 <CustomNavLink href="/register" className={`${!isHomePage || isScrolled ? "bg-green" : "bg-white"} px-8 py-2 rounded-full text-primary shadow-md`}>
                   Join
                 </CustomNavLink>
-                <CustomNavLink href="/dashboard">
-                  <ProfileCard>
-                    <img src={User1} alt="" className="w-full h-full object-cover" />
-                  </ProfileCard>
-                </CustomNavLink>
+                {
+                  isLoggedIn && (
+                    <CustomNavLink href="/dashboard">
+                      <ProfileCard>
+                        <img src={User1} alt="" className="w-full h-full object-cover" />
+                      </ProfileCard>
+                    </CustomNavLink>
+                  )
+                }
               </div>
               <div className={`icon flex items-center justify-center gap-6 ${isScrolled || !isHomePage ? "text-primary" : "text-white"}`}>
                 <button onClick={toggleMenu} className="lg:hidden w-10 h-10 flex justify-center items-center bg-black text-white focus:outline-none">

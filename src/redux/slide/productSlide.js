@@ -27,6 +27,7 @@ export const getAllProduct = createAsyncThunk("product/getallproduct", async (pa
       params: {
         page: paginate.page,
         size: paginate.size,
+        name: paginate.searchName ? paginate.searchName : ""
       },
       headers: { authRequired: true }
     })
@@ -171,6 +172,7 @@ export const productSlide = createSlice({
       state.isLoading = true;
       state.products = action.payload.result;
     });
+
 
     //delete
     builder.addCase(deleteProduct.pending, (state) => {

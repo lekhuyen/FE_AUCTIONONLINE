@@ -35,6 +35,7 @@ import Loading from "./components/Loading/index.js";
 import Chat from "./components/chat/chat.js";
 import { getAllProduct } from "./redux/slide/productSlide.js";
 import ProductPage from "./admin/product/ProductPage.js";
+import SearchPageProduct from "./screens/product/SearchPageProduct.js";
 
 
 function App() {
@@ -64,7 +65,6 @@ function App() {
   }, [dispatch, token]);
 
   useEffect(() => {
-
     if (!isIntrospect && !alertShown) {
       Swal.fire({
         title: "Login expired, please login again!",
@@ -120,6 +120,14 @@ function App() {
           element={
             <Layout>
               <ProductPage />
+            </Layout>
+          }
+        />
+        <Route
+          path="/search"
+          element={
+            <Layout>
+              <SearchPageProduct />
             </Layout>
           }
         />

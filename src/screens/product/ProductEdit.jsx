@@ -8,6 +8,7 @@ import { jwtDecode } from "jwt-decode";
 import { validateForm } from "../../utils/validation";
 import { updateProduct } from "../../redux/slide/productSlide";
 import { useLoginExpired } from "../../utils/helper";
+import moment from "moment";
 
 export const ProductEdit = () => {
   const { id } = useParams()
@@ -21,6 +22,7 @@ export const ProductEdit = () => {
   const [invlidImages, setInvlidImages] = useState(false)
   const [isLogin] = useState(localStorage.getItem('isIntrospect') || false)
   const { triggerLoginExpired } = useLoginExpired();
+
   useEffect(() => {
     const getProduct = async () => {
       if (isLogin) {
@@ -28,7 +30,7 @@ export const ProductEdit = () => {
           const response = await axios.get(`auction/${id}`,
             { authRequired: true },
           )
-          if (response.code === 0) {
+          if (response.code === 0 && response.result.item_id !== productUpdate.item_id) {
             const product = {
               item_id: response.result.item_id,
               item_name: response.result.item_name,
@@ -49,7 +51,7 @@ export const ProductEdit = () => {
       }
     }
     getProduct()
-  }, [id, isLogin, dispatch, navigate, triggerLoginExpired])
+  }, [id, dispatch, navigate, triggerLoginExpired, isLogin])
 
 
 
@@ -64,6 +66,7 @@ export const ProductEdit = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('token')
+
     if (token) {
       try {
         const tokenInfo = jwtDecode(token)
@@ -99,6 +102,7 @@ export const ProductEdit = () => {
     } else {
       setInvlidImages(true)
     }
+
     if (invalids === 0 && userId && imageFile.length > 0) {
       dispatch(updateProduct(formData));
       setImageFile([])
@@ -153,7 +157,8 @@ export const ProductEdit = () => {
             </div>
             <div className="w-1/2">
               <Caption className="mb-2">Start date </Caption>
-              <input onFocus={() => setInvalidFields([])} type="date" name="start_date" value={productUpdate.start_date}
+              <input onFocus={() => setInvalidFields([])} type="date" name="start_date"
+                value={productUpdate?.start_date ? moment(Array.isArray(productUpdate.start_date) ? productUpdate.start_date.join('-') : productUpdate.start_date, 'YYYY-MM-DD').format('YYYY-MM-DD') : ''}
                 onChange={(e) => {
                   setProductUpdate(prev => ({ ...prev, start_date: e.target.value }))
                 }}
@@ -179,7 +184,8 @@ export const ProductEdit = () => {
             </div>
             <div className="w-1/2">
               <Caption className="mb-2">End date </Caption>
-              <input onFocus={() => setInvalidFields([])} type="date" name="end_date" value={productUpdate.end_date}
+              <input onFocus={() => setInvalidFields([])} type="date" name="end_date"
+                value={productUpdate?.end_date ? moment(Array.isArray(productUpdate.end_date) ? productUpdate.end_date.join('-') : productUpdate.end_date, 'YYYY-MM-DD').format('YYYY-MM-DD') : ''}
                 onChange={(e) => {
                   setProductUpdate(prev => ({ ...prev, end_date: e.target.value }))
                 }}

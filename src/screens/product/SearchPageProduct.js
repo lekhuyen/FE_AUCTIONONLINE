@@ -1,96 +1,57 @@
 import React, { useEffect, useState } from 'react';
-import { Link, NavLink, useParams, useSearchParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, NavLink, useLocation, useSearchParams } from 'react-router-dom';
+import { getAllProduct } from '../../redux/slide/productSlide';
 import { Caption, PrimaryButton, ProfileCard, Title } from '../../router';
 import { RiAuctionFill } from 'react-icons/ri';
 import { GiTakeMyMoney } from 'react-icons/gi';
 import { MdOutlineFavorite } from 'react-icons/md';
-import { useDispatch, useSelector } from 'react-redux';
-import { getAllProductByCategory } from '../../redux/slide/productSlide';
 import Pagination from '../../components/common/layout/Pagination';
-import { calculateTimeLeft } from '../../utils/helper';
 
-
-const ProductPage = () => {
+const SearchPageProduct = () => {
+  const [searchName, setSearchName] = useState('');
+  const location = useLocation();
   const dispatch = useDispatch()
-  const { productsbycategory } = useSelector(state => state.product)
-  const { productId } = useParams()
-  const [prevPagination, setPrevPagination] = useState({ currentPage: 0, pageSize: 0, prevProductId: productId });
   const [searchParams] = useSearchParams();
   const currentPage = parseInt(searchParams.get('page')) || 1;
-  const [timeLeft, setTimeLeft] = useState({});
+  const { products } = useSelector(state => state.product)
 
   const [paginate, setPaginate] = useState({
     page: currentPage,
     size: process.env.REACT_APP_SIZE_ELEMENT,
-    productId
+    searchName
   })
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const name = params.get('name');
+    setSearchName(name);
+  }, [location.search]);
 
   useEffect(() => {
     setPaginate(prevState => ({
       ...prevState,
       page: currentPage,
-      productId,
+      searchName
     }));
-  }, [currentPage, productId]);
+  }, [currentPage, searchName]);
 
   useEffect(() => {
-    if (productId) {
-      const currentPage = productsbycategory?.currentPage;
-      const pageSize = productsbycategory?.pageSize;
-
-      if (
-        currentPage !== prevPagination.currentPage ||
-        pageSize !== prevPagination.pageSize ||
-        productId !== prevPagination.productId
-      ) {
-        dispatch(
-          getAllProductByCategory(paginate)
-        );
-        setPrevPagination({ currentPage, pageSize, productId });
-      }
+    if (searchName.trim() !== '') {
+      dispatch(getAllProduct(paginate))
     }
-  }, [productId, productsbycategory?.currentPage, productsbycategory?.pageSize, currentPage])
+  }, [dispatch, paginate, searchName])
 
 
 
-  useEffect(() => {
-    if (productsbycategory?.data) {
-      const timers = productsbycategory.data.map(product => {
-        if (product.start_date) {
-          const updateTime = () => {
-            calculateTimeLeft(product.start_date, timeLeft =>
-              setTimeLeft(prev => ({
-                ...prev,
-                [product.item_id]: timeLeft,
-              }))
-            );
-          };
-
-          updateTime();
-          const timer = setInterval(updateTime, 1000);
-          return { item_id: product.item_id, timer };
-        }
-        return null;
-      });
-
-      return () => {
-        // Xóa tất cả các timer khi component unmount
-        timers.forEach(timer => {
-          if (timer?.timer) {
-            clearInterval(timer.timer);
-          }
-        });
-      };
-    }
-  }, [productsbycategory])
 
   return (
     <div className="w-[85%] m-auto mt-[100px]">
       <div className=" grid grid-cols-1 md:grid-cols-4 gap-8 my-8">
         {
-          productsbycategory?.data?.length > 0 && productsbycategory?.data?.map((item) => (
+          products?.data?.length > 0 && products?.data?.map((item) => (
             <Link to={`/details/${item?.item_id}`} key={item.item_id} className="bg-white shadow-s1 rounded-xl p-3 relative">
-              {
+              {/* {
                 timeLeft[item.item_id] && (
                   <div className="flex text-center absolute left-[50%] top-[50%] 
               translate-x-[-50%] shadow-lg translate-y-[-70%] w-[150px] h-[30px] 
@@ -126,7 +87,7 @@ const ProductPage = () => {
                     }
                   </div>
                 )
-              }
+              } */}
               <div className="h-56 relative overflow-hidden">
                 <NavLink to={`/details/${item?.item_id}`} >
                   <img src={item.images[0]} alt="" className="w-full h-full object-cover rounded-xl hover:scale-105 hover:cursor-pointer transition-transform duration-300 ease-in-out" />
@@ -182,20 +143,21 @@ const ProductPage = () => {
         }
       </div>
       {
-        productsbycategory?.data?.length === 0 && (
+        products?.data?.length === 0 && (
           <div className="flex m-auto">
             <h2>Khong co san phan nao</h2>
           </div>)
       }
       <div className="mt-8 flex justify-end">
         <Pagination
-          listItem={productsbycategory}
-          to={`/product-list/${productId}`}
-          methodCallApi={getAllProductByCategory}
+          listItem={products}
+          // to={`/search?name=${searchName}`}
+          tosearch={`/search?name=${searchName}`}
+          methodCallApi={getAllProduct}
         />
       </div>
     </div>
   );
 };
 
-export default ProductPage;
+export default SearchPageProduct;

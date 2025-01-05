@@ -14,6 +14,7 @@ export const UpdateCategory = () => {
     category_id: "",
     category_name: "",
   })
+  console.log(isLogin);
 
   const getCategory = async () => {
     try {

@@ -29,6 +29,7 @@ export const UserList = () => {
   //update status
   const handleUpdateStatus = (id) => {
     if (isLogin) {
+
       Swal.fire({
         title: "Are you sure?",
         text: "Do you want to update this user status?",
