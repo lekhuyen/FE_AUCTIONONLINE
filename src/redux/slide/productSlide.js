@@ -81,11 +81,34 @@ export const auctionsuccess = createAsyncThunk("category/auctionsuccess", async 
   }
 })
 
+//get product by category
+export const getAllProductByCategory = createAsyncThunk("product/getallproductbycategory", async (paginate, thunkAPI) => {
+  try {
+    if (paginate.productId) {
+
+      const response = await axios.get(`/auction/category/${paginate.productId}`, {
+        params: {
+          page: paginate.page,
+          size: paginate.size,
+        },
+      })
+      return response.result
+    }
+
+    // console.log(response);
+  } catch (error) {
+    // console.log(error.response.data.message);
+    const errorMessage = (error.response && error.response.data && error.response.data.message) || error.message || error.toString() || error
+    return thunkAPI.rejectWithValue(errorMessage)
+  }
+})
+
 const initialState = {
   code: null,
   message: '',
   isLoading: false,
   products: [],
+  productsbycategory: [],
   categories: [],
   notification: {},
 }
@@ -194,6 +217,23 @@ export const productSlide = createSlice({
 
     builder.addCase(auctionsuccess.rejected, (state, action) => {
       state.isLoading = true;
+    });
+
+
+    //get all product by category
+    builder.addCase(getAllProductByCategory.pending, (state) => {
+      // state.isLoading = true;
+      state.productsbycategory = [];
+    });
+
+    builder.addCase(getAllProductByCategory.fulfilled, (state, action) => {
+      // state.isLoading = false;
+      state.productsbycategory = action.payload;
+    });
+
+    builder.addCase(getAllProductByCategory.rejected, (state, action) => {
+      // state.isLoading = true;
+      state.productsbycategory = action.payload;
     });
   },
 })

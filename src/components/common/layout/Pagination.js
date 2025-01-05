@@ -2,17 +2,20 @@ import React, { useEffect, useState } from 'react';
 import usePanigation from '../../../utils/hook/usePanagation';
 import { useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { getAllProduct } from '../../../redux/slide/productSlide';
+// import { getAllProduct } from '../../../redux/slide/productSlide';
 
 const Pagination = ({ listItem, to, methodCallApi }) => {
+  // console.log(listItem);
+
   // const { products } = useSelector(state => state.product)
   const dispatch = useDispatch()
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const currentPage = parseInt(searchParams.get('page')) || 1;
+
   const [paginate, setPaginate] = useState({
     page: currentPage,
-    size: process.env.REACT_APP_SIZE_ELEMENT
+    size: process.env.REACT_APP_SIZE_ELEMENT,
   })
   const totalElements = listItem?.totalElements || 0;
   const pagination = usePanigation(totalElements, currentPage)

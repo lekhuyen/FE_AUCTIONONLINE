@@ -179,9 +179,11 @@ export const Header = () => {
                           <ul className="">
                             {
                               categories?.data?.length > 0 && categories?.data?.map(category => (
-                                <li key={category?.category_id} className="border-b-[1px] p-1 cursor-pointer">
-                                  <Link to="#">{category?.category_name}</Link>
-                                </li>
+                                <Link to={`/product-list/${category?.category_id}`}>
+                                  <li key={category?.category_id} className="border-b-[1px] p-1 cursor-pointer">
+                                    {category?.category_name}
+                                  </li>
+                                </Link>
                               ))
                             }
                           </ul>
@@ -329,13 +331,13 @@ export const Header = () => {
             </div>
 
             {/* Responsive Menu if below 768px */}
-            <div ref={menuRef} className={`lg:flex lg:items-center lg:w-auto w-full p-5 absolute right-0 top-full menu-container ${isOpen ? "open" : "closed"}`}>
+            {/* <div ref={menuRef} className={`lg:flex lg:items-center lg:w-auto w-full p-5 absolute right-0 top-full menu-container ${isOpen ? "open" : "closed"}`}>
               {menulists.map((list) => (
                 <li href={list.path} key={list.id} className="uppercase list-none">
                   <CustomNavLink className="text-white">{list.link}</CustomNavLink>
                 </li>
               ))}
-            </div>
+            </div> */}
           </nav>
         </Container>
       </header>

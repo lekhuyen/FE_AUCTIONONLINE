@@ -229,6 +229,7 @@ export const ProductsDetailsPage = () => {
       triggerLoginExpired()
     }
   }
+  // console.log(productDetail);
 
   return (
     <>
@@ -319,7 +320,7 @@ export const ProductsDetailsPage = () => {
                 )
               }
               {
-                userId !== productDetail.buyerId && productDetail.isSell && (productDetail.isSoldOut === false) &&
+                ((userId !== productDetail.buyerId) && (productDetail.isSell === true) && (productDetail.isSoldOut === false)) &&
                 <div div className="p-5 px-10 shadow-s3 py-8">
                   <form onSubmit={onSubmitBidding} className="flex gap-3 justify-between">
                     <input className={commonClassNameOfInput} value={priceBidding} onChange={e => setPriceBidding(e.target.value)} type="number" name="price" />
