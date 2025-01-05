@@ -19,7 +19,7 @@ export const validateForm = (data, setInvalidFields) => {
       case "start_date":
         const date1 = arr[1]
         const startDate = new Date(date1)
-        if (startDate <= Date.now()) {
+        if (startDate < Date.now()) {
           invalid++
           setInvalidFields(prev => [...prev, { name: arr[0], message: 'Start date must be greater then today' }])
         }
