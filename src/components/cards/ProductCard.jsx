@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { calculateTimeLeft } from "../../utils/helper";
 
 export const ProductCard = ({ item }) => {
+
   const [timeLeft, setTimeLeft] = useState(null);
 
   useEffect(() => {
@@ -71,7 +72,7 @@ export const ProductCard = ({ item }) => {
           <div className="absolute top-0 left-0 p-2 w-full">
             <div className="flex items-center justify-between">
 
-              {item?.isSoldout ? (
+              {item?.soldout === true ? (
                 <Caption className="text-red-500 bg-white px-3 py-1 text-sm rounded-full">Sold Out</Caption>
               ) : (
                 <Caption className="text-green bg-green_100 px-3 py-1 text-sm rounded-full">On Stock</Caption>

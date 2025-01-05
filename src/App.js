@@ -34,6 +34,7 @@ import Swal from "sweetalert2";
 import Loading from "./components/Loading/index.js";
 import Chat from "./components/chat/chat.js";
 import { getAllProduct } from "./redux/slide/productSlide.js";
+import ProductPage from "./admin/product/ProductPage.js";
 
 
 function App() {
@@ -113,7 +114,14 @@ function App() {
               <Chat />
             </Layout>
           }
-
+        />
+        <Route
+          path="/product-list/:productId"
+          element={
+            <Layout>
+              <ProductPage />
+            </Layout>
+          }
         />
         <Route
           path="/contact"
