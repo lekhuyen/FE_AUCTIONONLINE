@@ -138,6 +138,7 @@ const Chat = () => {
           const response = await axios.get(`chatroom/room/message/${roomId}`,
             { authRequired: true },
           )
+
           setMessages(response)
         }
       } catch (error) {
@@ -163,11 +164,15 @@ const Chat = () => {
       console.log('Connected to WebSocket');
       client.subscribe(`/topic/room/${roomId}`, (message) => {
         try {
-          const newMessage = JSON.parse(JSON.parse(message.body));
-          if (newMessage) {
-            setMessages(prevMessages => [...prevMessages, newMessage]);
+          // const newMessage = JSON.parse(JSON.parse(message.body));
+          const decoder = new TextDecoder('utf-8');
+          const jsonString = decoder.decode(message.binaryBody);  // Giải mã Uint8Array thành chuỗi
+          const parsedMessage = JSON.parse(jsonString);  // Phân tích cú pháp chuỗi JSON
+
+          if (parsedMessage) {
+            setMessages(prevMessages => [...prevMessages, parsedMessage]);
           } else {
-            console.error('Message parsing failed:', newMessage);
+            console.error('Message parsing failed:', parsedMessage);
           }
         } catch (error) {
           console.error('Failed to parse message:', error);
@@ -202,7 +207,7 @@ const Chat = () => {
   //     return null;
   //   }))
   // )
-  const handleSubmitChat = async (e) => {
+  const handleSubmitChatt = async (e) => {
     const token = localStorage.getItem('token');
     if (!content.trim()) {
       console.error("Message content is empty");
@@ -242,6 +247,52 @@ const Chat = () => {
     }
   }
 
+
+  // ------------------------------------------------------------------------------------------------
+  const handleSubmitChat = async () => {
+    const token = localStorage.getItem('token');
+
+    const formData = new FormData();
+    formData.append('content', content);
+    formData.append('roomId', roomId);
+    formData.append('sender', userId);
+    imageFile.forEach((url) => {
+      formData.append('images', url);
+    })
+
+
+
+    const response = await axios.post(`chatroom/send-message`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+      }
+    })
+
+
+    if (response) {
+      const data = {
+        content: response.content,
+        roomId: response.roomId,
+        sender: response.senderId,
+        imagess: response.images.map((image) => image.toString()),
+        timestamp: response.timestamp
+      }
+      // console.log(data);
+
+      if (stompClient) {
+        stompClient.send('/app/sendMessage', { Authorization: `Bearer ${token}` }, JSON.stringify(data));
+        setContent("")
+        setImageFile([])
+        setSelectedImages([]);
+      }
+    }
+
+  }
+
+  // =================================================================================================================
+
+
   useEffect(() => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -253,6 +304,11 @@ const Chat = () => {
       setSelectedImages(prev => [...prev, ...newImages])
       setImageFile(Array.from(files));
     }
+
+    // lat nua doi lai
+
+    // const files = e.target.files; // Lấy danh sách các file
+    // setImageFile(Array.from(files));
   }
 
   // useEffect(() => {
@@ -308,6 +364,7 @@ const Chat = () => {
     }
   }, [messages]);
 
+  // console.log(messages);
 
   return (
     <section className='flex justify-center'>
@@ -322,7 +379,7 @@ const Chat = () => {
               {
                 listChatOfSeller?.length > 0 && listChatOfSeller?.map((item, index) => {
                   return (
-                    <div onClick={() => handleClickUserChat(item, userId !== item?.userId ? item?.sellerName : item?.buyerName)} key={index} className="flex justify-between h-[85px] items-center border-b-[1px] cursor-pointer">
+                    <div key={index} onClick={() => handleClickUserChat(item, userId !== item?.userId ? item?.sellerName : item?.buyerName)} className="flex justify-between h-[85px] items-center border-b-[1px] cursor-pointer">
                       <div className="flex items-center">
                         <div className="w-[46px] relative mr-1">
                           <div className="absolute right-0 top-[-5px] border w-5 h-5 flex items-center justify-center rounded-full bg-red-600">
@@ -374,21 +431,50 @@ const Chat = () => {
                   {
                     messages?.length > 0 && messages?.map((item, index) => {
                       return (
-                        <div key={index} className={cx(`flex mb-3 ${item?.senderId === userId ? 'flex justify-end' : ''}`)}>
-                          <div className={cx(`min-w-[100px] max-w-[300px] rounded-md ml-3 p-2 mr-2 ${item?.senderId === userId ? 'bg-[#1f7f67]' : 'bg-[#f4f4f4]'}`)}>
-                            <p className={cx(`break-words text-[14px]  ${item?.senderId === userId ? 'text-white' : 'text-black'}`)}>{item?.content}</p>
-                            <div className="flex justify-end">
-                              <span className="text-[12px] text-[#9B9B9B]">{moment(item.timestamp).format('h:mm a')}</span>
-                            </div>
-                          </div>
-                        </div>
+                        <>
+                          {
+                            item?.content.length > 0 && (
+                              <div key={index} className={cx(`flex mb-3 ${item?.senderId === userId ? 'flex justify-end' : ''}`)}>
+                                <div className={cx(`min-w-[100px] max-w-[300px] rounded-md ml-3 p-2 mr-2 ${item?.senderId === userId ? 'bg-[#1f7f67]' : 'bg-[#f4f4f4]'}`)}>
+                                  <p className={cx(`break-words text-[14px]  ${item?.senderId === userId ? 'text-white' : 'text-black'}`)}>{item?.content}</p>
+                                  <div className="flex justify-end">
+                                    <span className="text-[12px] text-[#9B9B9B]">{moment(item.timestamp).format('h:mm a')}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            )
+                          }
+
+                          {
+                            item?.images && item.images.length > 0 && (
+                              <div className={cx(`flex mb-3 ${item?.senderId === userId ? 'flex justify-end' : ''}`)}>
+                                <div className={cx(`min-w-[100px] max-w-[300px] rounded-md ml-3 p-2 mr-2 ${item?.senderId === userId ? 'bg-[#1f7f67]' : 'bg-[#f4f4f4]'}`)}>
+                                  <div>
+                                    {
+                                      item?.images?.length > 0 && item?.images?.map((img, index) => {
+                                        return (
+                                          <div key={index} className="mb-1">
+                                            <img className='' src={img} alt="" />
+                                          </div>
+                                        )
+                                      }
+                                      )
+                                    }
+                                  </div>
+                                  <div className="flex justify-end">
+                                    <span className="text-[12px] text-[#9B9B9B]">{moment(item.timestamp).format('h:mm a')}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            )
+                          }
+                        </>
                       )
                     })
                   }
                   <div ref={endOfMessagesRef} />
                 </div>
                 <div className={styles.chatBox_write}>
-                  {/* <form onSubmit={handleSubmitChat} encType="multipart/form-data"> */}
                   <div className={styles.chat_box_input}>
                     <div className="mr-2">
                       <input type="file" id='picture' hidden multiple onChange={handleSelectImages} />
