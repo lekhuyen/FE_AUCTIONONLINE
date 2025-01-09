@@ -28,9 +28,11 @@ const Chat = () => {
   const [selectedImages, setSelectedImages] = useState([]);
   const [isChat, setIsChat] = useState(false)
   const [roomChatInfo, setRoomChatInfo] = useState(null)
-  const [listChatOfSeller, setListChatOfSeller] = useState([])
+
   const [imageFile, setImageFile] = useState([]);
   const [notiMessage, setNotiMessage] = useState([])
+  const [notiMessageChat, setNotiMessageChat] = useState(null)
+  const [indexChat, setIndexChat] = useState(null)
 
   const [messages, setMessages] = useState([{
     content: "",
@@ -40,9 +42,44 @@ const Chat = () => {
     senderId: "",
     timestamp: "",
   }]);
+
+  const [listChatOfSeller, setListChatOfSeller] = useState([])
   const [content, setContent] = useState('');
   const [roomId, setRoomId] = useState('');
   const [stompClient, setStompClient] = useState(null);
+
+  const [notificationQuantities, setNotificationQuantities] = useState({});
+  const [typing, setTyping] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const [userIdInput, setUserIdInput] = useState(null)
+
+  useEffect(() => {
+    // Tính toán và cập nhật notificationQuantities một lần cho tất cả các phòng chat
+    const newNotificationQuantities = {};
+
+    listChatOfSeller?.forEach((item) => {
+      const displayQuantity =
+        notiMessageChat?.chatroomId === item.roomId
+          ? (notiMessageChat?.buyerId === userId
+            ? notiMessageChat?.quantityBuyer
+            : notiMessageChat?.sellerId === userId
+              ? notiMessageChat?.quantitySeller
+              : '')
+          : item?.notification?.chatroomId === item.roomId
+            ? item?.notification?.buyerId === userId
+              ? item?.notification?.quantityBuyer
+              : item?.notification?.sellerId === userId
+                ? item?.notification?.quantitySeller
+                : ''
+            : '';
+
+      if (displayQuantity) {
+        newNotificationQuantities[item.roomId] = displayQuantity;
+      }
+    });
+
+    setNotificationQuantities(newNotificationQuantities);
+  }, [listChatOfSeller, notiMessageChat, userId]); // Chạy lại khi danh sách chat hoặc thông báo thay đổi
 
 
   // create room
@@ -100,6 +137,11 @@ const Chat = () => {
           const response = await axios.get(`chatroom/room/${userId}`,
             { authRequired: true },
           )
+          // console.log(response);
+          response.forEach(data => {
+            setNotiMessageChat(data.notification);
+          });
+
           setListChatOfSeller(response);
         }
       } catch (error) {
@@ -110,6 +152,7 @@ const Chat = () => {
       getAllRoomBySeller();
     }
   }, [userId])
+
 
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -123,12 +166,24 @@ const Chat = () => {
     }
   }, [])
 
-  const handleClickUserChat = (item, userChat) => {
+  const handleClickUserChat = async (item, userChat, index) => {
     setRoomId(item.roomId)
     const newPath = `/chat?item_id=${item.item_id}&buyerId=${item.userId}`;
     navigate(newPath)
     setRoomChatInfo(userChat);
     setIsChat(true);
+
+    setIsTyping(false)
+
+    setIndexChat(index)
+
+    setNotificationQuantities({});
+
+    if (userId) {
+      await axios.delete(`chatroom/notification-chat/${item.roomId}/${userId}`,
+        { authRequired: true },
+      )
+    }
   }
 
   useEffect(() => {
@@ -178,6 +233,21 @@ const Chat = () => {
           console.error('Failed to parse message:', error);
         }
       });
+
+      //====================notification chat====================
+      client.subscribe('/topic/notificationchat', (message) => {
+        const newnotification = JSON.parse(message.body);
+        setNotiMessageChat(newnotification)
+      });
+
+      // =======================user dang nhap trong o input=============
+      client.subscribe(`/topic/room/${roomId}/typing`, (message) => {
+        const typingInfo = JSON.parse(message.body);
+        setUserIdInput(typingInfo.userId);
+        setIsTyping(typingInfo.typing);
+      });
+
+
     }, (error) => {
       console.error('Error connecting to WebSocket:', error);
     })
@@ -191,62 +261,6 @@ const Chat = () => {
       }
     };
   }, [roomId])
-
-
-  // const filesArray = Array.isArray(imageFile) ? imageFile : Array.from(imageFile || []);
-  // const base64Images = await Promise.all(
-  //   filesArray?.map(file => {
-  //     return new Promise((resolve, reject) => {
-  //       const reader = new FileReader();
-  //       reader.onload = () => resolve(reader.result.split(",")[1]);
-  //       reader.onerror = reject;
-  //       reader.readAsDataURL(file);
-  //     });
-  //   }).map(promise => promise.catch(err => {
-  //     console.error("Failed to read file:", err);
-  //     return null;
-  //   }))
-  // )
-  const handleSubmitChatt = async (e) => {
-    const token = localStorage.getItem('token');
-    if (!content.trim()) {
-      console.error("Message content is empty");
-      return;
-    }
-    const formData = new FormData();
-    formData.append('content', content);
-    formData.append('roomId', roomId);
-    formData.append('sender', userId);
-    if (imageFile.length > 0) {
-      const base64Images = await Promise.all(
-        imageFile.map(file => {
-          return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result.split(",")[1]);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-          });
-        })
-      );
-
-      base64Images.forEach(image => formData.append('images', image));
-    }
-
-    const payload = Object.fromEntries(formData.entries());
-    if (stompClient && stompClient.connected && roomId) {
-      console.log("WebSocket connected");
-      try {
-        stompClient.send(`/app/sendMessage`, { Authorization: `Bearer ${token}` }, JSON.stringify(payload));
-        setContent("");
-        setSelectedImages([]);
-      } catch (error) {
-        console.error("Gửi tin nhắn thất bại:", error);
-      }
-    } else {
-      console.error("WebSocket không kết nối");
-    }
-  }
-
 
   // ------------------------------------------------------------------------------------------------
   const handleSubmitChat = async () => {
@@ -305,8 +319,6 @@ const Chat = () => {
       setImageFile(Array.from(files));
     }
 
-    // lat nua doi lai
-
     // const files = e.target.files; // Lấy danh sách các file
     // setImageFile(Array.from(files));
   }
@@ -364,7 +376,33 @@ const Chat = () => {
     }
   }, [messages]);
 
-  // console.log(messages);
+
+  //nhap tin nhan, kt user co dang nhap text hay k
+  const handleTyping = (e) => {
+    setContent(e.target.value);
+
+    // Kiểm tra xem người dùng có đang gõ chữ không
+    setTyping(true);
+    stompClient.send(
+      `/app/chat/${roomId}/typing`,
+      {},
+      JSON.stringify({ userId, typing: true })
+    );
+
+    // Đặt lại thời gian để gửi trạng thái "ngừng gõ" sau 1 khoảng thời gian
+    if (window.typingTimeout) {
+      clearTimeout(window.typingTimeout);
+    }
+    window.typingTimeout = setTimeout(() => {
+      setTyping(false);
+      stompClient.send(
+        `/app/chat/${roomId}/typing`,
+        {},
+        JSON.stringify({ userId, typing: false })
+      );
+    }, 2000);
+  };
+
 
   return (
     <section className='flex justify-center'>
@@ -375,16 +413,42 @@ const Chat = () => {
             <div className="h-[40px] mt-3 p-2 border-2 mx-3 rounded-md">
               <input className="h-full w-full border-none outline-none" placeholder="Enter chat name" />
             </div>
-            <div className=" mt-3">
+            <div className=" mt-3 ">
               {
                 listChatOfSeller?.length > 0 && listChatOfSeller?.map((item, index) => {
+
+                  const isCurrentUserInRoom = item.roomId === roomId;  // Kiểm tra người dùng có đang trong phòng này không
+                  const hasSentMessageRecently = messages.some(msg => msg.senderId === userId && msg.roomId === item.roomId);  // Kiểm tra người dùng có gửi tin nhắn chưa
+
                   return (
-                    <div key={index} onClick={() => handleClickUserChat(item, userId !== item?.userId ? item?.sellerName : item?.buyerName)} className="flex justify-between h-[85px] items-center border-b-[1px] cursor-pointer">
+                    <div key={index} onClick={() => handleClickUserChat(item, userId !== item?.userId ? item?.sellerName : item?.buyerName, index)}
+                      className={cx(`flex justify-between h-[85px] items-center border-b-[1px] cursor-pointer ${indexChat === index ? 'bg-[#33ecbe]' : ''}`)}>
                       <div className="flex items-center">
                         <div className="w-[46px] relative mr-1">
-                          <div className="absolute right-0 top-[-5px] border w-5 h-5 flex items-center justify-center rounded-full bg-red-600">
-                            <span className="text-white">2</span>
-                          </div>
+                          {
+                            (item.roomId === item?.notification?.chatroomId ||
+                              notiMessageChat?.chatroomId === item.roomId) &&
+                            !isCurrentUserInRoom &&
+                            !hasSentMessageRecently &&
+                            (
+                              // Check for seller's quantity
+                              (notificationQuantities[item.roomId] > 0 && (
+                                <div className="absolute right-0 top-[-5px] border w-5 h-5 flex items-center justify-center rounded-full bg-red-600">
+                                  <span className="text-white text-[12px]">
+                                    {(notificationQuantities[item.roomId] < 5 ? notificationQuantities[item.roomId] : '5+') || ''}
+                                  </span>
+                                </div>
+                              )) ||
+                              // Check for buyer's quantity
+                              (notificationQuantities[item.roomId] > 0 && (
+                                <div className="absolute right-0 top-[-5px] border w-5 h-5 flex items-center justify-center rounded-full bg-red-600">
+                                  <span className="text-white text-[12px]">
+                                    {(notificationQuantities[item.roomId] < 5 ? notificationQuantities[item.roomId] : '5+') || ''}
+                                  </span>
+                                </div>
+                              ))
+                            )
+                          }
                           <img alt="" src="https://cdn-icons-png.flaticon.com/512/6596/6596121.png" />
                         </div>
                         <div>
@@ -396,7 +460,7 @@ const Chat = () => {
                               notiMessage?.length > 0 && notiMessage?.map((msg, index) => {
                                 return (
                                   <span className="text-[11px]  font-weight: bold text-black">
-                                    {msg[msg.length - 1].roomId === item.roomId ? msg[msg.length - 1].content : ""}
+                                    {msg[msg.length - 1].roomId === item.setNotiMessageChat ? msg[msg.length - 1].content : ""}
                                   </span>
                                 )
                               })
@@ -415,7 +479,7 @@ const Chat = () => {
           </div>
           {
             isChat && <>
-              <div className="grid grid-rows-[60px,1fr,100px] w-full">
+              <div className="grid grid-rows-[60px,1fr,15px,55px] w-full">
                 <div className="border flex items-center">
                   <div className="flex items-center">
                     <div className="w-[46px]">
@@ -454,7 +518,7 @@ const Chat = () => {
                                       item?.images?.length > 0 && item?.images?.map((img, index) => {
                                         return (
                                           <div key={index} className="mb-1">
-                                            <img className='' src={img} alt="" />
+                                            <img className='h-[200px]' src={img} alt="" />
                                           </div>
                                         )
                                       }
@@ -474,6 +538,36 @@ const Chat = () => {
                   }
                   <div ref={endOfMessagesRef} />
                 </div>
+
+
+                <div>
+                  {isTyping && userIdInput !== userId &&
+                    (
+                      <div className={styles.wave_text_container}>
+                        <span className={styles.wave_text}>N</span>
+                        <span className={styles.wave_text}>g</span>
+                        <span className={styles.wave_text}>ư</span>
+                        <span className={styles.wave_text}>ờ</span>
+                        <span className={styles.wave_text}>i</span>
+                        <span className={styles.wave_text}>d</span>
+                        <span className={styles.wave_text}>ù</span>
+                        <span className={styles.wave_text}>n</span>
+                        <span className={styles.wave_text}>g</span>
+                        <span className={styles.wave_text}>đ</span>
+                        <span className={styles.wave_text}>a</span>
+                        <span className={styles.wave_text}>n</span>
+                        <span className={styles.wave_text}>g</span>
+                        <span className={styles.wave_text}>n</span>
+                        <span className={styles.wave_text}>h</span>
+                        <span className={styles.wave_text}>ậ</span>
+                        <span className={styles.wave_text}>p</span>
+                        <span className={styles.wave_text}>.</span>
+                        <span className={styles.wave_text}>.</span>
+                        <span className={styles.wave_text}>.</span>
+                      </div>
+                    )}
+                </div>
+
                 <div className={styles.chatBox_write}>
                   <div className={styles.chat_box_input}>
                     <div className="mr-2">
@@ -482,11 +576,12 @@ const Chat = () => {
                         <AiFillPicture size={30} className="text-[#1f7f67]" />
                       </label>
                     </div>
+
                     <div className="flex-1 bg-[#f0f0f0] rounded-lg overflow-hidden">
                       <textarea
                         className='w-full'
                         value={content}
-                        onChange={(e) => setContent(e.target.value)}
+                        onChange={handleTyping}
                         placeholder="Write.." />
                       {
                         selectedImages.length > 0 && (

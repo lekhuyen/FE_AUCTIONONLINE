@@ -112,6 +112,7 @@ const initialState = {
   productsbycategory: [],
   categories: [],
   notification: {},
+  notificationchat: {},
 }
 
 export const productSlide = createSlice({
@@ -120,6 +121,9 @@ export const productSlide = createSlice({
   reducers: {
     addNotification: (state, action) => {
       state.notification = action.payload
+    },
+    notificationchat: (state, action) => {
+      state.notificationchat = action.payload
     },
 
   },
@@ -240,6 +244,6 @@ export const productSlide = createSlice({
   },
 })
 
-export const { addNotification } = productSlide.actions
+export const { addNotification, notificationchat } = productSlide.actions
 
 export default productSlide.reducer
