@@ -274,8 +274,6 @@ const Chat = () => {
       formData.append('images', url);
     })
 
-
-
     const response = await axios.post(`chatroom/send-message`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
