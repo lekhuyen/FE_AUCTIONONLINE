@@ -10,6 +10,7 @@ import { Stomp } from '@stomp/stompjs';
 import moment from 'moment';
 import { AiFillPicture } from "react-icons/ai";
 import { IoMdCloseCircle } from "react-icons/io";
+import ControlledCarousel from '../carousel/Carousel';
 
 
 const cx = classNames.bind(styles)
@@ -49,7 +50,7 @@ const Chat = () => {
   const [stompClient, setStompClient] = useState(null);
 
   const [notificationQuantities, setNotificationQuantities] = useState({});
-  const [typing, setTyping] = useState(false);
+  // const [typing, setTyping] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [userIdInput, setUserIdInput] = useState(null)
 
@@ -380,7 +381,7 @@ const Chat = () => {
     setContent(e.target.value);
 
     // Kiểm tra xem người dùng có đang gõ chữ không
-    setTyping(true);
+    // setTyping(true);
     stompClient.send(
       `/app/chat/${roomId}/typing`,
       {},
@@ -392,7 +393,7 @@ const Chat = () => {
       clearTimeout(window.typingTimeout);
     }
     window.typingTimeout = setTimeout(() => {
-      setTyping(false);
+      // setTyping(false);
       stompClient.send(
         `/app/chat/${roomId}/typing`,
         {},
@@ -401,7 +402,11 @@ const Chat = () => {
     }, 2000);
   };
 
-
+  const slides = [
+    "https://chat.chotot.com/emptyRoom.png",
+    "https://chat.chotot.com/emptyRoom2.png",
+    "https://t4.ftcdn.net/jpg/01/52/26/99/360_F_152269999_krzVqnxRBfXeUQxNg2w3RlJHOUaHKoyu.jpg"
+  ]
   return (
     <section className='flex justify-center'>
 
@@ -617,8 +622,8 @@ const Chat = () => {
           }
           {
             !isChat && (
-              <div className="w-full h-full flex items-center">
-                <h1>chat</h1>
+              <div className="w-full h-full flex items-center justify-center">
+                <ControlledCarousel slides={slides} />
               </div>
             )
           }
