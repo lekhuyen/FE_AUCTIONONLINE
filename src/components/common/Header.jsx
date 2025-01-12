@@ -4,7 +4,6 @@ import styles from '../chat/chat.module.scss'
 
 // design
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
-import { IoSearchOutline } from "react-icons/io5";
 import { Container, CustomNavLink, CustomNavLinkList, ProfileCard } from "../../router";
 import { User1 } from "../hero/Hero";
 import { menulists } from "../../utils/data";
@@ -35,6 +34,7 @@ export const Header = () => {
   const [isLogin, setIsLogin] = useState(localStorage.getItem('isIntrospect') || false)
   const { triggerLoginExpired } = useLoginExpired();
   const [notifications, setNotifications] = useState([])
+  const [notificationsLength, setNotificationsLength] = useState([])
   const [showNotification, setShowNotification] = useState(false)
   const [currentUser, setCurrentUser] = useState(null)
   const [notificationProduct, setNotificationProduct] = useState([])
@@ -113,6 +113,7 @@ export const Header = () => {
 
         if (response.code === 0) {
           setNotifications(response.result)
+          setNotificationsLength(response.result)
         }
       } catch (error) {
         console.log(error);
@@ -122,6 +123,8 @@ export const Header = () => {
 
   useEffect(() => {
     setNotifications(prev => [notification, ...prev])
+    setNotificationsLength(prev => [notification, ...prev])
+
   }, [notification])
 
   const hanldeReadedNotification = async (id) => {
@@ -487,28 +490,29 @@ export const Header = () => {
                   onClick={() => {
                     setShowNotification(!showNotification)
                     setshowNotifiProduct(false)
+                    setNotificationsLength([])
                   }} className="relative cursor-pointer">
                   {isLoggedIn && <IoMdNotificationsOutline size={23} className={`${isScrolled || !isHomePage ? "text-black" : "text-white"}`} />}
                   {
-                    notifications.filter(notification => notification.sellerIsRead === false && notification.sellerId === userId).length > 0 && (
+                    notificationsLength.filter(notification => notification.sellerIsRead === false && notification.sellerId === userId).length > 0 && (
                       <div className="absolute top-[-10px] right-[-10px] w-5 h-5 border rounded-full bg-red-600 
                     flex items-center justify-center text-white text-[13px]">
-                        {notifications.filter(notification => notification.sellerIsRead === false && notification.sellerId === userId).length}
+                        {notificationsLength.filter(notification => notification.sellerIsRead === false && notification.sellerId === userId).length}
                       </div>
                     )
                   }
                   {
-                    notifications.filter(notification => notification.buyerIsRead === false && notification.buyerId === userId).length > 0 && (
+                    notificationsLength.filter(notification => notification.buyerIsRead === false && notification.buyerId === userId).length > 0 && (
                       <div className="absolute top-[-10px] right-[-10px] w-5 h-5 border rounded-full bg-red-600 
                     flex items-center justify-center text-white text-[13px]">
-                        {notifications.filter(notification => notification.buyerIsRead === false && notification.buyerId === userId).length}
+                        {notificationsLength.filter(notification => notification.buyerIsRead === false && notification.buyerId === userId).length}
                       </div>
                     )
                   }
                   {/* notification */}
                   {
                     showNotification && (
-                      <div className="absolute w-[360px] top-[33px] overflow-hidden bg-white shadow-lg rounded-sm p-2">
+                      <div className="absolute w-[360px] top-[33px] right-1 overflow-hidden bg-white shadow-lg rounded-sm p-2">
                         <div className="w-full"><h3 className="text-[24px]">Thong bao</h3></div>
                         <div className={clsx(styles.custom_scroll, 'overflow-y-auto max-h-[400px]')}>
                           {notifications?.length > 0 && notifications?.map((notifi, index) => (
