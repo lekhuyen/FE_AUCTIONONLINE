@@ -122,6 +122,7 @@ export const Header = () => {
   }
 
   useEffect(() => {
+
     setNotifications(prev => [notification, ...prev])
     setNotificationsLength(prev => [notification, ...prev])
 
@@ -497,7 +498,9 @@ export const Header = () => {
                     notificationsLength.filter(notification => notification.sellerIsRead === false && notification.sellerId === userId).length > 0 && (
                       <div className="absolute top-[-10px] right-[-10px] w-5 h-5 border rounded-full bg-red-600 
                     flex items-center justify-center text-white text-[13px]">
-                        {notificationsLength.filter(notification => notification.sellerIsRead === false && notification.sellerId === userId).length}
+                        {notificationsLength.filter(notification => notification.sellerIsRead === false && notification.sellerId === userId).length > 5 ? '5+' :
+                          notificationsLength.filter(notification => notification.sellerIsRead === false && notification.sellerId === userId).length
+                        }
                       </div>
                     )
                   }
@@ -505,7 +508,9 @@ export const Header = () => {
                     notificationsLength.filter(notification => notification.buyerIsRead === false && notification.buyerId === userId).length > 0 && (
                       <div className="absolute top-[-10px] right-[-10px] w-5 h-5 border rounded-full bg-red-600 
                     flex items-center justify-center text-white text-[13px]">
-                        {notificationsLength.filter(notification => notification.buyerIsRead === false && notification.buyerId === userId).length}
+                        {notificationsLength.filter(notification => notification.buyerIsRead === false && notification.buyerId === userId).length > 5 ? '5+' :
+                          notificationsLength.filter(notification => notification.buyerIsRead === false && notification.buyerId === userId).length
+                        }
                       </div>
                     )
                   }
