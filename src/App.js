@@ -33,9 +33,11 @@ import { introspect, logout } from "./redux/slide/authSlide.js";
 import Swal from "sweetalert2";
 import Loading from "./components/Loading/index.js";
 import Chat from "./components/chat/chat.js";
-import { getAllProduct } from "./redux/slide/productSlide.js";
+import { addNotification, getAllProduct } from "./redux/slide/productSlide.js";
 import ProductPage from "./admin/product/ProductPage.js";
 import SearchPageProduct from "./screens/product/SearchPageProduct.js";
+import SockJS from "sockjs-client";
+import { Stomp } from "@stomp/stompjs";
 
 
 function App() {
@@ -44,6 +46,8 @@ function App() {
   const { token } = useSelector(state => state.auth)
   const { isLoading } = useSelector(state => state.product)
   // const { isLoading: isLoadingUser } = useSelector(state => state.auth)
+  const [notification, setNotification] = useState('')
+  const [stompClient, setStompClient] = useState(null);
 
 
   useEffect(() => {
@@ -83,6 +87,51 @@ function App() {
     // toast.error("Login expired, please login again!", { toastId: 'login-expired' });
 
   }, [isIntrospect, navigate, dispatch, alertShown])
+
+
+  // dau gia
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const socketFactory = () => {
+      return new SockJS('http://localhost:8080/ws', null, {
+        withCredentials: true,
+      });
+    };
+
+    const client = Stomp.over(socketFactory);
+
+    client.connect({ Authorization: `Bearer ${token}` }, () => {
+      // console.log("Connected to WebSocket");
+
+
+      client.subscribe('/topic/notification', (message) => {
+        const newNotification = JSON.parse(message.body);
+        // console.log(newNotification);
+
+        setNotification(newNotification);
+      });
+    }, (error) => {
+      console.error("WebSocket connection error:", error);
+    });
+
+    setStompClient(client);
+
+    return () => {
+      if (client.connected) {
+        client.disconnect(() => {
+          console.log("Disconnected from WebSocket");
+        });
+      }
+    };
+
+
+  }, [])
+
+  useEffect(() => {
+    if (notification) {
+      dispatch(addNotification(notification))
+    }
+  }, [dispatch, notification])
 
   return (
     <>

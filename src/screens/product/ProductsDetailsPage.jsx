@@ -27,7 +27,7 @@ export const ProductsDetailsPage = () => {
   const [priceBidding, setPriceBidding] = useState('')
   const [currentPrice, setCurrentPrice] = useState(0)
   const [stompClient, setStompClient] = useState(null);
-  const [notification, setNotification] = useState('')
+  // const [notification, setNotification] = useState('')
 
   const { isLoading } = useSelector(state => state.product)
 
@@ -144,12 +144,12 @@ export const ProductsDetailsPage = () => {
         const newCategory = JSON.parse(message.body);
         setCurrentPrice(newCategory);
       });
-      client.subscribe('/topic/notification', (message) => {
-        const newNotification = JSON.parse(message.body);
-        // console.log(newNotification);
+      // client.subscribe('/topic/notification', (message) => {
+      //   const newNotification = JSON.parse(message.body);
+      //   // console.log(newNotification);
 
-        setNotification(newNotification);
-      });
+      //   setNotification(newNotification);
+      // });
     }, (error) => {
       console.error("WebSocket connection error:", error);
     });
@@ -197,11 +197,7 @@ export const ProductsDetailsPage = () => {
 
   }
 
-  useEffect(() => {
-    if (notification) {
-      dispatch(addNotification(notification))
-    }
-  }, [dispatch, notification])
+
 
 
   //call api khi countdown = 0
