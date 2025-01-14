@@ -12,23 +12,22 @@ export const ProductCard = ({ item }) => {
   const [timeLeft, setTimeLeft] = useState(null);
 
   useEffect(() => {
-    if (item?.end_date) {
+    if (item?.start_date) {
       const updateTime = () => calculateTimeLeft(item?.start_date, setTimeLeft)
       updateTime()
       const timer = setInterval(updateTime, 1000);
       return () => clearInterval(timer);
     }
-  }, [item?.end_date]);
+  }, [item?.start_date]);
 
   return (
     <>
       <div className="bg-white shadow-s1 rounded-xl p-3 relative">
         {
           timeLeft && (
-            <div className="flex text-center 
-                            absolute left-[50%] 
-                            top-[50%] translate-x-[-50%] shadow-lg
-                            translate-y-[-70%] w-[150px] h-[30px] z-20 justify-center items-center rounded-2xl bg-white"
+            <div className="flex text-center absolute left-[50%] 
+            top-[50%] translate-x-[-50%] shadow-lg translate-y-[-70%] 
+            w-[150px] h-[30px] z-20 justify-center items-center rounded-2xl bg-white"
             >
               {
                 timeLeft?.days && (
