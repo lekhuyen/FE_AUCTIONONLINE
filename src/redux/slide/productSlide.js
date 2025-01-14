@@ -72,7 +72,7 @@ export const getAllCategory = createAsyncThunk("category/getallcategory", async 
 export const auctionsuccess = createAsyncThunk("category/auctionsuccess", async (data, thunkAPI) => {
   try {
     const response = await axios.post(`/bidding/success/${data.productId}/${data.sellerId}`, null, { authRequired: true })
-    // console.log(response);
+    console.log(response);
 
     return response
   } catch (error) {
