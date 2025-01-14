@@ -10,7 +10,7 @@ import { calculateTimeLeft, useLoginExpired } from "../../utils/helper";
 import { toast } from "react-toastify";
 import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addNotification, auctionsuccess } from "../../redux/slide/productSlide";
 
 
@@ -28,6 +28,8 @@ export const ProductsDetailsPage = () => {
   const [currentPrice, setCurrentPrice] = useState(0)
   const [stompClient, setStompClient] = useState(null);
   const [notification, setNotification] = useState('')
+
+  const { isLoading } = useSelector(state => state.product)
 
   const getProduct = async () => {
     try {
@@ -218,8 +220,9 @@ export const ProductsDetailsPage = () => {
       try {
         // const response = await axios.post(`bidding/success/${productDetail.item_id}/${userId}`, null, { authRequired: true })
         dispatch(auctionsuccess({ productId: id, sellerId: userId }))
-
-        toast.success("Ban da cho qua thanh cong")
+        if (!isLoading) {
+          toast.success("Ban da cho qua thanh cong")
+        }
 
         getProduct()
       } catch (error) {
