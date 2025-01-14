@@ -2,11 +2,12 @@ import { CategoryDropDown, Caption, PrimaryButton, Title } from "../../router";
 import axios from '../../utils/axios'
 import { commonClassNameOfInput } from "../../components/common/Design";
 import { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { jwtDecode } from "jwt-decode";
 import { createProduct } from "../../redux/slide/productSlide";
 import { validateForm } from "../../utils/validation";
 import { useLoginExpired } from "../../utils/helper";
+
 
 const initialState = {
   item_name: "",
@@ -32,6 +33,7 @@ export const AddProduct = () => {
   const { triggerLoginExpired } = useLoginExpired();
   const dispatch = useDispatch()
   const fileInputRef = useRef(null);
+
 
 
   const getCategories = async () => {
@@ -94,6 +96,10 @@ export const AddProduct = () => {
       }
     }
   }, [])
+
+
+
+
 
   const handleCreateProduct = (e) => {
     e.preventDefault()

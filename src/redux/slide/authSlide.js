@@ -56,7 +56,7 @@ const initialState = {
   isError: false,
   isSuccess: false,
   isLoading: false,
-  isLoggedIn: false,
+  isLoggedIn: localStorage.getItem("isIntrospect") || false,
   message: "",
   token: localStorage.getItem('token') || null,
   isRegister: false,
@@ -146,7 +146,7 @@ export const authSlide = createSlice({
     });
 
     builder.addCase(introspect.fulfilled, (state, action) => {
-      state.isLoggedIn = false;
+      state.isLoggedIn = true;
       // state.isIntrospect = 
       localStorage.setItem('isIntrospect', action.payload);
 

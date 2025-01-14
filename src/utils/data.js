@@ -6,8 +6,9 @@ export const menulists = [
   },
   {
     id: 2,
-    path: "/product",
+    // path: "/product",
     link: "product",
+    children: true,
   },
   {
     id: 3,
