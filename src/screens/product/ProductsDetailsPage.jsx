@@ -10,7 +10,7 @@ import { calculateTimeLeft, useLoginExpired } from "../../utils/helper";
 import { toast } from "react-toastify";
 import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addNotification, auctionsuccess } from "../../redux/slide/productSlide";
 
 
@@ -27,7 +27,9 @@ export const ProductsDetailsPage = () => {
   const [priceBidding, setPriceBidding] = useState('')
   const [currentPrice, setCurrentPrice] = useState(0)
   const [stompClient, setStompClient] = useState(null);
-  const [notification, setNotification] = useState('')
+  // const [notification, setNotification] = useState('')
+
+  const { isLoading } = useSelector(state => state.product)
 
   const getProduct = async () => {
     try {
@@ -142,12 +144,12 @@ export const ProductsDetailsPage = () => {
         const newCategory = JSON.parse(message.body);
         setCurrentPrice(newCategory);
       });
-      client.subscribe('/topic/notification', (message) => {
-        const newNotification = JSON.parse(message.body);
-        // console.log(newNotification);
+      // client.subscribe('/topic/notification', (message) => {
+      //   const newNotification = JSON.parse(message.body);
+      //   // console.log(newNotification);
 
-        setNotification(newNotification);
-      });
+      //   setNotification(newNotification);
+      // });
     }, (error) => {
       console.error("WebSocket connection error:", error);
     });
@@ -195,11 +197,7 @@ export const ProductsDetailsPage = () => {
 
   }
 
-  useEffect(() => {
-    if (notification) {
-      dispatch(addNotification(notification))
-    }
-  }, [dispatch, notification])
+
 
 
   //call api khi countdown = 0
@@ -218,8 +216,9 @@ export const ProductsDetailsPage = () => {
       try {
         // const response = await axios.post(`bidding/success/${productDetail.item_id}/${userId}`, null, { authRequired: true })
         dispatch(auctionsuccess({ productId: id, sellerId: userId }))
-
-        toast.success("Ban da cho qua thanh cong")
+        if (!isLoading) {
+          toast.success("Ban da cho qua thanh cong")
+        }
 
         getProduct()
       } catch (error) {
