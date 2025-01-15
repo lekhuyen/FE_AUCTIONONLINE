@@ -54,3 +54,8 @@ export { UserProfile } from "../screens/auth/UserProfile";
 
 export { Contact } from "../Contact/Contact"
 export {AboutUsComponents} from "../Contact/AboutUsComponents"
+
+export {AdminContact} from "../admin/Contact/AdminContact"
+export {ContactDetailPage} from "../admin/Contact/ContactDetailPage"
+
+
