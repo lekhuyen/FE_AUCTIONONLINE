@@ -1,42 +1,20 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';  // Import useState and useEffect hooks from React
+import axios from 'axios';  // Import axios for making HTTP requests
 
 // Main title component
-const AboutUsMainTitle = () => {
-    return (
-        <div style={styles.container}>
-            <h1 style={styles.title}>About Us</h1>
-        </div>
-    );
-};
+const AboutUsMainTitle = ({ title }) => (
+    <div style={styles.container}>
+        <h1 style={styles.title}>{title}</h1>
+    </div>
+);
 
 // Description component
-const AboutUsDescription = () => {
-    return (
-        <div style={styles.descriptionContainer}>
-            <p style={styles.descriptionText}>
-                Welcome to <strong>Bit Out</strong>, the leading online auction platform where buyers and sellers come
-                together to participate in thrilling bidding experiences. We are a passionate team dedicated to
-                revolutionizing the way people engage in auctions, providing a seamless, secure, and exciting platform
-                for all types of items—whether you're looking to acquire unique collectibles, rare antiques, or the
-                latest tech gadgets.
-            </p>
-            <p style={styles.descriptionText}>
-                Our mission is to empower individuals and businesses alike by offering a transparent, user-friendly
-                environment where users can bid on products they love while ensuring that every transaction is smooth
-                and reliable. We take pride in providing an innovative, inspiring platform that fosters competition,
-                excitement, and fairness, making it accessible to both first-time bidders and seasoned auction
-                enthusiasts.
-            </p>
-            <p style={styles.descriptionText}>
-                At <strong>Bit Out</strong>, we understand the thrill of the auction experience, and we're committed to
-                delivering exceptional customer service, cutting-edge technology, and secure payment options. Our team
-                works tirelessly to bring you the most exciting, diverse range of auctions, ensuring you never miss out
-                on an opportunity to get your hands on something extraordinary. Join us today and experience the future
-                of online auctions!
-            </p>
-        </div>
-    );
-};
+const AboutUsDescription = ({ description }) => (
+    <div style={styles.descriptionContainer}>
+        <p style={styles.descriptionText}>{description}</p>
+    </div>
+);
+
 
 // AboutUsCard Component with image and text
 const AboutUsCard = ({ title, bodyText, imageUrl }) => {
@@ -88,14 +66,47 @@ const AccordionItem = ({ title, content }) => {
 
 // AboutUsComponents to render the whole About Us section
 export const AboutUsComponents = () => {
+
+    const [aboutUsData, setAboutUsData] = useState(null);
+
+    useEffect(() => {
+        // Fetch About Us data from the backend
+        axios.get('http://localhost:8080/api/aboutus')
+            .then((response) => {
+                // Set the fetched data to state
+                setAboutUsData(response.data);
+            })
+            .catch((error) => {
+                console.error("Error fetching About Us data", error);
+            });
+    }, []);
+
+    // Check if data is still loading
+    if (!aboutUsData) {
+        return <div>Loading...</div>;
+    }
+
     return (
         <div style={pageStyles.container}>
-            <AboutUsMainTitle />
-            <AboutUsDescription />
+            {/* Render dynamic content */}
+            <AboutUsMainTitle title={aboutUsData[0]?.title} />
+            <AboutUsDescription description={aboutUsData[0]?.description} />
 
             <div style={pageStyles.imageRow}>
-                <img src="https://dashboard.codeparrot.ai/api/assets/Z1adTowTRzcMVVyW" alt="Placeholder" style={pageStyles.image} />
-                <img src="https://dashboard.codeparrot.ai/api/assets/Z1adTowTRzcMVVyX" alt="Placeholder" style={pageStyles.image} />
+                {aboutUsData[0]?.aboutImage1 && (
+                    <img
+                        src={`http://localhost:8080/api/aboutus/AboutUsImages/${aboutUsData[0]?.aboutImage1}`} // Backend image path
+                        alt="About Us Image 1"
+                        style={pageStyles.image}
+                    />
+                )}
+                {aboutUsData[0]?.aboutImage2 && (
+                    <img
+                        src={`http://localhost:8080/api/aboutus/AboutUsImages/${aboutUsData[0]?.aboutImage2}`} // Backend image path
+                        alt="About Us Image 2"
+                        style={pageStyles.image}
+                    />
+                )}
             </div>
 
             <h2 style={pageStyles.subheading}>Why Choose Us?</h2>
