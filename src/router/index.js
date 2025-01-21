@@ -1,3 +1,5 @@
+import {AdminAboutUs} from "../admin/AboutUs/AdminAboutUs";
+
 export { PrivateRoute } from "./PrivateRoute";
 export { ScrollToTop } from "../utils/ScrollToTop";
 export { NotFound } from "../components/common/NotFound";
@@ -52,10 +54,14 @@ export { Login } from "../screens/auth/Login";
 export { LoginAsSeller } from "../screens/auth/LoginAsSeller";
 export { UserProfile } from "../screens/auth/UserProfile";
 
+// Contact
 export { Contact } from "../Contact/Contact"
-export {AboutUsComponents} from "../Contact/AboutUsComponents"
-
 export {AdminContact} from "../admin/Contact/AdminContact"
 export {ContactDetailPage} from "../admin/Contact/ContactDetailPage"
+
+
+//AboutUs
+export {AboutUsComponents} from "../Contact/AboutUsComponents"
+export {AdminAboutUs} from "../admin/AboutUs/AdminAboutUs"
 
 
