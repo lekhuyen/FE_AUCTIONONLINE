@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import {AdminAboutUsCard} from "./AdminAboutUsCard";
 
 export const AdminAboutUs = () => {
     const [aboutUsData, setAboutUsData] = useState(null);
@@ -10,6 +11,8 @@ export const AdminAboutUs = () => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [hasChanges, setHasChanges] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
+    const [selectedCard, setSelectedCard] = useState(null);
+
 
     useEffect(() => {
         axios.get('http://localhost:8080/api/aboutus')
@@ -118,6 +121,10 @@ export const AdminAboutUs = () => {
         handleDiscardChanges();
     };
 
+    const handleCardSelect = (card) => {
+        setSelectedCard(card);
+    };
+
     return (
         <div style={styles.pageContainer}>
             {aboutUsData !== null ? (
@@ -184,13 +191,19 @@ export const AdminAboutUs = () => {
                             </div>
                         </div>
                     )}
+
+                    {selectedCard && <AdminAboutUsCard card={selectedCard} />}
                 </div>
+
+
             ) : (
                 <div>Loading...</div>
             )}
         </div>
     );
 };
+
+
 
 // Styles (same as before)
 const styles = {

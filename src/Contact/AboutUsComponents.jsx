@@ -15,19 +15,17 @@ const AboutUsDescription = ({ description }) => (
     </div>
 );
 
-
-// AboutUsCard Component with image and text
-const AboutUsCard = ({ title, bodyText, imageUrl }) => {
+const AboutUsCard = ({ title, description, aboutCardImage }) => {
     return (
         <div style={styles.card}>
             <img
-                src={imageUrl}
+                src={`http://localhost:8080/api/aboutuscard/AboutUsImages/${aboutCardImage}`}  // Adjusting image URL path
                 alt={title}
                 style={styles.image}
             />
             <div style={styles.body}>
-                <h3 style={styles.cardTitle}>{title}</h3> {/* Changed to h3 and updated style */}
-                <p style={styles.bodyText}>{bodyText}</p>
+                <h3 style={styles.cardTitle}>{title}</h3>
+                <p style={styles.bodyText}>{description}</p>
             </div>
         </div>
     );
@@ -63,21 +61,31 @@ const AccordionItem = ({ title, content }) => {
     );
 };
 
-
 // AboutUsComponents to render the whole About Us section
 export const AboutUsComponents = () => {
 
     const [aboutUsData, setAboutUsData] = useState(null);
+    const [aboutUsCardData, setAboutUsCardData] = useState([]);
 
     useEffect(() => {
         // Fetch About Us data from the backend
         axios.get('http://localhost:8080/api/aboutus')
             .then((response) => {
-                // Set the fetched data to state
                 setAboutUsData(response.data);
             })
             .catch((error) => {
                 console.error("Error fetching About Us data", error);
+            });
+    }, []);
+
+    useEffect(() => {
+        // Fetch About Us Card data from the backend
+        axios.get('http://localhost:8080/api/aboutuscard')
+            .then((response) => {
+                setAboutUsCardData(response.data);  // Set About Us Card data to state
+            })
+            .catch((error) => {
+                console.error("Error fetching About Us Card data", error);
             });
     }, []);
 
@@ -89,8 +97,8 @@ export const AboutUsComponents = () => {
     return (
         <div style={pageStyles.container}>
             {/* Render dynamic content */}
-            <AboutUsMainTitle title={aboutUsData[0]?.title} />
-            <AboutUsDescription description={aboutUsData[0]?.description} />
+            <AboutUsMainTitle title={aboutUsData[0]?.title}/>
+            <AboutUsDescription description={aboutUsData[0]?.description}/>
 
             <div style={pageStyles.imageRow}>
                 {aboutUsData[0]?.aboutImage1 && (
@@ -111,44 +119,23 @@ export const AboutUsComponents = () => {
 
             <h2 style={pageStyles.subheading}>Why Choose Us?</h2>
             <div style={pageStyles.cardRow}>
-                <AboutUsCard
-                    title="Secure & Reliable"
-                    bodyText="We provide a secure and trustworthy environment for bidding, ensuring that your personal information and transactions are always protected."
-                    imageUrl="/images/AboutUs/security.png"
-                />
-                <AboutUsCard
-                    title="Exciting Bidding Experience"
-                    bodyText="Our dynamic auction platform delivers an exciting and engaging experience for all users, whether you're new to bidding or an experienced pro."
-                    imageUrl="/images/AboutUs/bidding.png"
-                />
-                <AboutUsCard
-                    title="Variety of Items"
-                    bodyText="From collectibles to the latest tech, Bit Out offers a wide range of auction categories to fit your interests and needs."
-                    imageUrl="/images/AboutUs/item.png"
-                />
-            </div>
-            <div style={pageStyles.cardRow}>
-                <AboutUsCard
-                    title="Transparent Process"
-                    bodyText="We maintain a transparent auction process with clear guidelines and no hidden fees, so you always know exactly what you're bidding on."
-                    imageUrl="/images/AboutUs/process.png"
-                />
-                <AboutUsCard
-                    title="24/7 Customer Support"
-                    bodyText="Our customer support team is always available to help with any questions or issues you may encounter during your auction experience."
-                    imageUrl="/images/AboutUs/customer.png"
-                />
-                <AboutUsCard
-                    title="Community Engagement"
-                    bodyText="Join a vibrant community of auction enthusiasts, share tips, and learn from fellow bidders while engaging in exciting auctions."
-                    imageUrl="/images/AboutUs/community.jpg"
-                />
+                {aboutUsCardData.map((card, index) => (
+                    <AboutUsCard
+                        key={index}
+                        title={card.title}
+                        description={card.description}
+                        aboutCardImage={card.aboutCardImage}
+                    />
+                ))}
             </div>
 
             <div style={pageStyles.accordionSection}>
-                <AccordionItem title="What types of auctions can I participate in?" content="We offer a wide variety of auctions, from collectibles to electronics, and much more!" />
-                <AccordionItem title="How can I place a bid?" content="Bidding is easy! Simply sign up, browse auctions, and place your bid on any item you're interested in." />
-                <AccordionItem title="Is my payment information secure?" content="Yes! We use top-tier security measures to ensure all your personal and payment details are kept safe." />
+                <AccordionItem title="What types of auctions can I participate in?"
+                               content="We offer a wide variety of auctions, from collectibles to electronics, and much more!"/>
+                <AccordionItem title="How can I place a bid?"
+                               content="Bidding is easy! Simply sign up, browse auctions, and place your bid on any item you're interested in."/>
+                <AccordionItem title="Is my payment information secure?"
+                               content="Yes! We use top-tier security measures to ensure all your personal and payment details are kept safe."/>
             </div>
         </div>
     );
@@ -190,7 +177,6 @@ const styles = {
         borderRadius: '8px',
         padding: '24px',
         backgroundColor: '#ffffff',
-        maxWidth: '325px',
         boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
     },
     image: {
@@ -268,8 +254,8 @@ const pageStyles = {
         marginBottom: '32px',
     },
     cardRow: {
-        display: 'flex',
-        justifyContent: 'center',
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',  // Ensures 3 cards per row
         gap: '32px',
         marginBottom: '32px',
     },
