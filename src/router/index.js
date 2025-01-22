@@ -63,7 +63,7 @@ export {ContactDetailPage} from "../admin/Contact/ContactDetailPage"
 //AboutUs
 export {AboutUsComponents} from "../Contact/AboutUsComponents"
 export {AdminAboutUs} from "../admin/AboutUs/AdminAboutUs"
-export {AdminAboutUsCard} from "../admin/AboutUs/AdminAboutUsCard"
+
 
 
 

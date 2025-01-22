@@ -239,18 +239,6 @@ function App() {
             }
         />
         <Route
-            path="/AdminAboutUsCard"
-            element={
-              <PrivateRoute>
-                <Layout>
-                  <DashboardLayout>
-                    <AdminAboutUsCard />
-                  </DashboardLayout>
-                </Layout>
-              </PrivateRoute>
-            }
-        />
-        <Route
           path="/admin/income"
           element={
             <PrivateRoute>
