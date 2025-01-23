@@ -25,7 +25,7 @@ import {
   WinningBidList,
   NotFound,
   ScrollToTop,
-  PrivateRoute, Contact, AboutUsComponents, AdminContact, ContactDetailPage,
+  PrivateRoute, Contact, AboutUsComponents, AdminContact, ContactDetailPage, AdminAboutUs, AdminAboutUsCard,
 } from "./router/index.js";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -189,7 +189,7 @@ function App() {
           }
         />
         <Route
-          path="/test"
+          path="/aboutus"
           element={
             <Layout>
               <AboutUsComponents />
@@ -225,6 +225,18 @@ function App() {
               </Layout>
             </PrivateRoute>
           }
+        />
+        <Route
+            path="/AdminAboutUs"
+            element={
+              <PrivateRoute>
+                <Layout>
+                  <DashboardLayout>
+                    <AdminAboutUs />
+                  </DashboardLayout>
+                </Layout>
+              </PrivateRoute>
+            }
         />
         <Route
           path="/admin/income"
