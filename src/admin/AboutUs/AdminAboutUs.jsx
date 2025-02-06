@@ -237,20 +237,21 @@ const AdminAboutUsCard = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [image1, setImage1] = useState(null);
-    const [initialImage, setInitialImage] = useState(null); // Store the initial image
-    const [initialImageFileName, setInitialImageFileName] = useState(null); // Store the initial image file name
+    const [initialImage, setInitialImage] = useState(null);
+    const [initialImageFileName, setInitialImageFileName] = useState(null);
     const [hasChanges, setHasChanges] = useState(false);
-    const [isEditMode, setIsEditMode] = useState(false);
+    const [isEditMode, setIsEditMode] = useState(false); // True when editing an existing card
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [aboutUsCardData, setAboutUsCardData] = useState([]);
     const [cardToDelete, setCardToDelete] = useState(null);
-    const [editingCardId, setEditingCardId] = useState(null); // Track the card being edited by ID
+    const [editingCardId, setEditingCardId] = useState(null);
+    const [openModal, setOpenModal] = useState(false); // New state for managing modal visibility
 
-    // Fetch About Us Card data from the backend when component mounts
     useEffect(() => {
+        // Fetch data for the About Us Cards
         axios.get('http://localhost:8080/api/aboutuscard')
             .then((response) => {
-                setAboutUsCardData(response.data);  // Set About Us Card data to state
+                setAboutUsCardData(response.data);
             })
             .catch((error) => {
                 console.error("Error fetching About Us Card data", error);
@@ -266,20 +267,24 @@ const AdminAboutUsCard = () => {
     };
 
     const handleSave = () => {
+        // Validation for empty title and description
+        if (!title || !description) {
+            alert("Title and Description cannot be empty.");
+            return;
+        }
+
         const formData = new FormData();
         formData.append('title', title);
         formData.append('description', description);
 
-        // If a new image is uploaded, append it as 'file1'
         if (image1) {
             formData.append('file1', image1); // Send new image
         } else if (initialImageFileName) {
-            // Include the existing image name if no new image is uploaded
             formData.append('aboutCardImage', initialImageFileName);
         }
 
         const url = isEditMode
-            ? `http://localhost:8080/api/aboutuscard/${editingCardId}`  // Use `id` for edit
+            ? `http://localhost:8080/api/aboutuscard/${editingCardId}`
             : 'http://localhost:8080/api/aboutuscard';
 
         const method = isEditMode ? 'put' : 'post';
@@ -291,13 +296,11 @@ const AdminAboutUsCard = () => {
         })
             .then(() => {
                 setHasChanges(false);
-                fetchAboutUsCardData();  // Refresh the list after save
-                setTitle('');
-                setDescription('');
-                setImage1(null);
-                setInitialImage(null);  // Reset initial image as well
-                setInitialImageFileName(null); // Reset initial image file name
+                fetchAboutUsCardData();
+                // Reset form fields after saving
+                resetForm();
                 setIsEditMode(false);
+                setOpenModal(false); // Close the modal after saving
             })
             .catch((error) => {
                 console.error("Error saving About Us data", error);
@@ -309,22 +312,14 @@ const AdminAboutUsCard = () => {
         if (hasChanges) {
             const userConfirmed = window.confirm("You have unsaved changes. Are you sure you want to discard them?");
             if (userConfirmed) {
-                setHasChanges(false);
-                setTitle('');
-                setDescription('');
-                setImage1(null);
-                setInitialImage(null); // Reset initial image as well
-                setInitialImageFileName(null); // Reset initial image file name
+                resetForm();
                 setIsEditMode(false);
+                setOpenModal(false); // Close the modal if changes are discarded
             }
         } else {
-            // Reset only if there are no changes
-            setTitle('');
-            setDescription('');
-            setImage1(null);
-            setInitialImage(null); // Reset initial image as well
-            setInitialImageFileName(null); // Reset initial image file name
+            resetForm();
             setIsEditMode(false);
+            setOpenModal(false); // Close the modal if no changes
         }
     };
 
@@ -332,49 +327,71 @@ const AdminAboutUsCard = () => {
         setIsEditMode(true);
         setTitle(card.title);
         setDescription(card.description);
-        setInitialImage(card.aboutCardImage); // Store the initial image
-        setInitialImageFileName(card.aboutCardImage); // Store the initial image file name for reference
-        setEditingCardId(card.id); // Store the ID for editing
+        setInitialImage(card.aboutCardImage);
+        setInitialImageFileName(card.aboutCardImage);
+        setEditingCardId(card.id);
+        setOpenModal(true); // Open the modal when editing an existing card
     };
 
     const handleDelete = () => {
         axios.delete(`http://localhost:8080/api/aboutuscard/${cardToDelete?.id}`)
             .then(() => {
                 alert("Card deleted successfully!");
-                // Refresh the list after delete
                 fetchAboutUsCardData();
+                setOpenDeleteModal(false);
             })
             .catch((error) => {
                 console.error("Error deleting About Us Card", error);
                 alert("Failed to delete card.");
             });
-        setOpenDeleteModal(false);
     };
 
     const fetchAboutUsCardData = () => {
         axios.get('http://localhost:8080/api/aboutuscard')
             .then((response) => {
-                setAboutUsCardData(response.data);  // Set About Us Card data to state
+                setAboutUsCardData(response.data);
             })
             .catch((error) => {
                 console.error("Error fetching About Us Card data", error);
             });
     };
 
+    const resetForm = () => {
+        setTitle('');
+        setDescription('');
+        setImage1(null);
+        setInitialImage(null);
+        setInitialImageFileName(null);
+    };
+
     if (!aboutUsCardData.length) {
-        return <div>Loading...</div>; // Show loading state while data is being fetched
+        return <div>Loading...</div>;
     }
 
     return (
         <div style={aboutusstyles.container}>
             <h2>About Us Cards</h2>
 
+            {/* Add Card Button */}
+            <Box mb={2}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => {
+                        setIsEditMode(false); // Set to 'false' to indicate adding new card
+                        resetForm();
+                        setOpenModal(true); // Open the modal when adding a new card
+                    }}
+                >
+                    Add New Card
+                </Button>
+            </Box>
+
             {/* Render Cards in a grid layout */}
             <Grid container spacing={2}>
                 {aboutUsCardData.map((card) => (
                     <Grid item xs={12} sm={6} md={4} key={card.id}>
                         <Card style={aboutusstyles.card}>
-                            {/* Image */}
                             <CardMedia
                                 component="img"
                                 height="200"
@@ -415,7 +432,7 @@ const AdminAboutUsCard = () => {
             </Grid>
 
             {/* Edit/Add Card Modal */}
-            <Modal open={isEditMode || hasChanges} onClose={handleDiscardChanges}>
+            <Modal open={openModal} onClose={handleDiscardChanges}>
                 <Box sx={aboutusstyles.modalBox}>
                     <h2>{isEditMode ? "Edit About Us Card" : "Add About Us Card"}</h2>
                     <TextField
@@ -431,7 +448,6 @@ const AdminAboutUsCard = () => {
                         onChange={(e) => setDescription(e.target.value)}
                         style={aboutusstyles.textarea}
                     />
-                    {/* Display current image if exists */}
                     {initialImage && (
                         <div>
                             <img
@@ -441,7 +457,6 @@ const AdminAboutUsCard = () => {
                             />
                         </div>
                     )}
-                    {/* File input for image upload */}
                     <input type="file" accept="image/*" onChange={handleImageChange} style={aboutusstyles.fileInput} />
                     <Box mt={2} style={aboutusstyles.buttonContainer}>
                         <Button variant="contained" onClick={handleSave} style={aboutusstyles.saveButton}>
@@ -471,6 +486,8 @@ const AdminAboutUsCard = () => {
         </div>
     );
 };
+
+
 
 
 // Styles (same as before)
