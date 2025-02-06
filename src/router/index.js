@@ -64,6 +64,10 @@ export {ContactDetailPage} from "../admin/Contact/ContactDetailPage"
 export {AboutUsComponents} from "../Contact/AboutUsComponents"
 export {AdminAboutUs} from "../admin/AboutUs/AdminAboutUs"
 
+//Blog
+export {BlogPage} from "../screens/Blog/BlogPage"
+export {BlogDetail} from "../screens/Blog/BlogDetail"
 
-
-
+export {AdminBlog} from "../admin/Blog/AdminBlog"
+export {AdminBlogDetail} from "../admin/Blog/AdminBlogDetail"
+export {AdminBlogAdd} from "../admin/Blog/AdminBlogAdd"
