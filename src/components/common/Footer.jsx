@@ -19,55 +19,49 @@ export const Footer = () => {
           <div className="w-full md:w-1/3">
             <img src="../images/common/header-logo.png" alt="" />
             <br />
-            <p className="text-gray-300">Created with the collaboration of over 60 of the worlds best Nuron Artists.</p>
-            <div className="bg-gray-300 h-[1px] my-8"></div>
-            <Title className=" font-normal text-gray-100">Get The Latest Nuron Updates</Title>
+            <p className="text-gray-300">Biddora - market place for all.</p>
+            {/* <div className="bg-gray-300 h-[1px] my-8"></div>
+            <Title className=" font-normal text-gray-100">Get The Latest Updates</Title>
             <div className="flex items-center justify-between mt-5">
               <input type="text" placeholder="Enter your email" className="w-full h-full p-3.5 py-[15px] text-sm border-none outline-none rounded-l-md" />
               <PrimaryButton className="rounded-none py-3.5 px-8 text-sm hover:bg-indigo-800 rounded-r-md">Submit</PrimaryButton>
             </div>
-            <p className="text-gray-300 text-sm mt-3">Email is safe. We dont spam.</p>
+            <p className="text-gray-300 text-sm mt-3">Email is safe. We don't spam.</p> */}
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 w-full md:w-2/3">
             <div>
               <Title level={5} className="text-white font-normal">
-                Auction Categories
+                Categories
               </Title>
               <ul className="flex flex-col gap-5 mt-8 text-gray-200">
-                <p>Ending Now</p>
-                <p>Vehicles</p>
-                <p>Watches</p>
                 <p>Electronics</p>
-                <p>Real Estate</p>
-                <p>Jewelry</p>
-                <p>Art</p>
+                <p>Books</p>
                 <p>Sports & Outdoor</p>
+                <p>Instruments</p>
+                <p>Jewelries</p>
+                <p>Toys and Games</p>
+                <p>Clothes</p>
               </ul>
             </div>
             <div>
               <Title level={5} className="text-white font-normal">
-                About Us
+                Discover
               </Title>
               <ul className="flex flex-col gap-5 mt-8 text-gray-200">
-                <p>About Sbidu</p>
+                <p>About Biddora</p>
                 <p>Help</p>
-                <p>Affiliates</p>
-                <p>Jobs</p>
                 <p>Press</p>
-                <p>Our blog</p>
-                <p>Collectors portal</p>
+                <p>Our Blog</p>
               </ul>
             </div>
             <div>
               <Title level={5} className="text-white font-normal">
-                We are Here to Help
+                We are Here
               </Title>
               <ul className="flex flex-col gap-5 mt-8 text-gray-200">
                 <p>Your Account</p>
-                <p>Safe and Secure</p>
-                <p>Shipping Information</p>
+                <p>Information</p>
                 <p>Contact Us</p>
-                <p>Help & FAQ</p>
               </ul>
             </div>
             <div>
@@ -81,14 +75,14 @@ export const Footer = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <MdOutlineAttachEmail size={22} />
-                  <span>help@engotheme.com</span>
+                  <span>biddora@gmail.com</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <IoLocationOutline size={22} />
                   <span>1201 Broadway Suite</span>
                 </div>
               </ul>
-              <div className="flex items-center mt-5 justify-between">
+              {/* <div className="flex items-center mt-5 justify-between">
                 <ProfileCard className="bg-white">
                   <AiOutlineYoutube size={22} />
                 </ProfileCard>
@@ -101,7 +95,7 @@ export const Footer = () => {
                 <ProfileCard className="bg-white">
                   <CiLinkedin size={22} />
                 </ProfileCard>
-              </div>
+              </div> */}
             </div>
           </div>
         </Container>
