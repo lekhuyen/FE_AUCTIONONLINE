@@ -20,11 +20,11 @@ export const menulists = [
     path: "/about",
     link: "about",
   },
-  {
-    id: 5,
-    path: "/services",
-    link: "Services",
-  },
+  // {
+  //   id: 5,
+  //   path: "/services",
+  //   link: "Services",
+  // },
   {
     id: 6,
     path: "/contact",
@@ -466,7 +466,7 @@ export const trustList = [
 export const topList = [
   {
     id: 1,
-    catgeory: "Luxury Vehicles",
+    catgeory: "Electronics",
     total: 7,
     img1: "https://rainbowthemes.net/themes/nuron/wp-content/uploads/2023/09/automotive_product-01-300x200.jpg",
     img2: "https://rainbowthemes.net/themes/nuron/wp-content/uploads/2023/09/automotive_product-07-150x150.jpg",
@@ -475,7 +475,7 @@ export const topList = [
   },
   {
     id: 2,
-    catgeory: "Classic",
+    catgeory: "Sports",
     total: 10,
     img1: "https://rainbowthemes.net/themes/nuron/wp-content/uploads/2023/09/automotive_product-09-300x200.jpg",
     img2: "https://rainbowthemes.net/themes/nuron/wp-content/uploads/2023/09/automotive_product-01-150x150.jpg",
@@ -484,7 +484,7 @@ export const topList = [
   },
   {
     id: 3,
-    catgeory: "Muscle Machines",
+    catgeory: "Toys",
     total: 8,
     img1: "https://rainbowthemes.net/themes/nuron/wp-content/uploads/2023/09/automotive_product-07-300x200.jpg",
     img2: "https://rainbowthemes.net/themes/nuron/wp-content/uploads/2023/09/automotive_product-03-150x150.jpg",
@@ -493,7 +493,7 @@ export const topList = [
   },
   {
     id: 4,
-    catgeory: "Automotive",
+    catgeory: "Instruments",
     total: 4,
     img3: "https://rainbowthemes.net/themes/nuron/wp-content/uploads/2023/09/automotive_product-05-300x200.jpg",
     img2: "https://rainbowthemes.net/themes/nuron/wp-content/uploads/2023/09/automotive_product-05-768x768.jpg",
