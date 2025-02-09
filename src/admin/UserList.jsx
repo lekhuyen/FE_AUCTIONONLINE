@@ -4,8 +4,10 @@ import { TiEyeOutline } from "react-icons/ti";
 // import { User2 } from "../components/hero/Hero";
 import { useEffect, useState } from "react";
 import axios from '../../src/utils/axios'
-import { FaCheck } from "react-icons/fa6";
-import { FaXmark } from "react-icons/fa6";
+
+import { FaCheck } from "react-icons/fa";
+import { HiXMark  } from "react-icons/hi2";
+
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 import { useLoginExpired } from "../utils/helper";
@@ -172,7 +174,7 @@ export const UserList = () => {
                   <td className="px-6 py-4">{user.dob ? user.dob : "NOT UPDATED"}</td>
                   <td className="px-6 py-4">
                     <p onClick={() => handleUpdateStatus(user.id)} className={`${user.active ? "text-green" : "text-red-600"} cursor-pointer`}>
-                      {user.active && !user.roles.includes("ROLE_ADMIN") ? <FaCheck size={22} /> : <FaXmark size={22} />}
+                      {user.active && !user.roles.includes("ROLE_ADMIN") ? <FaCheck size={22} /> : <HiXMark  size={22} />}
                     </p>
                   </td>
                   {/* <td className="px-6 py-4">

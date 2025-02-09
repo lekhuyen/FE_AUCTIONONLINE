@@ -8,7 +8,7 @@ export const Trust = () => {
         <Container>
           <Heading
             title="Trusted By 500+ Businesses."
-            subtitle="Explore on the world's best & largest Bidding marketplace with our beautiful Bidding products. We want to be a part of your smile, success and future growth."
+            subtitle="Explore on the world's best & largest bidding marketplace with our beautiful bidding products. We want to be a part of your smile, success and future growth."
           />
 
           <div className="content grid grid-cols-3 md:grid-cols-7 gap-5 mt-8">

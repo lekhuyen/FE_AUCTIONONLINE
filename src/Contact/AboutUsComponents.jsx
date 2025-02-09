@@ -1,43 +1,37 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';  // Import useState and useEffect hooks from React
+import axios from 'axios';  // Import axios for making HTTP requests
 
-const AboutUsMainTitle = () => {
-    return (
-        <div style={styles.container}>
-            <h1 style={styles.title}>About Us</h1>
-        </div>
-    );
-};
+// Main title component
+const AboutUsMainTitle = ({ title }) => (
+    <div style={styles.container}>
+        <h1 style={styles.title}>{title}</h1>
+    </div>
+);
 
-// AboutUsDescription Component (the new component for the description)
-const AboutUsDescription = () => {
-    return (
-        <div style={styles.descriptionContainer}>
-            <p style={styles.descriptionText}>
-                We are a passionate team committed to providing exceptional services and delivering results that exceed expectations. Our mission is to innovate, inspire, and make a lasting impact through our work.
-            </p>
-        </div>
-    );
-};
+// Description component
+const AboutUsDescription = ({ description }) => (
+    <div style={styles.descriptionContainer}>
+        <p style={styles.descriptionText}>{description}</p>
+    </div>
+);
 
-
-const AboutUsCard = () => {
+const AboutUsCard = ({ title, description, aboutCardImage }) => {
     return (
         <div style={styles.card}>
             <img
-                src="https://dashboard.codeparrot.ai/api/assets/Z1adTowTRzcMVVyT"
-                alt="Placeholder"
+                src={`http://localhost:8080/api/aboutuscard/AboutUsImages/${aboutCardImage}`}  // Adjusting image URL path
+                alt={title}
                 style={styles.image}
             />
             <div style={styles.body}>
-                <h2 style={styles.title}>Title</h2>
-                <p style={styles.bodyText}>
-                    Body text  whatever you’d like to say. Add main takeaway points, quotes, anecdotes, or even a very very short story.
-                </p>
+                <h3 style={styles.cardTitle}>{title}</h3>
+                <p style={styles.bodyText}>{description}</p>
             </div>
         </div>
     );
 };
 
+// Accordion Item for FAQ section
 const AccordionItem = ({ title, content }) => {
     const [isOpen, setIsOpen] = React.useState(false);
 
@@ -50,7 +44,9 @@ const AccordionItem = ({ title, content }) => {
             <div onClick={toggleAccordion} style={accordionStyles.title}>
                 <span>{title}</span>
                 <img
-                    src={isOpen ? 'https://dashboard.codeparrot.ai/api/assets/Z1adTowTRzcMVVyU' : 'https://dashboard.codeparrot.ai/api/assets/Z1adTowTRzcMVVyV'}
+                    src={isOpen
+                        ? 'https://fonts.gstatic.com/s/i/materialiconsoutlined/keyboard_arrow_down/v7/24px.svg'  // Downward arrow when open
+                        : 'https://fonts.gstatic.com/s/i/materialiconsoutlined/keyboard_arrow_up/v7/24px.svg'}  // Upward arrow when closed
                     alt="Toggle"
                     width="20"
                     height="20"
@@ -65,40 +61,87 @@ const AccordionItem = ({ title, content }) => {
     );
 };
 
+// AboutUsComponents to render the whole About Us section
 export const AboutUsComponents = () => {
+
+    const [aboutUsData, setAboutUsData] = useState(null);
+    const [aboutUsCardData, setAboutUsCardData] = useState([]);
+
+    useEffect(() => {
+        // Fetch About Us data from the backend
+        axios.get('http://localhost:8080/api/aboutus')
+            .then((response) => {
+                setAboutUsData(response.data);
+            })
+            .catch((error) => {
+                console.error("Error fetching About Us data", error);
+            });
+    }, []);
+
+    useEffect(() => {
+        // Fetch About Us Card data from the backend
+        axios.get('http://localhost:8080/api/aboutuscard')
+            .then((response) => {
+                setAboutUsCardData(response.data);  // Set About Us Card data to state
+            })
+            .catch((error) => {
+                console.error("Error fetching About Us Card data", error);
+            });
+    }, []);
+
+    // Check if data is still loading
+    if (!aboutUsData) {
+        return <div>Loading...</div>;
+    }
+
     return (
         <div style={pageStyles.container}>
-            <AboutUsMainTitle />
-
-            <AboutUsDescription />
+            {/* Render dynamic content */}
+            <AboutUsMainTitle title={aboutUsData[0]?.title}/>
+            <AboutUsDescription description={aboutUsData[0]?.description}/>
 
             <div style={pageStyles.imageRow}>
-                <img src="https://dashboard.codeparrot.ai/api/assets/Z1adTowTRzcMVVyW" alt="Placeholder" style={pageStyles.image} />
-                <img src="https://dashboard.codeparrot.ai/api/assets/Z1adTowTRzcMVVyX" alt="Placeholder" style={pageStyles.image} />
+                {aboutUsData[0]?.aboutImage1 && (
+                    <img
+                        src={`http://localhost:8080/api/aboutus/AboutUsImages/${aboutUsData[0]?.aboutImage1}`} // Backend image path
+                        alt="About Us Image 1"
+                        style={pageStyles.image}
+                    />
+                )}
+                {aboutUsData[0]?.aboutImage2 && (
+                    <img
+                        src={`http://localhost:8080/api/aboutus/AboutUsImages/${aboutUsData[0]?.aboutImage2}`} // Backend image path
+                        alt="About Us Image 2"
+                        style={pageStyles.image}
+                    />
+                )}
             </div>
 
             <h2 style={pageStyles.subheading}>Why Choose Us?</h2>
             <div style={pageStyles.cardRow}>
-                <AboutUsCard />
-                <AboutUsCard />
-                <AboutUsCard />
+                {aboutUsCardData.map((card, index) => (
+                    <AboutUsCard
+                        key={index}
+                        title={card.title}
+                        description={card.description}
+                        aboutCardImage={card.aboutCardImage}
+                    />
+                ))}
             </div>
-            <div style={pageStyles.cardRow}>
-                <AboutUsCard />
-                <AboutUsCard />
-                <AboutUsCard />
-            </div>
+
             <div style={pageStyles.accordionSection}>
-                <AccordionItem title="Title" content="Answer the frequently asked question in a simple sentence, a longish paragraph, or even in a list." />
-                <AccordionItem title="Title" content="" />
-                <AccordionItem title="Title" content="" />
-                <AccordionItem title="Title" content="" />
-                <AccordionItem title="Title" content="" />
+                <AccordionItem title="What types of auctions can I participate in?"
+                               content="We offer a wide variety of auctions, from collectibles to electronics, and much more!"/>
+                <AccordionItem title="How can I place a bid?"
+                               content="Bidding is easy! Simply sign up, browse auctions, and place your bid on any item you're interested in."/>
+                <AccordionItem title="Is my payment information secure?"
+                               content="Yes! We use top-tier security measures to ensure all your personal and payment details are kept safe."/>
             </div>
         </div>
     );
 };
 
+// Styling
 const styles = {
     container: {
         display: 'flex',
@@ -106,15 +149,12 @@ const styles = {
         alignItems: 'center',
         height: '230px',
         backgroundColor: '#f5f5f5',
-
-
     },
     descriptionContainer: {
-
         alignItems: 'center',
         paddingLeft: '200px',
         paddingRight: '200px',
-        paddingBottom: '50px'
+        paddingBottom: '50px',
     },
     descriptionText: {
         fontSize: '1.2rem',
@@ -128,7 +168,6 @@ const styles = {
         letterSpacing: '-2.16px',
         textAlign: 'center',
         lineHeight: '120%',
-
     },
     card: {
         display: 'flex',
@@ -138,7 +177,6 @@ const styles = {
         borderRadius: '8px',
         padding: '24px',
         backgroundColor: '#ffffff',
-        maxWidth: '325px',
         boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
     },
     image: {
@@ -156,6 +194,13 @@ const styles = {
         fontWeight: 400,
         color: '#757575',
         lineHeight: '140%',
+    },
+    cardTitle: {
+        fontSize: '24px',  // Smaller font size for the card title
+        fontWeight: 600,   // Medium font weight
+        color: '#1e1e1e',
+        textAlign: 'center',
+        marginBottom: '16px',
     },
 };
 
@@ -209,8 +254,8 @@ const pageStyles = {
         marginBottom: '32px',
     },
     cardRow: {
-        display: 'flex',
-        justifyContent: 'center',
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',  // Ensures 3 cards per row
         gap: '32px',
         marginBottom: '32px',
     },
@@ -218,4 +263,3 @@ const pageStyles = {
         marginTop: '32px',
     },
 };
-

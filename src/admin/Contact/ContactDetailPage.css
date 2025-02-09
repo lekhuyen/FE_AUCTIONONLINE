@@ -1,0 +1,98 @@
+/* Container for the contact detail page */
+.container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Header styling */
+.container h2 {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+    color: #333;
+}
+
+/* Styling for message and received time */
+.message-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.message-container p {
+    font-size: 1.1rem;
+    color: #555;
+}
+
+/* Styling for the reply message textarea */
+textarea.form-control {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
+    resize: vertical;
+    margin-bottom: 1.5rem;
+}
+
+/* Focus effect for textarea */
+textarea.form-control:focus {
+    outline: none;
+    border-color: #007bff; /* Blue border color when focused */
+}
+
+/* Button styling */
+button.btn-success {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Button hover effect */
+button.btn-success:hover {
+    background-color: #218838;
+}
+
+/* Responsive Design for small screens */
+@media (max-width: 768px) {
+    .container {
+        padding: 1.5rem;
+    }
+
+    .container h2 {
+        font-size: 1.8rem;
+    }
+
+    p {
+        font-size: 1rem;
+    }
+
+    textarea.form-control {
+        font-size: 1rem;
+        padding: 0.8rem;
+    }
+
+    button.btn-success {
+        font-size: 1rem;
+        padding: 0.8rem;
+    }
+
+    /* Stack message and received time vertically on small screens */
+    .message-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
