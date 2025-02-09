@@ -69,11 +69,41 @@ export const getAllCategory = createAsyncThunk("category/getallcategory", async 
 })
 
 
+//getAllProductByCreator
+export const getAllProductByCreator = createAsyncThunk("auction/creator", async (userId, thunkAPI) => {
+  try {
+    const response = await axios.get(`auction/creator/${userId}`, {
+
+      headers: { authRequired: true }
+    })
+    return response.result
+  } catch (error) {
+    // console.log(error.response.data.message);
+    const errorMessage = (error.response && error.response.data && error.response.data.message) || error.message || error.toString() || error
+    return thunkAPI.rejectWithValue(errorMessage)
+  }
+})
+
+
+//getAllProductByBuyer
+export const getAllProductByBuyer = createAsyncThunk("auction/buyer", async (userId, thunkAPI) => {
+  try {
+    const response = await axios.get(`auction/buyer/${userId}`, {
+
+      headers: { authRequired: true }
+    })
+    return response.result
+  } catch (error) {
+    // console.log(error.response.data.message);
+    const errorMessage = (error.response && error.response.data && error.response.data.message) || error.message || error.toString() || error
+    return thunkAPI.rejectWithValue(errorMessage)
+  }
+})
+
+
 export const auctionsuccess = createAsyncThunk("category/auctionsuccess", async (data, thunkAPI) => {
   try {
     const response = await axios.post(`/bidding/success/${data.productId}/${data.sellerId}`, null, { authRequired: true })
-    console.log(response);
-
     return response
   } catch (error) {
     // console.log(error.response.data.message);
@@ -109,6 +139,8 @@ const initialState = {
   message: '',
   isLoading: false,
   products: [],
+  productsOfCreator: [],
+  productsOfBuyer: [],
   productsbycategory: [],
   categories: [],
   notification: {},
@@ -175,6 +207,36 @@ export const productSlide = createSlice({
     builder.addCase(getAllProduct.rejected, (state, action) => {
       state.isLoading = true;
       state.products = action.payload.result;
+    });
+    // getAllProductByCreator
+    builder.addCase(getAllProductByCreator.pending, (state) => {
+      state.isLoading = true;
+      state.productsOfCreator = [];
+    });
+
+    builder.addCase(getAllProductByCreator.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.productsOfCreator = action.payload;
+    });
+
+    builder.addCase(getAllProductByCreator.rejected, (state, action) => {
+      state.isLoading = true;
+      state.productsOfCreator = action.payload;
+    });
+    // getAllProductByBuyer
+    builder.addCase(getAllProductByBuyer.pending, (state) => {
+      state.isLoading = true;
+      state.productsOfBuyer = [];
+    });
+
+    builder.addCase(getAllProductByBuyer.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.productsOfBuyer = action.payload;
+    });
+
+    builder.addCase(getAllProductByBuyer.rejected, (state, action) => {
+      state.isLoading = true;
+      state.productsOfBuyer = action.payload;
     });
 
 

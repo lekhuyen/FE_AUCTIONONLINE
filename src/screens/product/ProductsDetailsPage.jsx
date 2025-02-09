@@ -146,7 +146,6 @@ export const ProductsDetailsPage = () => {
       });
       // client.subscribe('/topic/notification', (message) => {
       //   const newNotification = JSON.parse(message.body);
-      //   // console.log(newNotification);
 
       //   setNotification(newNotification);
       // });
@@ -299,6 +298,8 @@ export const ProductsDetailsPage = () => {
               <Title className={`flex items-center gap-2 ${productDetail.isSoldOut ? 'text-red-700' : ''}`}>
                 Current bid:<Caption className="text-3xl">${currentPrice.price || 0} </Caption>
               </Title>
+
+
               {
                 (userId !== productDetail.buyerId && productDetail.isSoldOut === false) && (
                   <div className="w-[200px] h-[40px] bg-green border rounded-md flex justify-center items-center">
