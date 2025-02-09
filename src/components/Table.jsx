@@ -14,6 +14,7 @@ import { HiXMark  } from "react-icons/hi2";
 import axios from '../../utils/../src/utils/axios'
 import { useLoginExpired } from "../utils/helper";
 import Pagination from "./common/layout/Pagination";
+import moment from "moment";
 
 export const Table = () => {
   const dispatch = useDispatch()
@@ -205,8 +206,8 @@ export const Table = () => {
                   <td className="px-6 py-4">{product.starting_price}</td>
                   <td className="px-6 py-4">{product.bid_step}</td>
                   <td className="px-6 py-4">{product.category.category_name}</td>
-                  <td className="px-6 py-4">{product.start_date}</td>
-                  <td className="px-6 py-4">{product.end_date}</td>
+                  <td className="px-6 py-4">{moment(product.start_date).format("DD/MM/YYYY")}</td>
+                  <td className="px-6 py-4">{moment(product.end_date).format("DD/MM/YYYY")}</td>
                   {/* <td className={`${product.sell ? "text-green" : "text-red-600"} px-6 py-4`}>{product.isSell ? "SOLD" : "NOT YET"}</td> */}
                   <td className="px-6 py-4">
                     <p onClick={() => handleUpdateStatus(product.item_id)} className={`${product.status ? "text-green" : "text-red-600"} cursor-pointer`}>

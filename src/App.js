@@ -44,6 +44,11 @@ import ProductPage from "./admin/product/ProductPage.js";
 import SearchPageProduct from "./screens/product/SearchPageProduct.js";
 import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
+import VideoCall from "./components/VideoCall.js";
+import VideoChat from "./components/VideoChat.js";
+import Checkout from "./components/Checkout.js";
+import PaymentResult from "./components/PaymentResult.js";
+import ManagerPost from "./components/ManagerPost.js";
 
 
 function App() {
@@ -154,6 +159,14 @@ function App() {
           }
         />
         <Route
+          path="/manager-post"
+          element={
+            <Layout>
+              <ManagerPost />
+            </Layout>
+          }
+        />
+        <Route
           path="/login"
           element={
             <Layout>
@@ -195,6 +208,43 @@ function App() {
             </Layout>
           }
         />
+        {/* xoa sau */}
+        <Route
+          path="/room"
+          element={
+            <Layout>
+              <VideoCall />
+            </Layout>
+          }
+        />
+        <Route
+          path="/roomchat"
+          element={
+            <Layout>
+              <VideoChat />
+            </Layout>
+          }
+        />
+
+        {/* payment */}
+
+        <Route
+          path="/checkout/:id"
+          element={
+            <Layout>
+              <Checkout />
+            </Layout>
+          }
+        />
+        <Route
+          path="/success"
+          element={
+            <Layout>
+              <PaymentResult />
+            </Layout>
+          }
+        />
+
         <Route
           path="/aboutus"
           element={
@@ -293,6 +343,7 @@ function App() {
             </Layout>
           }
         />
+
         <Route
           path="/dashboard"
           element={
