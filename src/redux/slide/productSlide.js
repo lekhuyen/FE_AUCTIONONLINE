@@ -60,6 +60,7 @@ export const getAllCategory = createAsyncThunk("category/getallcategory", async 
       },
       headers: { authRequired: true }
     })
+
     return response.result
   } catch (error) {
     // console.log(error.response.data.message);
@@ -126,7 +127,6 @@ export const getAllProductByCategory = createAsyncThunk("product/getallproductby
       return response.result
     }
 
-    // console.log(response);
   } catch (error) {
     // console.log(error.response.data.message);
     const errorMessage = (error.response && error.response.data && error.response.data.message) || error.message || error.toString() || error
