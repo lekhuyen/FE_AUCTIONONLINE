@@ -122,6 +122,7 @@ export const AddProduct = () => {
     formData.append('end_date', productValue.end_date)
     formData.append('bid_step', productValue.bid_step)
     formData.append('userId', userId)
+    console.log(invalids);
 
     if (imageFile.length > 0) {
       for (let i = 0; i < imageFile.length; i++) {

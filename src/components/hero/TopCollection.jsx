@@ -8,7 +8,7 @@ export const TopCollection = () => {
         <Container>
           <Heading
             title="Top Collection"
-            subtitle="Explore on the world's best & largest Bidding marketplace with our beautiful Bidding products. We want to be a part of your smile, success and future growth."
+            subtitle="Discover Biddora, largest and best bidding marketplace, with a stunning selection of products. We’re excited to be part of your success, growth, and the moments that bring you joy."
           />
 
           <div className="content grid grid-cols-1 md:grid-cols-4 gap-5 mt-8">

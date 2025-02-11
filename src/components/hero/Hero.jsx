@@ -17,11 +17,11 @@ export const Hero = () => {
         <Container className="flex items-center justify-between md:flex-row flex-col">
           <div className="w-full md:w-1/2 text-white pr-12">
             <Title level={3} className="text-white">
-              Build, sell & collect digital items.
+              Buy, sell & collect items.
             </Title>
             <Body className="leading-7 text-gray-200 my-8">
-              Nulla facilisi. Maecenas ac tellus ut ligula interdum convallis. Nullam dapibus on erat in dolor posuere, none hendrerit lectus ornare. Suspendisse sit amet turpina sagittis, ultrices
-              dui et, aliquam urna.
+            Biddora is your go-to online bidding platform, offering exciting auctions on a variety of exclusive items. 
+            Bid in real-time, enjoy a secure experience, and discover unbeatable deals. Join Biddora today and start bidding!
             </Body>
             <SearchBox />
             <div className="flex items-center gap-8 my-8">
@@ -48,10 +48,10 @@ export const Hero = () => {
           <div className="w-full md:w-1/2 my-16 relative py-16">
             <img src="../images/home/hero.webp" alt="" />
             <div className="horiz-move absolute md:top-28 top-8 left-0">
-              <Box title="Proof of quality" desc="Lorem Ipsum Dolar Amet" />
+              <Box title="Proof of quality" desc="Checked before sale" />
             </div>
             <div className="horiz-move absolute bottom-72 right-0">
-              <Box title="Safe and secure" desc="Lorem Ipsum Dolar Amet" />
+              <Box title="Safe and secure" desc="Safe bidding and transactions" />
             </div>
 
             <div className="px-5 py-4 bg-white shadow-md flex items-center gap-5 rounded-xl ml-5 -mt-5 vert-move w-1/2">

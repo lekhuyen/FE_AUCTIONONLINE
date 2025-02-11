@@ -13,7 +13,7 @@ export const ProductList = () => {
         <Container>
           <Heading
             title="Live Auction"
-            subtitle="Explore on the world's best & largest Bidding marketplace with our beautiful Bidding products. We want to be a part of your smile, success and future growth."
+            subtitle="Explore on the world's best & largest bidding marketplace with our beautiful bidding products. We want to be a part of your smile, success and future growth."
           />
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 my-8">

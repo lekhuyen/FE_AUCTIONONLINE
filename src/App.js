@@ -3,29 +3,35 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './index.css'
 import {
-  LoginAsSeller,
-  Register,
-  Login,
-  UserProfile,
-  DashboardLayout,
-  Layout,
-  CreateCategory,
-  UpdateCategory,
-  Catgeorylist,
-  UpdateProductByAdmin,
-  AdminProductList,
-  Income,
-  Dashboard,
-  ProductList,
-  ProductEdit,
-  AddProduct,
-  ProductsDetailsPage,
-  Home,
-  UserList,
-  WinningBidList,
-  NotFound,
-  ScrollToTop,
-  PrivateRoute, Contact, AboutUsComponents,
+    LoginAsSeller,
+    Register,
+    Login,
+    UserProfile,
+    DashboardLayout,
+    Layout,
+    CreateCategory,
+    UpdateCategory,
+    Catgeorylist,
+    UpdateProductByAdmin,
+    AdminProductList,
+    Income,
+    Dashboard,
+    ProductList,
+    ProductEdit,
+    AddProduct,
+    ProductsDetailsPage,
+    Home,
+    UserList,
+    WinningBidList,
+    NotFound,
+    ScrollToTop,
+    PrivateRoute,
+    Contact,
+    AboutUsComponents,
+    AdminContact,
+    ContactDetailPage,
+    AdminAboutUs, BlogPage, BlogDetail, AdminBlog, AdminBlogDetail, AdminBlogAdd,
+
 } from "./router/index.js";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -185,6 +191,7 @@ function App() {
             </Layout>
           }
         />
+
         <Route
           path="/search"
           element={
@@ -239,12 +246,28 @@ function App() {
         />
 
         <Route
-          path="/test"
+          path="/aboutus"
           element={
             <Layout>
               <AboutUsComponents />
             </Layout>
           }
+        />
+        <Route
+            path="/blog"
+            element={
+              <Layout>
+                <BlogPage />
+              </Layout>
+            }
+        />
+        <Route
+            path="/blog/:id"
+            element={
+              <Layout>
+                <BlogDetail />
+              </Layout>
+            }
         />
         <Route
           path="/seller/login"
@@ -275,6 +298,18 @@ function App() {
               </Layout>
             </PrivateRoute>
           }
+        />
+        <Route
+            path="/AdminAboutUs"
+            element={
+              <PrivateRoute>
+                <Layout>
+                  <DashboardLayout>
+                    <AdminAboutUs />
+                  </DashboardLayout>
+                </Layout>
+              </PrivateRoute>
+            }
         />
         <Route
           path="/admin/income"
@@ -370,6 +405,42 @@ function App() {
           }
         />
         <Route
+            path="/adminblog"
+            element={
+              <PrivateRoute>
+                <Layout>
+                  <DashboardLayout>
+                    <AdminBlog />
+                  </DashboardLayout>
+                </Layout>
+              </PrivateRoute>
+            }
+        />
+        <Route
+            path="/adminblog/detail/:id"
+            element={
+              <PrivateRoute>
+                <Layout>
+                  <DashboardLayout>
+                    <AdminBlogDetail />
+                  </DashboardLayout>
+                </Layout>
+              </PrivateRoute>
+            }
+        />
+          <Route
+              path="/adminblog/add"
+              element={
+                  <PrivateRoute>
+                      <Layout>
+                          <DashboardLayout>
+                              <AdminBlogAdd />
+                          </DashboardLayout>
+                      </Layout>
+                  </PrivateRoute>
+              }
+          />
+        <Route
           path="/winning-products"
           element={
             <PrivateRoute>
@@ -429,6 +500,30 @@ function App() {
               </Layout>
             </PrivateRoute>
           }
+        />
+        <Route
+            path="/adminContact"
+            element={
+              <PrivateRoute>
+                <Layout>
+                  <DashboardLayout>
+                    <AdminContact />
+                  </DashboardLayout>
+                </Layout>
+              </PrivateRoute>
+            }
+        />
+        <Route
+            path="/adminContact/:id"
+            element={
+              <PrivateRoute>
+                <Layout>
+                  <DashboardLayout>
+                    <ContactDetailPage />
+                  </DashboardLayout>
+                </Layout>
+              </PrivateRoute>
+            }
         />
         <Route
           path="/*"

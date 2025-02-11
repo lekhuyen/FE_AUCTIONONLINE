@@ -7,8 +7,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { deleteProduct, getAllProduct } from "../redux/slide/productSlide";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
-import { FaCheck } from "react-icons/fa6";
-import { FaXmark } from "react-icons/fa6";
+
+import { FaCheck } from "react-icons/fa";
+import { HiXMark  } from "react-icons/hi2";
+
 import axios from '../../utils/../src/utils/axios'
 import { useLoginExpired } from "../utils/helper";
 import Pagination from "./common/layout/Pagination";
@@ -209,11 +211,11 @@ export const Table = () => {
                   {/* <td className={`${product.sell ? "text-green" : "text-red-600"} px-6 py-4`}>{product.isSell ? "SOLD" : "NOT YET"}</td> */}
                   <td className="px-6 py-4">
                     <p onClick={() => handleUpdateStatus(product.item_id)} className={`${product.status ? "text-green" : "text-red-600"} cursor-pointer`}>
-                      {product.status ? <FaCheck size={22} /> : <FaXmark size={22} />}
+                      {product.status ? <FaCheck size={22} /> : <HiXMark  size={22} />}
                     </p>
                   </td>
                   <td className="px-6 py-4">{product.user.name}</td>
-                  <td onClick={() => handleUpdateSell(product.item_id)} className={`${product.sell ? "text-green" : "text-red-600"} px-6 py-4 cursor-pointer`}>{product.sell ? <FaCheck size={22} /> : <FaXmark size={22} />}</td>
+                  <td onClick={() => handleUpdateSell(product.item_id)} className={`${product.sell ? "text-green" : "text-red-600"} px-6 py-4 cursor-pointer`}>{product.sell ? <FaCheck size={22} /> : <HiXMark  size={22} />}</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center">
                       {/* <div className={`h-2.5 w-2.5 rounded-full  me-2 ${product.soldout ? "bg-green" : "bg-red-600"}`}></div> */}
