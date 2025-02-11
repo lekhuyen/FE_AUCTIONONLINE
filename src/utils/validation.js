@@ -31,13 +31,13 @@ export const validateForm = (data, setInvalidFields) => {
         const startDateFields = formPayload.find(item => item[0] === 'start_date')
         const startDateF = startDateFields ? new Date(startDateFields[1]) : null
 
-        if (endDate <= Date.now()) {
-          invalid++
-          setInvalidFields(prev => [...prev, { name: arr[0], message: 'End date must be greater then today' }])
-        } else if (startDateF && endDate <= startDateF) {
-          invalid++
-          setInvalidFields(prev => [...prev, { name: arr[0], message: 'End date must be greater then start date' }])
-        }
+        // if (endDate <= Date.now()) {
+        //   invalid++
+        //   setInvalidFields(prev => [...prev, { name: arr[0], message: 'End date must be greater then today' }])
+        // } else if (startDateF && endDate <= startDateF) {
+        //   invalid++
+        //   setInvalidFields(prev => [...prev, { name: arr[0], message: 'End date must be greater then start date' }])
+        // }
         break;
       case "starting_price":
         if (arr[1] <= 0) {

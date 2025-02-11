@@ -2,7 +2,7 @@ import { CategoryDropDown, Caption, PrimaryButton, Title } from "../../router";
 import axios from '../../utils/axios'
 import { commonClassNameOfInput } from "../../components/common/Design";
 import { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
 import { createProduct } from "../../redux/slide/productSlide";
 import { validateForm } from "../../utils/validation";
@@ -24,7 +24,7 @@ export const AddProduct = () => {
   const [productValue, setProductValue] = useState(initialState)
   const { item_name, description, starting_price, start_date, end_date, bid_step } = productValue
   const [imageFile, setImageFile] = useState([]);
-  const [categories, setCategories] = useState([])
+  // const [categories, setCategories] = useState([])
   const [selectedCategory, setSelectedCategory] = useState(null)
 
   const [invalidFields, setInvalidFields] = useState([])
@@ -33,37 +33,43 @@ export const AddProduct = () => {
   const { triggerLoginExpired } = useLoginExpired();
   const dispatch = useDispatch()
   const fileInputRef = useRef(null);
+  const { categories } = useSelector(state => state.product)
 
 
 
-  const getCategories = async () => {
-    if (isLogin) {
-      try {
-        const response = await axios.get("category", {
-          authRequired: true,
-        })
-        if (response.code === 0) {
-          setCategories(response.result.data)
-        }
-      } catch (error) {
-        console.log(error)
-      }
-    } else {
-      triggerLoginExpired()
+  // const getCategories = async () => {
+  //   if (isLogin) {
+  //     try {
+  //       const response = await axios.get("category", {
+  //         authRequired: true,
+  //       })
+  //       if (response.code === 0) {
+  //         setCategories(response.result.data)
+  //       }
+  //     } catch (error) {
+  //       console.log(error)
+  //     }
+  //   } else {
+  //     triggerLoginExpired()
+  //   }
+
+  // }
+  console.log(categories.data);
+
+  useEffect(() => {
+    if (categories.data) {
+      const categoryOptions = categories?.data.map((category) => ({
+        label: category.category_name,
+        value: category.category_id,
+      }));
+
+      setSelectedCategory(categoryOptions)
     }
-
-  }
-  useEffect(() => {
-    const categoryOptions = categories.map((category) => ({
-      label: category.category_name,
-      value: category.category_id,
-    }));
-    setSelectedCategory(categoryOptions)
   }, [categories])
-  useEffect(() => {
+  // useEffect(() => {
 
-    getCategories()
-  }, [])
+  //   getCategories()
+  // }, [])
 
   const handleCategoryChange = (e) => {
     setSelectedCategory(e)
@@ -155,7 +161,7 @@ export const AddProduct = () => {
             <Caption className="mb-2">Category *</Caption>
             <CategoryDropDown
               value={selectedCategory}
-              options={categories?.map((category) => ({
+              options={categories?.data?.map((category) => ({
                 label: category.category_name,
                 value: category.category_id,
               }))}
