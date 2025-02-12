@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import styles from '../chat/chat.module.scss'
+import { FaRegListAlt } from "react-icons/fa";
 
 // design
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
@@ -368,6 +369,10 @@ export const Header = () => {
                     </CustomNavLink>
                   )
                 }
+                {/* quan ly sp cua user */}
+                <CustomNavLink href="/manager-post" className={`${isScrolled || !isHomePage ? "text-black" : "text-white"}`} >
+                  <FaRegListAlt />
+                </CustomNavLink>
 
                 {/* ----------------------------------------------------------------------------------- */}
                 <div className="relative cursor-pointer"
@@ -616,6 +621,7 @@ export const Header = () => {
                     </CustomNavLink>
                   )
                 }
+
                 {
                   isLoggedIn && (
                     <CustomNavLink href="/dashboard">
