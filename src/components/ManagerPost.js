@@ -76,9 +76,9 @@ const ManagerPost = () => {
     if (productsOfCreator?.length > 0) {
       // const now = moment();
       // const expiredProducts = productsOfCreator.filter(product => moment(product.end_date).isBefore(now));
-      const check = productsOfCreator.filter(product => product.status === true);
-      const isactiveProducts = productsOfCreator.filter(product => product.status === false);
-      const productsSoldOut = productsOfCreator.filter(product => product.soldout === true);
+      const check = productsOfCreator?.filter(product => product.status === true);
+      const isactiveProducts = productsOfCreator?.filter(product => product.status === false);
+      const productsSoldOut = productsOfCreator?.filter(product => product.soldout === true);
 
       // setExprise(expiredProducts);
       setIsCheck(check);
