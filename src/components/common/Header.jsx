@@ -299,7 +299,7 @@ export const Header = () => {
     };
   }, []);
 
-  console.log(notificationsBidding);
+  // console.log(notificationsBidding);
 
 
   return (

@@ -7,6 +7,9 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { register, RESET } from "../../redux/slide/authSlide";
 import { Oval } from "react-loader-spinner";
+import axios from "axios";
+import clsx from "clsx";
+import { removeVietnameseAccents } from "../../utils/helper";
 
 
 const inittialState = {
@@ -14,14 +17,29 @@ const inittialState = {
   email: "",
   password: "",
   confirmPassword: "",
+  phone: "",
+  address: "",
 }
 export const Register = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const [formData, setFormData] = useState(inittialState)
-  const { name, email, password, confirmPassword } = formData
+  const { name, email, password, confirmPassword, phone } = formData
 
   const { isRegister, message, isError, isLoading } = useSelector(state => state.auth)
+
+  const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
+
+  const [selectedProvince, setSelectedProvince] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [selectedWard, setSelectedWard] = useState("");
+
+  const [provinceName, setProvinceName] = useState("");
+  const [districtName, setDistrictName] = useState("");
+  const [wardName, setWardName] = useState("");
+  const [addressDetail, setAddressDetail] = useState("");
 
 
 
@@ -42,12 +60,15 @@ export const Register = () => {
     if (password !== confirmPassword) {
       return toast.error('Password does not match')
     }
+    const address = removeVietnameseAccents(addressDetail)
 
-    const userData = { name, email, password }
+    const userData = { name, email, password, address, phone }
 
     dispatch(register(userData))
 
   }
+
+
 
   useEffect(() => {
     if (isRegister) {
@@ -63,6 +84,20 @@ export const Register = () => {
     }
   }, [dispatch, isRegister, isError, message, navigate])
 
+  // Lấy danh sách tỉnh/thành
+  useEffect(() => {
+    axios.get("https://provinces.open-api.vn/api/p/")
+      .then(response => setProvinces(response.data))
+      .catch(error => console.error("Lỗi khi lấy danh sách tỉnh:", error));
+  }, []);
+
+  useEffect(() => {
+    const newAddress = `${wardName ? wardName + ", " : ""}${districtName ? districtName + ", " : ""}${provinceName}`;
+
+    // Nếu người dùng đã nhập thêm dữ liệu, giữ lại nội dung nhập vào
+    setAddressDetail((prev) => (prev.includes(newAddress) ? prev : newAddress));
+  }, [provinceName, districtName, wardName]);
+
   if (isLoading) {
     return (
       <Oval
@@ -76,6 +111,63 @@ export const Register = () => {
       />
     )
   }
+
+  // Khi chọn tỉnh, lấy danh sách huyện
+  const handleProvinceChange = async (e) => {
+    const provinceCode = e.target.value;
+    setSelectedProvince(provinceCode);
+    setSelectedDistrict("");
+    setSelectedWard("");
+    setDistricts([]);
+    setWards([]);
+
+    const province = provinces.find(p => p.code === Number(provinceCode));
+    setProvinceName(province?.name || "");
+
+    if (provinceCode) {
+      try {
+        const response = await axios.get(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`);
+        setDistricts(response.data.districts);
+      } catch (error) {
+        console.error("Lỗi khi lấy danh sách huyện:", error);
+      }
+    }
+  };
+
+  // Khi chọn huyện, lấy danh sách xã/phường
+  const handleDistrictChange = async (e) => {
+    const districtCode = e.target.value;
+    setSelectedDistrict(districtCode);
+    setSelectedWard("");
+    setWards([]);
+
+    const district = districts.find(d => d.code === Number(districtCode));
+    setDistrictName(district?.name || "");
+
+    if (districtCode) {
+      try {
+        const response = await axios.get(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`);
+        setWards(response.data.wards);
+      } catch (error) {
+        console.error("Lỗi khi lấy danh sách xã/phường:", error);
+      }
+    }
+  };
+
+  // Khi chọn xã/phường
+  const handleWardChange = (e) => {
+    const wardCode = e.target.value;
+    setSelectedWard(wardCode);
+
+    const ward = wards.find(w => w.code === Number(wardCode));
+    setWardName(ward?.name || "");
+  };
+
+
+  const handleAddressChange = (e) => {
+    setAddressDetail(e.target.value);
+  };
+
 
   return (
     <>
@@ -108,13 +200,76 @@ export const Register = () => {
               Do you already have an account? <CustomNavLink href="/login">Log In Here</CustomNavLink>
             </p>
           </div>
-          <div className="py-5">
+          <div className="py-2">
             <Caption className="mb-2">Username *</Caption>
             <input type="text" name="name" value={name} onChange={handleInputChange} className={commonClassNameOfInput} placeholder="First Name" />
           </div>
-          <div className="py-5">
+          <div className="py-2">
             <Caption className="mb-2">Enter Your Email *</Caption>
             <input type="email" name="email" value={email} onChange={handleInputChange} className={commonClassNameOfInput} placeholder="Enter Your Email" />
+          </div>
+          <div className="py-2 font-[500] text-gray_100">
+            <label>Tỉnh/Thành phố:</label>
+            <select
+              value={selectedProvince}
+              onChange={handleProvinceChange}
+              className={clsx(commonClassNameOfInput)}
+            >
+              <option value="">-- Chọn tỉnh/thành phố --</option>
+              {provinces.map(province => (
+                <option key={province.code} value={province.code}>
+                  {province.name}
+                </option>
+              ))}
+            </select>
+
+            <label>Huyện/Quận:</label>
+            <select
+              value={selectedDistrict}
+              onChange={handleDistrictChange}
+              disabled={!selectedProvince}
+              className={clsx(commonClassNameOfInput)}
+            >
+              <option value="">-- Chọn huyện/quận --</option>
+              {districts.map(district => (
+                <option key={district.code} value={district.code}>
+                  {district.name}
+                </option>
+              ))}
+            </select>
+
+            <label>Xã/Phường:</label>
+            <select
+              value={selectedWard}
+              onChange={handleWardChange}
+              disabled={!selectedDistrict}
+              className={clsx(commonClassNameOfInput)}
+            >
+              <option value="">-- Chọn xã/phường --</option>
+              {wards.map(ward => (
+                <option key={ward.code} value={ward.code}>
+                  {ward.name}
+                </option>
+              ))}
+            </select>
+
+          </div>
+
+          <div className="py-2">
+            <Caption className="mb-2">Address Detail</Caption>
+            <textarea
+              name="address"
+              value={addressDetail}
+              onChange={handleAddressChange}
+              className={commonClassNameOfInput}
+              placeholder="Nhập địa chỉ chi tiết (số nhà, đường...)"
+            />
+          </div>
+
+
+          <div>
+            <Caption className="mb-2">Number Phone *</Caption>
+            <input type="number" name="phone" value={phone} onChange={handleInputChange} className={commonClassNameOfInput} placeholder="Enter Your Password" />
           </div>
           <div>
             <Caption className="mb-2">Password *</Caption>

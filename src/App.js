@@ -52,6 +52,7 @@ import ManagerPost from "./components/ManagerPost.js";
 import { jwtDecode } from "jwt-decode";
 import { debounce } from "lodash";
 import axios from "../src/utils/axios";
+import AddressForm from "./components/AddressForm.js";
 
 function App() {
   const navigate = useNavigate()
@@ -296,6 +297,14 @@ function App() {
           element={
             <Layout>
               <ProductPage />
+            </Layout>
+          }
+        />
+        <Route
+          path="/address"
+          element={
+            <Layout>
+              <AddressForm />
             </Layout>
           }
         />
