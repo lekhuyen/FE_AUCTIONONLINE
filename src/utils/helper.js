@@ -35,21 +35,21 @@ export const generateRange = (start, end) => {
 
 //count down
 export const calculateTimeLeft = (end_date, setTimeLeft, setIsDuration = () => { }) => {
+  if (!end_date) {
+    setTimeLeft(null);
+    setIsDuration(true);
+    return;
+  }
+
   const now = new Date();
+  const endDate = Array.isArray(end_date) ? moment(end_date.join('-'), 'YYYY-MM-DD').toDate() : new Date(end_date);
 
-  const endDateArray = end_date;
-  // console.log(end_date);
-
-  if (endDateArray) {
-    const endDate = moment(endDateArray.join('-'), 'YYYY-MM-DD').toDate();
-    if (endDate > now) {
-      const diff = Math.floor((endDate - now) / 1000);
-      const duration = intervalToDuration({ start: 0, end: diff * 1000 });
-      setTimeLeft(duration);
-      setIsDuration(false);
-    } else {
-      setTimeLeft(null);
-      setIsDuration(true)
-    }
+  if (endDate > now) {
+    const duration = intervalToDuration({ start: now, end: endDate });
+    setTimeLeft(duration);
+    setIsDuration(false);
+  } else {
+    setTimeLeft(null);
+    setIsDuration(true);
   }
 };

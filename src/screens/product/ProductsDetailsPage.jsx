@@ -18,6 +18,7 @@ export const ProductsDetailsPage = () => {
   const { id } = useParams()
   const dispatch = useDispatch()
   const [userId, setUserId] = useState(null);
+  const [isOpenInput, setSsOpenInput] = useState(false);
   const [productDetail, setProductDetail] = useState({})
   const [imageFile, setImageFile] = useState([]);
   const [timeLeft, setTimeLeft] = useState(null);
@@ -240,29 +241,45 @@ export const ProductsDetailsPage = () => {
     }
   }
 
+  // const handleAutoFinishAuction = () => {
+  //   if (!productDetail || productDetail?.isSoldOut || !currentPrice?.price) {
+  //     return;  // Dừng hàm nếu không có dữ liệu hoặc không thỏa điều kiện
+  //   }
+
+  //   console.log("Checking auction status");
+  //   console.log(productDetail?.isSoldOut, currentPrice?.price);
+  //   console.log(isLogin, userId, timeLeftEndDate);
+
+  //   if (isLogin && userId && timeLeftEndDate === null) {
+  //     console.log(isLogin, userId, timeLeftEndDate);
+
+  //     try {
+  //       dispatch(auctionsuccess({ productId: id, sellerId: userId }));
+  //       if (!isLoading) {
+  //         toast.success("Sản phẩm của bạn đã được đấu giá thành công");
+  //       }
+  //       getProduct();
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   if (productDetail && currentPrice?.price && timeLeftEndDate === null) {
+  //     handleAutoFinishAuction();
+  //   }
+  // }, [timeLeftEndDate, id]);
+
+
+
+
+
   useEffect(() => {
-    console.log({
-      isLogin, timeLeftEndDate, userId
-    });
-
-    if (currentPrice?.price) {
-      if (isLogin && userId && timeLeftEndDate === null) {
-        console.log("da dau da");
-
-        try {
-          dispatch(auctionsuccess({ productId: id, sellerId: userId }))
-          if (!isLoading) {
-            toast.success("San pham cua ban da duoc dau gia thanh cong")
-          }
-
-          getProduct()
-        } catch (error) {
-          console.log(error);
-        }
-      }
-
+    if ((userId !== productDetail.buyerId) && (productDetail.isSell === true) && (productDetail.isSoldOut === false)) {
+      setSsOpenInput(true)
     }
-  }, [isLogin, userId, timeLeftEndDate])
+  }, [id, productDetail]);
 
   return (
     <>
@@ -388,7 +405,7 @@ export const ProductsDetailsPage = () => {
                 )
               }
               {
-                ((userId !== productDetail.buyerId) && (productDetail.isSell === true) && (productDetail.isSoldOut === false)) &&
+                isOpenInput &&
                 <div div className="p-5 px-10 shadow-s3 py-8">
                   <form onSubmit={onSubmitBidding} className="flex gap-3 justify-between">
                     <input className={commonClassNameOfInput} value={priceBidding} onChange={e => setPriceBidding(e.target.value)} type="number" name="price" />
