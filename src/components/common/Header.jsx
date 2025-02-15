@@ -375,9 +375,13 @@ export const Header = () => {
                   )
                 }
                 {/* quan ly sp cua user */}
-                <CustomNavLink href="/manager-post" className={`${isScrolled || !isHomePage ? "text-black" : "text-white"}`} >
-                  <FaRegListAlt />
-                </CustomNavLink>
+                {
+                  isLoggedIn && (
+                    <CustomNavLink href="/manager-post" className={`${isScrolled || !isHomePage ? "text-black" : "text-white"}`} >
+                      <FaRegListAlt />
+                    </CustomNavLink>
+                  )
+                }
 
                 {/* ----------------------------------------------------------------------------------- */}
                 <div className="relative cursor-pointer"
@@ -515,11 +519,11 @@ export const Header = () => {
                     )
                   }
                   {
-                    notificationsBidding?.filter(notification => notification.buyerIsRead === false && notification.buyerId === userId).length > 0 && (
+                    notificationsLength?.filter(notification => notification.buyerIsRead === false && notification.buyerId === userId).length > 0 && (
                       <div className="absolute top-[-10px] right-[-10px] w-5 h-5 border rounded-full bg-red-600 
                     flex items-center justify-center text-white text-[13px]">
-                        {notificationsBidding?.filter(notification => notification.buyerIsRead === false && notification.buyerId === userId).length > 5 ? '5+' :
-                          notificationsBidding?.filter(notification => notification.buyerIsRead === false && notification.buyerId === userId).length
+                        {notificationsLength?.filter(notification => notification.buyerIsRead === false && notification.buyerId === userId).length > 5 ? '5+' :
+                          notificationsLength?.filter(notification => notification.buyerIsRead === false && notification.buyerId === userId).length
                         }
                       </div>
                     )
@@ -530,9 +534,7 @@ export const Header = () => {
                       <div className="absolute w-[360px] top-[33px] right-1 overflow-hidden bg-white shadow-lg rounded-sm p-2">
                         <div className="w-full"><h3 className="text-[24px]">Thong bao</h3></div>
                         <div className={clsx(styles.custom_scroll, 'overflow-y-auto max-h-[400px]')}>
-                          {userId && notificationsBidding?.length > 0 && notificationsBidding?.map((notifi, index) => {
-                            console.log(notifi);
-                            console.log(userId);
+                          {userId && notifications?.length > 0 && notifications?.map((notifi, index) => {
                             return (
                               <NavLink to={`/details/${notifi?.productId}`}
                                 onClick={() => hanldeReadedNotification(notifi.id)} key={notifi.id} className="flex gap-2 items-center bottom-1 padding-2">

@@ -74,23 +74,28 @@ const ManagerPost = () => {
   }, [])
 
   useEffect(() => {
-    if (productsOfCreator?.length > 0) {
+    if (productsOfCreator && productsOfCreator?.length > 0) {
       // const now = moment();
       // const expiredProducts = productsOfCreator.filter(product => moment(product.end_date).isBefore(now));
       const check = productsOfCreator?.filter(product => product.status === true);
-      const productExprise = productsOfCreator?.filter(product => {
-        const [year, month, day] = product.end_date;
-        const endDate = new Date(year, month - 1, day);
-        return !product.bidding && product.status && endDate <= new Date();
-      });
+      const productExprise = Array.isArray(productsOfCreator)
+        ? productsOfCreator.filter(product => {
+          const [year, month, day] = product?.end_date || [];
+          if (!year || !month || !day) return false; // Kiểm tra nếu end_date không hợp lệ
+
+          const endDate = new Date(year, month - 1, day);
+          return !product.bidding && product.status && endDate <= new Date();
+        })
+        : [];
+
 
       const isactiveProducts = productsOfCreator?.filter(product => product.status === false);
       const productsSoldOut = productsOfCreator?.filter(product => product.soldout === true);
       // setExprise(expiredProducts);
-      setIsCheck(check);
-      setProductExprise(productExprise);
-      setIsActive(isactiveProducts);
-      setProductSoldOut(productsSoldOut);
+      setIsCheck(check || []);
+      setProductExprise(productExprise || []);
+      setIsActive(isactiveProducts || []);
+      setProductSoldOut(productsSoldOut || []);
     }
   }, [productsOfCreator]);
 
@@ -120,7 +125,7 @@ const ManagerPost = () => {
 
   const handlePayment = (id) => {
     const uniqueOrderId = `order_${id}_${Date.now()}`;
-    const product = productsOfBuyer.find(product => product.item_id === id);
+    const product = productsOfBuyer?.find(product => product.item_id === id);
     if (product?.bidding?.price) {
       checkout(id, product?.bidding?.price, uniqueOrderId)
         .then((res) => {
@@ -315,6 +320,7 @@ const ManagerPost = () => {
                           }
                           {
                             clickMenu === 3 && (
+                              productsOfBuyer &&
                               productsOfBuyer?.length > 0 &&
                               productsOfBuyer.filter(product => product?.buyer?.id === userId).map((product) => (
                                 <tr key={product.item_id} className="bg-white border-b hover:bg-gray-50">

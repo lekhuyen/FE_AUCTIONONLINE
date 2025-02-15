@@ -102,8 +102,6 @@ export const ProductsDetailsPage = () => {
   }, [productDetail?.end_date]);
 
 
-
-
   // bidding 
   //get bidding of product
   useEffect(() => {
@@ -241,39 +239,6 @@ export const ProductsDetailsPage = () => {
     }
   }
 
-  // const handleAutoFinishAuction = () => {
-  //   if (!productDetail || productDetail?.isSoldOut || !currentPrice?.price) {
-  //     return;  // Dừng hàm nếu không có dữ liệu hoặc không thỏa điều kiện
-  //   }
-
-  //   console.log("Checking auction status");
-  //   console.log(productDetail?.isSoldOut, currentPrice?.price);
-  //   console.log(isLogin, userId, timeLeftEndDate);
-
-  //   if (isLogin && userId && timeLeftEndDate === null) {
-  //     console.log(isLogin, userId, timeLeftEndDate);
-
-  //     try {
-  //       dispatch(auctionsuccess({ productId: id, sellerId: userId }));
-  //       if (!isLoading) {
-  //         toast.success("Sản phẩm của bạn đã được đấu giá thành công");
-  //       }
-  //       getProduct();
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   if (productDetail && currentPrice?.price && timeLeftEndDate === null) {
-  //     handleAutoFinishAuction();
-  //   }
-  // }, [timeLeftEndDate, id]);
-
-
-
-
 
   useEffect(() => {
     if ((userId !== productDetail.buyerId) && (productDetail.isSell === true) && (productDetail.isSoldOut === false)) {
@@ -409,9 +374,9 @@ export const ProductsDetailsPage = () => {
                 <div div className="p-5 px-10 shadow-s3 py-8">
                   <form onSubmit={onSubmitBidding} className="flex gap-3 justify-between">
                     <input className={commonClassNameOfInput} value={priceBidding} onChange={e => setPriceBidding(e.target.value)} type="number" name="price" />
-                    <button type="button" className="bg-gray-100 rounded-md px-5 py-3">
+                    {/* <button type="button" className="bg-gray-100 rounded-md px-5 py-3">
                       <AiOutlinePlus />
-                    </button>
+                    </button> */}
                     {/* cursor-not-allowed */}
                     <button type="submit" className={`py-3 px-8 rounded-lg ${"bg-gray-400 text-gray-700"}`}>
                       Submit

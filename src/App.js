@@ -39,7 +39,7 @@ import { introspect, logout } from "./redux/slide/authSlide.js";
 import Swal from "sweetalert2";
 import Loading from "./components/Loading/index.js";
 import Chat from "./components/chat/chat.js";
-import { addNotification, auctionsuccess, getAllProduct, getAllProductBidding, notificationBidding } from "./redux/slide/productSlide.js";
+import { addNotification, getAllProduct, getAllProductBidding, notificationBidding } from "./redux/slide/productSlide.js";
 import ProductPage from "./admin/product/ProductPage.js";
 import SearchPageProduct from "./screens/product/SearchPageProduct.js";
 import SockJS from "sockjs-client";
@@ -53,13 +53,13 @@ import { jwtDecode } from "jwt-decode";
 import { debounce } from "lodash";
 import axios from "../src/utils/axios";
 import AddressForm from "./components/AddressForm.js";
+import ForgotPassword from "./components/ForgotPassword.js";
 
 function App() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const { token, isLoggedIn } = useSelector(state => state.auth)
   const { isLoading, products, productsBidding } = useSelector(state => state.product)
-  // const { isLoading: isLoadingUser } = useSelector(state => state.auth)
   const [notification, setNotification] = useState('')
   const [stompClient, setStompClient] = useState(null);
   const prevProductsRef = useRef([]);
@@ -223,7 +223,6 @@ function App() {
     client.connect({ Authorization: `Bearer ${token}` }, () => {
       // console.log("Connected to WebSocket");
 
-
       client.subscribe('/topic/notification', (message) => {
         const newNotification = JSON.parse(message.body);
         // console.log(newNotification);
@@ -339,6 +338,14 @@ function App() {
           element={
             <Layout>
               <VideoChat />
+            </Layout>
+          }
+        />
+        <Route
+          path="/forgot-password"
+          element={
+            <Layout>
+              <ForgotPassword />
             </Layout>
           }
         />
