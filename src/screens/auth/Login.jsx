@@ -2,7 +2,7 @@ import { FaFacebook, FaGoogle } from "react-icons/fa";
 import { Caption, Container, CustomNavLink, PrimaryButton, Title } from "../../router";
 import { commonClassNameOfInput } from "../../components/common/Design";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { login, RESET } from "../../redux/slide/authSlide";
@@ -106,8 +106,8 @@ export const Login = () => {
             <input type="password" name="password" value={password} onChange={handleInputChange} className={commonClassNameOfInput} placeholder="Enter Your Password" required />
           </div>
           <div className="flex items-center gap-2 py-4">
-            <input type="checkbox" />
-            <Caption>I agree to the Terms & Policy</Caption>
+            {/* <input type="checkbox" /> */}
+            <Link to="/forgot-password" className="text-blue-600">Forgot password</Link>
           </div>
           <PrimaryButton className="w-full rounded-none my-5">LOGIN</PrimaryButton>
           <div className="text-center border py-4 rounded-lg mt-4">
