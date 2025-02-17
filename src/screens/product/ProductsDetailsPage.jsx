@@ -11,16 +11,18 @@ import { toast } from "react-toastify";
 import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
 import { useDispatch, useSelector } from "react-redux";
-import { addNotification, auctionsuccess } from "../../redux/slide/productSlide";
+import { auctionsuccess } from "../../redux/slide/productSlide";
 
 
 export const ProductsDetailsPage = () => {
   const { id } = useParams()
   const dispatch = useDispatch()
   const [userId, setUserId] = useState(null);
+  const [isOpenInput, setSsOpenInput] = useState(false);
   const [productDetail, setProductDetail] = useState({})
   const [imageFile, setImageFile] = useState([]);
   const [timeLeft, setTimeLeft] = useState(null);
+  const [timeLeftEndDate, setTimeLeftEndDate] = useState(null);
   const [isDuration, setIsDuration] = useState(false)
   const [isLogin, setIsLogin] = useState(localStorage.getItem('isIntrospect') || false)
   const { triggerLoginExpired } = useLoginExpired();
@@ -88,6 +90,15 @@ export const ProductsDetailsPage = () => {
       const timer = setInterval(updateTime, 1000);
       return () => clearInterval(timer);
     }
+  }, [productDetail?.start_date]);
+
+  useEffect(() => {
+    if (productDetail?.end_date) {
+      const updateTime = () => calculateTimeLeft(productDetail?.end_date, setTimeLeftEndDate, setIsDuration)
+      updateTime()
+      const timer = setInterval(updateTime, 1000);
+      return () => clearInterval(timer);
+    }
   }, [productDetail?.end_date]);
 
 
@@ -146,7 +157,6 @@ export const ProductsDetailsPage = () => {
       });
       // client.subscribe('/topic/notification', (message) => {
       //   const newNotification = JSON.parse(message.body);
-      //   // console.log(newNotification);
 
       //   setNotification(newNotification);
       // });
@@ -229,6 +239,13 @@ export const ProductsDetailsPage = () => {
     }
   }
 
+
+  useEffect(() => {
+    if ((userId !== productDetail.buyerId) && (productDetail.isSell === true) && (productDetail.isSoldOut === false)) {
+      setSsOpenInput(true)
+    }
+  }, [id, productDetail]);
+
   return (
     <>
       <section className="pt-24 px-8">
@@ -249,14 +266,14 @@ export const ProductsDetailsPage = () => {
                 }
               </div>
               <div className="flex gap-5">
-                <div className="flex text-green ">
+                {/* <div className="flex text-green ">
                   <IoIosStar size={20} />
                   <IoIosStar size={20} />
                   <IoIosStar size={20} />
                   <IoIosStarHalf size={20} />
                   <IoIosStarOutline size={20} />
                 </div>
-                <Caption>(2 customer reviews)</Caption>
+                <Caption>(2 customer reviews)</Caption> */}
               </div>
               <br />
               <Body>Korem ipsum dolor amet, consectetur adipiscing elit. Maece nas in pulvinar neque. Nulla finibus lobortis pulvinar. Donec a consectetur nulla.</Body>
@@ -265,25 +282,58 @@ export const ProductsDetailsPage = () => {
               <br />
               <Caption>Item Verifed: Yes</Caption>
               <br />
-              <Caption>Time left:</Caption>
+              <Caption>{timeLeft !== null ? "Upcoming" : "Opening"}:</Caption>
               <br />
               <div className="flex gap-8 text-center">
-                <div className="p-5 px-10 shadow-s1">
-                  <Title level={4}>{timeLeft?.days || 0}</Title>
-                  <Caption>Days</Caption>
-                </div>
-                <div className="p-5 px-10 shadow-s1">
-                  <Title level={4}>{timeLeft?.hours || 0}</Title>
-                  <Caption>Hours</Caption>
-                </div>
-                <div className="p-5 px-10 shadow-s1">
-                  <Title level={4}>{timeLeft?.minutes || 0}</Title>
-                  <Caption>Minutes</Caption>
-                </div>
-                <div className="p-5 px-10 shadow-s1">
-                  <Title level={4}>{timeLeft?.seconds || 0}</Title>
-                  <Caption>Seconds</Caption>
-                </div>
+
+                {/* thg sap mo ban */}
+                {
+                  timeLeft !== null && (
+                    <>
+                      <div className="p-5 px-10 shadow-s1">
+                        <Title level={4}>{timeLeft?.days || 0}</Title>
+                        <Caption>Days</Caption>
+                      </div>
+                      <div className="p-5 px-10 shadow-s1">
+                        <Title level={4}>{timeLeft?.hours || 0}</Title>
+                        <Caption>Hours</Caption>
+                      </div>
+                      <div className="p-5 px-10 shadow-s1">
+                        <Title level={4}>{timeLeft?.minutes || 0}</Title>
+                        <Caption>Minutes</Caption>
+                      </div>
+                      <div className="p-5 px-10 shadow-s1">
+                        <Title level={4}>{timeLeft?.seconds || 0}</Title>
+                        <Caption>Seconds</Caption>
+                      </div>
+                    </>
+                  )
+                }
+
+                {/* thg het han */}
+                {
+                  timeLeft === null && (
+                    <>
+                      <div className="p-5 px-10 shadow-s1">
+                        <Title level={4}>{timeLeftEndDate?.days || 0}</Title>
+                        <Caption>Days</Caption>
+                      </div>
+                      <div className="p-5 px-10 shadow-s1">
+                        <Title level={4}>{timeLeftEndDate?.hours || 0}</Title>
+                        <Caption>Hours</Caption>
+                      </div>
+                      <div className="p-5 px-10 shadow-s1">
+                        <Title level={4}>{timeLeftEndDate?.minutes || 0}</Title>
+                        <Caption>Minutes</Caption>
+                      </div>
+                      <div className="p-5 px-10 shadow-s1">
+                        <Title level={4}>{timeLeftEndDate?.seconds || 0}</Title>
+                        <Caption>Seconds</Caption>
+                      </div>
+                    </>
+                  )
+                }
+
               </div>
               <br />
               <Title className="flex items-center gap-2">
@@ -299,6 +349,8 @@ export const ProductsDetailsPage = () => {
               <Title className={`flex items-center gap-2 ${productDetail.isSoldOut ? 'text-red-700' : ''}`}>
                 Current bid:<Caption className="text-3xl">${currentPrice.price || 0} </Caption>
               </Title>
+
+
               {
                 (userId !== productDetail.buyerId && productDetail.isSoldOut === false) && (
                   <div className="w-[200px] h-[40px] bg-green border rounded-md flex justify-center items-center">
@@ -318,13 +370,13 @@ export const ProductsDetailsPage = () => {
                 )
               }
               {
-                ((userId !== productDetail.buyerId) && (productDetail.isSell === true) && (productDetail.isSoldOut === false)) &&
+                isOpenInput &&
                 <div div className="p-5 px-10 shadow-s3 py-8">
                   <form onSubmit={onSubmitBidding} className="flex gap-3 justify-between">
                     <input className={commonClassNameOfInput} value={priceBidding} onChange={e => setPriceBidding(e.target.value)} type="number" name="price" />
-                    <button type="button" className="bg-gray-100 rounded-md px-5 py-3">
+                    {/* <button type="button" className="bg-gray-100 rounded-md px-5 py-3">
                       <AiOutlinePlus />
-                    </button>
+                    </button> */}
                     {/* cursor-not-allowed */}
                     <button type="submit" className={`py-3 px-8 rounded-lg ${"bg-gray-400 text-gray-700"}`}>
                       Submit

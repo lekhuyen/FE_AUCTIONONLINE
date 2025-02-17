@@ -39,6 +39,19 @@ export const getAllProduct = createAsyncThunk("product/getallproduct", async (pa
     return thunkAPI.rejectWithValue(errorMessage)
   }
 })
+
+export const getAllProductBidding = createAsyncThunk("product/getallproductBidding", async (paginate, thunkAPI) => {
+  try {
+    const response = await axios.get("/auction/product")
+    return response
+  } catch (error) {
+    // console.log(error.response.data.message);
+    const errorMessage = (error.response && error.response.data && error.response.data.message) || error.message || error.toString() || error
+    return thunkAPI.rejectWithValue(errorMessage)
+  }
+})
+
+
 export const deleteProduct = createAsyncThunk("product/deleteproduct", async (id, thunkAPI) => {
   try {
     const response = await axios.delete(`/auction/${id}`, { authRequired: true })
@@ -60,6 +73,39 @@ export const getAllCategory = createAsyncThunk("category/getallcategory", async 
       },
       headers: { authRequired: true }
     })
+
+    return response.result
+  } catch (error) {
+    // console.log(error.response.data.message);
+    const errorMessage = (error.response && error.response.data && error.response.data.message) || error.message || error.toString() || error
+    return thunkAPI.rejectWithValue(errorMessage)
+  }
+})
+
+
+//getAllProductByCreator
+export const getAllProductByCreator = createAsyncThunk("auction/creator", async (userId, thunkAPI) => {
+  try {
+    const response = await axios.get(`auction/creator/${userId}`, {
+
+      headers: { authRequired: true }
+    })
+    return response.result
+  } catch (error) {
+    // console.log(error.response.data.message);
+    const errorMessage = (error.response && error.response.data && error.response.data.message) || error.message || error.toString() || error
+    return thunkAPI.rejectWithValue(errorMessage)
+  }
+})
+
+
+//getAllProductByBuyer
+export const getAllProductByBuyer = createAsyncThunk("auction/buyer", async (userId, thunkAPI) => {
+  try {
+    const response = await axios.get(`auction/buyer/${userId}`, {
+
+      headers: { authRequired: true }
+    })
     return response.result
   } catch (error) {
     // console.log(error.response.data.message);
@@ -71,9 +117,7 @@ export const getAllCategory = createAsyncThunk("category/getallcategory", async 
 
 export const auctionsuccess = createAsyncThunk("category/auctionsuccess", async (data, thunkAPI) => {
   try {
-    const response = await axios.post(`/bidding/success/${data.productId}/${data.sellerId}`, null, { authRequired: true })
-    console.log(response);
-
+    const response = await axios.post(`/bidding/success/${data.productId}/${data.sellerId}`, null, { authRequired: true, timeout: 10000 })
     return response
   } catch (error) {
     // console.log(error.response.data.message);
@@ -96,7 +140,6 @@ export const getAllProductByCategory = createAsyncThunk("product/getallproductby
       return response.result
     }
 
-    // console.log(response);
   } catch (error) {
     // console.log(error.response.data.message);
     const errorMessage = (error.response && error.response.data && error.response.data.message) || error.message || error.toString() || error
@@ -109,9 +152,14 @@ const initialState = {
   message: '',
   isLoading: false,
   products: [],
+  productsBidding: [],
+  productsOfCreator: [],
+  productsOfBuyer: [],
   productsbycategory: [],
   categories: [],
   notification: {},
+  notificationsBidding: [],
+  notificationsBiddingLength: [],
   notificationchat: {},
 }
 
@@ -124,6 +172,10 @@ export const productSlide = createSlice({
     },
     notificationchat: (state, action) => {
       state.notificationchat = action.payload
+    },
+    notificationBidding: (state, action) => {
+      state.notificationsBidding = action.payload
+      state.notificationsBiddingLength = action.payload
     },
 
   },
@@ -163,6 +215,7 @@ export const productSlide = createSlice({
 
     //getAll
     builder.addCase(getAllProduct.pending, (state) => {
+      console.log("pending");
       state.isLoading = true;
       state.products = [];
     });
@@ -173,8 +226,55 @@ export const productSlide = createSlice({
     });
 
     builder.addCase(getAllProduct.rejected, (state, action) => {
+      console.log("rejected");
+
+      // state.isLoading = true;
+      state.products = [];
+    });
+
+    // all sp chua ban
+    builder.addCase(getAllProductBidding.pending, (state) => {
+      state.productsBidding = [];
+    });
+
+    builder.addCase(getAllProductBidding.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.productsBidding = action.payload.result;
+    });
+
+    builder.addCase(getAllProductBidding.rejected, (state, action) => {
+      state.productsBidding = [];
+    });
+    // getAllProductByCreator
+    builder.addCase(getAllProductByCreator.pending, (state) => {
+
       state.isLoading = true;
-      state.products = action.payload.result;
+      state.productsOfCreator = [];
+    });
+
+    builder.addCase(getAllProductByCreator.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.productsOfCreator = action.payload;
+    });
+
+    builder.addCase(getAllProductByCreator.rejected, (state, action) => {
+      state.isLoading = true;
+      state.productsOfCreator = action.payload;
+    });
+    // getAllProductByBuyer
+    builder.addCase(getAllProductByBuyer.pending, (state) => {
+      state.isLoading = true;
+      state.productsOfBuyer = [];
+    });
+
+    builder.addCase(getAllProductByBuyer.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.productsOfBuyer = action.payload;
+    });
+
+    builder.addCase(getAllProductByBuyer.rejected, (state, action) => {
+      state.isLoading = true;
+      state.productsOfBuyer = action.payload;
     });
 
 
@@ -214,7 +314,7 @@ export const productSlide = createSlice({
 
     //chot dau gia
     builder.addCase(auctionsuccess.pending, (state) => {
-      state.isLoading = true;
+      // state.isLoading = true;
     });
 
     builder.addCase(auctionsuccess.fulfilled, (state, action) => {
@@ -222,7 +322,7 @@ export const productSlide = createSlice({
     });
 
     builder.addCase(auctionsuccess.rejected, (state, action) => {
-      state.isLoading = true;
+      // state.isLoading = true;
     });
 
 
@@ -244,6 +344,6 @@ export const productSlide = createSlice({
   },
 })
 
-export const { addNotification, notificationchat } = productSlide.actions
+export const { addNotification, notificationchat, notificationBidding } = productSlide.actions
 
 export default productSlide.reducer

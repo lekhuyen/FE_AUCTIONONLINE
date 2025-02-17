@@ -20,6 +20,7 @@ export const getAllUsers = createAsyncThunk("auth/getAllUsers", async (paginate,
 export const register = createAsyncThunk("auth/register", async (userDate, thunkAPI) => {
   try {
     const response = await axios.post("/users", userDate)
+
     return response
   } catch (error) {
     // console.log(error.response.data.message);
@@ -31,6 +32,8 @@ export const login = createAsyncThunk("auth/login", async (userDate, thunkAPI) =
   try {
     const response = await axios.post("auth/login", userDate)
     localStorage.setItem("token", response.result.token)
+    console.log(response);
+
     return response.result.token
 
   } catch (error) {

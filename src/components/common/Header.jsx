@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import styles from '../chat/chat.module.scss'
+import { FaRegListAlt } from "react-icons/fa";
 
 // design
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
@@ -25,7 +26,7 @@ import moment from "moment";
 
 export const Header = () => {
   const dispatch = useDispatch()
-  const { categories, notification } = useSelector(state => state.product)
+  const { categories, notification, notificationsBidding, notificationsBiddingLength } = useSelector(state => state.product)
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
@@ -44,7 +45,8 @@ export const Header = () => {
   const [notificationAdminLenght, setNotificationAdminLenght] = useState([])
 
 
-  const { isLoggedIn } = useSelector(state => state.auth)
+  const { isLoggedIn, token } = useSelector(state => state.auth)
+
 
   const menuRef = useRef(null);
   const notificationRef = useRef(null);
@@ -87,9 +89,8 @@ export const Header = () => {
   //get notification
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
+    // const token = localStorage.getItem('token')
     if (token) {
-
       try {
         const tokenInfo = jwtDecode(token)
         setUserId(tokenInfo.userid)
@@ -98,7 +99,8 @@ export const Header = () => {
         console.error("Error decoding token:", error.message);
       }
     }
-  }, [])
+  }, [token])
+
 
   //sửa lỗi khi login xong vẫn chưa hiện thông báo
   useEffect(() => {
@@ -106,6 +108,7 @@ export const Header = () => {
       getNotification()
     }
   }, [userId])
+
   const getNotification = async () => {
     if (isLogin && userId) {
       try {
@@ -296,6 +299,9 @@ export const Header = () => {
     };
   }, []);
 
+  // console.log(notificationsBidding);
+
+
   return (
     <>
       <header className={isHomePage ? `header py-1 bg-primary ${isScrolled ? "scrolled" : ""}` : `header bg-white shadow-s1 ${isScrolled ? "scrolled" : ""}`}>
@@ -365,6 +371,14 @@ export const Header = () => {
                   isLoggedIn && (
                     <CustomNavLink href="/chat" className={`${isScrolled || !isHomePage ? "text-black" : "text-white"}`}>
                       <MdOutlineMessage />
+                    </CustomNavLink>
+                  )
+                }
+                {/* quan ly sp cua user */}
+                {
+                  isLoggedIn && (
+                    <CustomNavLink href="/manager-post" className={`${isScrolled || !isHomePage ? "text-black" : "text-white"}`} >
+                      <FaRegListAlt />
                     </CustomNavLink>
                   )
                 }
@@ -495,21 +509,21 @@ export const Header = () => {
                   }} className="relative cursor-pointer">
                   {isLoggedIn && <IoMdNotificationsOutline size={23} className={`${isScrolled || !isHomePage ? "text-black" : "text-white"}`} />}
                   {
-                    notificationsLength.filter(notification => notification.sellerIsRead === false && notification.sellerId === userId).length > 0 && (
+                    notificationsLength?.filter(notification => notification.sellerIsRead === false && notification.sellerId === userId).length > 0 && (
                       <div className="absolute top-[-10px] right-[-10px] w-5 h-5 border rounded-full bg-red-600 
                     flex items-center justify-center text-white text-[13px]">
-                        {notificationsLength.filter(notification => notification.sellerIsRead === false && notification.sellerId === userId).length > 5 ? '5+' :
-                          notificationsLength.filter(notification => notification.sellerIsRead === false && notification.sellerId === userId).length
+                        {notificationsLength?.filter(notification => notification.sellerIsRead === false && notification.sellerId === userId).length > 5 ? '5+' :
+                          notificationsLength?.filter(notification => notification.sellerIsRead === false && notification.sellerId === userId).length
                         }
                       </div>
                     )
                   }
                   {
-                    notificationsLength.filter(notification => notification.buyerIsRead === false && notification.buyerId === userId).length > 0 && (
+                    notificationsLength?.filter(notification => notification.buyerIsRead === false && notification.buyerId === userId).length > 0 && (
                       <div className="absolute top-[-10px] right-[-10px] w-5 h-5 border rounded-full bg-red-600 
                     flex items-center justify-center text-white text-[13px]">
-                        {notificationsLength.filter(notification => notification.buyerIsRead === false && notification.buyerId === userId).length > 5 ? '5+' :
-                          notificationsLength.filter(notification => notification.buyerIsRead === false && notification.buyerId === userId).length
+                        {notificationsLength?.filter(notification => notification.buyerIsRead === false && notification.buyerId === userId).length > 5 ? '5+' :
+                          notificationsLength?.filter(notification => notification.buyerIsRead === false && notification.buyerId === userId).length
                         }
                       </div>
                     )
@@ -520,83 +534,85 @@ export const Header = () => {
                       <div className="absolute w-[360px] top-[33px] right-1 overflow-hidden bg-white shadow-lg rounded-sm p-2">
                         <div className="w-full"><h3 className="text-[24px]">Thong bao</h3></div>
                         <div className={clsx(styles.custom_scroll, 'overflow-y-auto max-h-[400px]')}>
-                          {notifications?.length > 0 && notifications?.map((notifi, index) => (
-                            <NavLink to={`/details/${notifi?.productId}`}
-                              onClick={() => hanldeReadedNotification(notifi.id)} key={index} className="flex gap-2 items-center bottom-1 padding-2">
-                              {
-                                // check if the user is the seller
-                                notifi.sellerId === userId && (
-                                  <>
-                                    <div className="w-[50px]  flex-shrink-0"><img className="w-full" alt="" src="https://cdn-icons-png.flaticon.com/512/6596/6596121.png" /></div>
-                                    <div>
-                                      {
-                                        notifi.auction === true ? (
-                                          <>
-                                            <p className="whitespace-normal overflow-hidden text-ellipsis text-[14px]">
-                                              <span className="font-bold">San pham <span className="font-bold">{notifi.productName}</span> cua ban </span>
-                                              da duoc dau gia thanh cong cua ban voi muc gia {notifi.price}
-                                            </p>
-                                          </>
-                                        )
-                                          :
-                                          (
+                          {userId && notifications?.length > 0 && notifications?.map((notifi, index) => {
+                            return (
+                              <NavLink to={`/details/${notifi?.productId}`}
+                                onClick={() => hanldeReadedNotification(notifi.id)} key={notifi.id} className="flex gap-2 items-center bottom-1 padding-2">
+                                {
+                                  // check if the user is the seller
+                                  notifi.sellerId === userId && (
+                                    <>
+                                      <div className="w-[50px]  flex-shrink-0"><img className="w-full" alt="" src="https://cdn-icons-png.flaticon.com/512/6596/6596121.png" /></div>
+                                      <div>
+                                        {
+                                          notifi.auction === true ? (
                                             <>
                                               <p className="whitespace-normal overflow-hidden text-ellipsis text-[14px]">
-                                                <span className="font-bold">{notifi.buyerName} </span>
-                                                da dau gia san pham <span className="font-bold">{notifi.productName} </span>
-                                                cua ban voi muc gia {notifi.price}
+                                                <span className="font-bold">San pham <span className="font-bold">{notifi.productName}</span> cua ban </span>
+                                                da duoc dau gia thanh cong cua ban voi muc gia {notifi.price}
                                               </p>
                                             </>
                                           )
-                                      }
-                                      <p className="text-blue-500 text-[12px]">{moment(notifi.timestamp).fromNow()}</p>
-                                    </div>
-                                    {
-                                      notifi.sellerIsRead === false && (
-                                        <div className="pr-3.5"><BsDot size={27} className="text-blue-500" /></div>
-                                      )
-                                    }
-                                  </>
-                                )
-                              }
-
-                              {
-                                // check if the user is the buyer
-                                notifi.buyerId === userId && (
-                                  <>
-                                    <div className="w-[50px] flex-shrink-0"><img className="w-full" alt="" src="https://cdn-icons-png.flaticon.com/512/6596/6596121.png" /></div>
-                                    <div>
+                                            :
+                                            (
+                                              <>
+                                                <p className="whitespace-normal overflow-hidden text-ellipsis text-[14px]">
+                                                  <span className="font-bold">{notifi.buyerName} </span>
+                                                  da dau gia san pham <span className="font-bold">{notifi.productName} </span>
+                                                  cua ban voi muc gia {notifi.price}
+                                                </p>
+                                              </>
+                                            )
+                                        }
+                                        <p className="text-blue-500 text-[12px]">{moment(notifi.timestamp).fromNow()}</p>
+                                      </div>
                                       {
-                                        notifi.auction === true ? (
-                                          <>
-                                            <p className="whitespace-normal overflow-hidden text-ellipsis text-[15px]">
-                                              <span className="font-bold">Chúc mừng bạn </span>
-                                              da dau gia thanh cong san pham <span className="font-bold">{notifi.productName}</span> voi muc gia {notifi.price}
-                                            </p>
-                                          </>
+                                        notifi.sellerIsRead === false && (
+                                          <div className="pr-3.5"><BsDot size={27} className="text-blue-500" /></div>
                                         )
-                                          :
-                                          (
+                                      }
+                                    </>
+                                  )
+                                }
+
+                                {
+                                  // check if the user is the buyer
+                                  notifi.buyerId === userId && (
+                                    <>
+                                      <div className="w-[50px] flex-shrink-0"><img className="w-full" alt="" src="https://cdn-icons-png.flaticon.com/512/6596/6596121.png" /></div>
+                                      <div>
+                                        {
+                                          notifi.auction === true ? (
                                             <>
                                               <p className="whitespace-normal overflow-hidden text-ellipsis text-[15px]">
-                                                <span className="font-bold">Ban </span>
+                                                <span className="font-bold">Chúc mừng bạn </span>
                                                 da dau gia thanh cong san pham <span className="font-bold">{notifi.productName}</span> voi muc gia {notifi.price}
                                               </p>
                                             </>
                                           )
+                                            :
+                                            (
+                                              <>
+                                                <p className="whitespace-normal overflow-hidden text-ellipsis text-[15px]">
+                                                  <span className="font-bold">Ban </span>
+                                                  da dau gia thanh cong san pham <span className="font-bold">{notifi.productName}</span> voi muc gia {notifi.price}
+                                                </p>
+                                              </>
+                                            )
+                                        }
+                                        <p className="text-blue-500 text-[12px]">{moment(notifi.timestamp).fromNow()}</p>
+                                      </div>
+                                      {
+                                        notifi.buyerIsRead === false && (
+                                          <div className="pr-3.5"><BsDot size={27} className="text-blue-500" /></div>
+                                        )
                                       }
-                                      <p className="text-blue-500 text-[12px]">{moment(notifi.timestamp).fromNow()}</p>
-                                    </div>
-                                    {
-                                      notifi.buyerIsRead === false && (
-                                        <div className="pr-3.5"><BsDot size={27} className="text-blue-500" /></div>
-                                      )
-                                    }
-                                  </>
-                                )
-                              }
-                            </NavLink>
-                          ))}
+                                    </>
+                                  )
+                                }
+                              </NavLink>
+                            )
+                          })}
                         </div>
                       </div>
                     )
@@ -616,6 +632,7 @@ export const Header = () => {
                     </CustomNavLink>
                   )
                 }
+
                 {
                   isLoggedIn && (
                     <CustomNavLink href="/dashboard">
