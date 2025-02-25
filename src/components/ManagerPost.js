@@ -34,6 +34,7 @@ const ManagerPost = () => {
   const [isCheck, setIsCheck] = useState([])
   const [isActive, setIsActive] = useState([])
   const [productSoldOut, setProductSoldOut] = useState([])
+  const [productExprise, setProductExprise] = useState([])
   const [userName, setUserName] = useState('')
   const [userId, setUserId] = useState(null);
   const { productsOfCreator, isLoading, productsOfBuyer } = useSelector(state => state.product)
@@ -73,17 +74,28 @@ const ManagerPost = () => {
   }, [])
 
   useEffect(() => {
-    if (productsOfCreator?.length > 0) {
+    if (productsOfCreator && productsOfCreator?.length > 0) {
       // const now = moment();
       // const expiredProducts = productsOfCreator.filter(product => moment(product.end_date).isBefore(now));
-      const check = productsOfCreator.filter(product => product.status === true);
-      const isactiveProducts = productsOfCreator.filter(product => product.status === false);
-      const productsSoldOut = productsOfCreator.filter(product => product.soldout === true);
+      const check = productsOfCreator?.filter(product => product.status === true);
+      const productExprise = Array.isArray(productsOfCreator)
+        ? productsOfCreator.filter(product => {
+          const [year, month, day] = product?.end_date || [];
+          if (!year || !month || !day) return false; // Kiểm tra nếu end_date không hợp lệ
 
+          const endDate = new Date(year, month - 1, day);
+          return !product.bidding && product.status && endDate <= new Date();
+        })
+        : [];
+
+
+      const isactiveProducts = productsOfCreator?.filter(product => product.status === false);
+      const productsSoldOut = productsOfCreator?.filter(product => product.soldout === true);
       // setExprise(expiredProducts);
-      setIsCheck(check);
-      setIsActive(isactiveProducts);
-      setProductSoldOut(productsSoldOut);
+      setIsCheck(check || []);
+      setProductExprise(productExprise || []);
+      setIsActive(isactiveProducts || []);
+      setProductSoldOut(productsSoldOut || []);
     }
   }, [productsOfCreator]);
 
@@ -113,7 +125,7 @@ const ManagerPost = () => {
 
   const handlePayment = (id) => {
     const uniqueOrderId = `order_${id}_${Date.now()}`;
-    const product = productsOfBuyer.find(product => product.item_id === id);
+    const product = productsOfBuyer?.find(product => product.item_id === id);
     if (product?.bidding?.price) {
       checkout(id, product?.bidding?.price, uniqueOrderId)
         .then((res) => {
@@ -247,10 +259,11 @@ const ManagerPost = () => {
                           </tr>
                         </thead>
                         <tbody>
+
                           {
-                            clickMenu === 2 && (
+                            clickMenu === 1 && (
                               (
-                                isCheck?.length > 0 && isCheck?.slice(0, visibleCountIsCheck).map((product, index) => (
+                                isCheck?.length > 0 && productExprise?.map((product, index) => (
                                   <tr key={product.item_id} className="bg-white border-b hover:bg-gray-50">
                                     <td className="px-6 py-4">{product.item_name}</td>
                                     <td className="px-6 py-4">{product.starting_price}</td>
@@ -263,15 +276,9 @@ const ManagerPost = () => {
                                       ))}
                                     </td>
                                     <td className="px-6 py-4 text-center flex items-center gap-3 mt-1">
-                                      <NavLink to="#" type="button" className="font-medium text-indigo-500">
-                                        <TiEyeOutline size={25} />
-                                      </NavLink>
-                                      <NavLink to={`/product/update/${product.item_id}`} type="button" className="font-medium text-green">
-                                        <CiEdit size={25} />
-                                      </NavLink>
-                                      {/* <button className="font-medium text-red-500" onClick={() => handleDeleteProduct(product.item_id)}>
-                          <MdOutlineDeleteOutline size={25} />
-                        </button> */}
+                                      <button className="font-medium text-green" >
+                                        Repost
+                                      </button>
                                     </td>
                                   </tr>
                                 ))
@@ -313,6 +320,7 @@ const ManagerPost = () => {
                           }
                           {
                             clickMenu === 3 && (
+                              productsOfBuyer &&
                               productsOfBuyer?.length > 0 &&
                               productsOfBuyer.filter(product => product?.buyer?.id === userId).map((product) => (
                                 <tr key={product.item_id} className="bg-white border-b hover:bg-gray-50">
@@ -349,7 +357,8 @@ const ManagerPost = () => {
                         <p className="text-[14px]">Price: <span className="text-[16px] font-bold">{product?.bidding?.price}</span></p>
                         <p className="text-[14px]">Ngay ban: <span className="text-[16px] font-bold">{moment(product.end_date).format("DD/MM/YYYY")}</span></p>
                         <p className="text-[14px]">Nguoi mua: <span className="text-[16px] font-bold">{product?.buyer?.name}</span></p>
-                        <p className="text-[14px]">STD: <span className="text-[16px] font-bold">{product?.buyer?.email}</span></p>
+                        <p className="text-[14px]">STD: <span className="text-[16px] font-bold">{product?.buyer?.phone}</span></p>
+                        <p className="text-[14px]">Address: <span className="text-[16px] font-bold">{product?.buyer?.address}</span></p>
                         <p className="text-[14px]">Thanh toan: <span className={clsx("text-[16px] font-bold", product?.paid === false ? "" : "text-red-500")}>{product?.paid === true ? "Da thanh toan" : "Chua thanh toan"}</span></p>
                       </div>
                     ))

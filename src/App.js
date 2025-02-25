@@ -3,43 +3,43 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './index.css'
 import {
-    LoginAsSeller,
-    Register,
-    Login,
-    UserProfile,
-    DashboardLayout,
-    Layout,
-    CreateCategory,
-    UpdateCategory,
-    Catgeorylist,
-    UpdateProductByAdmin,
-    AdminProductList,
-    Income,
-    Dashboard,
-    ProductList,
-    ProductEdit,
-    AddProduct,
-    ProductsDetailsPage,
-    Home,
-    UserList,
-    WinningBidList,
-    NotFound,
-    ScrollToTop,
-    PrivateRoute,
-    Contact,
-    AboutUsComponents,
-    AdminContact,
-    ContactDetailPage,
-    AdminAboutUs, BlogPage, BlogDetail, AdminBlog, AdminBlogDetail, AdminBlogAdd,
+  LoginAsSeller,
+  Register,
+  Login,
+  UserProfile,
+  DashboardLayout,
+  Layout,
+  CreateCategory,
+  UpdateCategory,
+  Catgeorylist,
+  UpdateProductByAdmin,
+  AdminProductList,
+  Income,
+  Dashboard,
+  ProductList,
+  ProductEdit,
+  AddProduct,
+  ProductsDetailsPage,
+  Home,
+  UserList,
+  WinningBidList,
+  NotFound,
+  ScrollToTop,
+  PrivateRoute,
+  Contact,
+  AboutUsComponents,
+  AdminContact,
+  ContactDetailPage,
+  AdminAboutUs, BlogPage, BlogDetail, AdminBlog, AdminBlogDetail, AdminBlogAdd,
 
 } from "./router/index.js";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { introspect, logout } from "./redux/slide/authSlide.js";
 import Swal from "sweetalert2";
 import Loading from "./components/Loading/index.js";
 import Chat from "./components/chat/chat.js";
-import { addNotification, getAllProduct } from "./redux/slide/productSlide.js";
+import { addNotification, getAllProduct, getAllProductBidding, notificationBidding } from "./redux/slide/productSlide.js";
 import ProductPage from "./admin/product/ProductPage.js";
 import SearchPageProduct from "./screens/product/SearchPageProduct.js";
 import SockJS from "sockjs-client";
@@ -49,17 +49,25 @@ import VideoChat from "./components/VideoChat.js";
 import Checkout from "./components/Checkout.js";
 import PaymentResult from "./components/PaymentResult.js";
 import ManagerPost from "./components/ManagerPost.js";
-
+import { jwtDecode } from "jwt-decode";
+import { debounce } from "lodash";
+import axios from "../src/utils/axios";
+import AddressForm from "./components/AddressForm.js";
+import ForgotPassword from "./components/ForgotPassword.js";
 
 function App() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const { token } = useSelector(state => state.auth)
-  const { isLoading } = useSelector(state => state.product)
-  // const { isLoading: isLoadingUser } = useSelector(state => state.auth)
+  const { token, isLoggedIn } = useSelector(state => state.auth)
+  const { isLoading, products, productsBidding } = useSelector(state => state.product)
   const [notification, setNotification] = useState('')
   const [stompClient, setStompClient] = useState(null);
-
+  const prevProductsRef = useRef([]);
+  const [userId, setUserId] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isLogin, setIsLogin] = useState(localStorage.getItem('isIntrospect') || false)
+  const [notifications, setNotifications] = useState([])
+  const [notificationsLength, setNotificationsLength] = useState([])
 
   useEffect(() => {
     dispatch(getAllProduct({
@@ -67,6 +75,107 @@ function App() {
       size: 0
     }));
   }, [dispatch])
+
+  const debouncedGetAllProduct = debounce(() => {
+    dispatch(getAllProductBidding());
+  }, 3000);
+
+  useEffect(() => {
+    dispatch(getAllProductBidding());
+  }, [])
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      try {
+        const tokenInfo = jwtDecode(token)
+        setUserId(tokenInfo.userid)
+      } catch (error) {
+        console.error("Error decoding token:", error.message);
+      }
+    }
+  }, [])
+
+  // tự động chốt phiên đấu giá khi end_date <= now
+  useEffect(() => {
+    if (Array.isArray(productsBidding) && productsBidding.length > 0) {
+      prevProductsRef.current = [...productsBidding];
+    }
+  }, [productsBidding]);
+
+  useEffect(() => {
+    if (isLoggedIn && userId) {
+      getNotification()
+    }
+  }, [isLoggedIn, isLogin, userId])
+  const getNotification = async () => {
+    if (isLogin && userId) {
+      try {
+        const response = await axios.get("bidding/notification/" + userId, { authRequired: true })
+
+        if (response.code === 0) {
+          dispatch(notificationBidding(response.result))
+          setNotificationsLength(response.result)
+          setNotifications(response.result)
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!Array.isArray(productsBidding)) return;
+
+    const interval = setInterval(async () => {
+      if (isProcessing || isLoading) return; // Prevent multiple requests
+
+      setIsProcessing(true);
+      debouncedGetAllProduct();
+
+      const now = new Date();
+      console.log("Checking for expired products...");
+
+      // Lọc các sản phẩm đã hết hạn
+      const expiredProducts = productsBidding.filter((product) => {
+        if (!Array.isArray(product.end_date) || product.end_date.length < 3) return false;
+
+        const [year, month, day] = product.end_date;
+        const endDate = new Date(year, month - 1, day);
+        return endDate <= now && !product.isSoldOut;
+      });
+
+
+      for (const product of expiredProducts) {
+        if (userId) {
+          console.log(`⚡ Auction success for: ${product.item_name}`);
+
+          if (token) {
+            try {
+              const response = await axios.post(`/bidding/success/${product.item_id}/${userId}`, null, {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+                timeout: 10000,
+              });
+              console.log(response);
+            } catch (error) {
+              console.error(`Error during auction success for ${product.item_name}:`, error);
+            }
+          } else {
+            console.log("No token found, skipping auction success.");
+          }
+        }
+      }
+
+      setIsProcessing(false);
+    }, 12 * 60 * 60 * 1000);
+
+    return () => clearInterval(interval);
+
+  }, [dispatch, userId, products, isLoading, isProcessing]);
+
 
 
   const [isIntrospect, setIsIntrospect] = useState(localStorage.getItem('isIntrospect') === "true" || false);
@@ -113,7 +222,6 @@ function App() {
 
     client.connect({ Authorization: `Bearer ${token}` }, () => {
       // console.log("Connected to WebSocket");
-
 
       client.subscribe('/topic/notification', (message) => {
         const newNotification = JSON.parse(message.body);
@@ -191,6 +299,14 @@ function App() {
             </Layout>
           }
         />
+        <Route
+          path="/address"
+          element={
+            <Layout>
+              <AddressForm />
+            </Layout>
+          }
+        />
 
         <Route
           path="/search"
@@ -225,6 +341,14 @@ function App() {
             </Layout>
           }
         />
+        <Route
+          path="/forgot-password"
+          element={
+            <Layout>
+              <ForgotPassword />
+            </Layout>
+          }
+        />
 
         {/* payment */}
 
@@ -254,20 +378,20 @@ function App() {
           }
         />
         <Route
-            path="/blog"
-            element={
-              <Layout>
-                <BlogPage />
-              </Layout>
-            }
+          path="/blog"
+          element={
+            <Layout>
+              <BlogPage />
+            </Layout>
+          }
         />
         <Route
-            path="/blog/:id"
-            element={
-              <Layout>
-                <BlogDetail />
-              </Layout>
-            }
+          path="/blog/:id"
+          element={
+            <Layout>
+              <BlogDetail />
+            </Layout>
+          }
         />
         <Route
           path="/seller/login"
@@ -300,16 +424,16 @@ function App() {
           }
         />
         <Route
-            path="/AdminAboutUs"
-            element={
-              <PrivateRoute>
-                <Layout>
-                  <DashboardLayout>
-                    <AdminAboutUs />
-                  </DashboardLayout>
-                </Layout>
-              </PrivateRoute>
-            }
+          path="/AdminAboutUs"
+          element={
+            <PrivateRoute>
+              <Layout>
+                <DashboardLayout>
+                  <AdminAboutUs />
+                </DashboardLayout>
+              </Layout>
+            </PrivateRoute>
+          }
         />
         <Route
           path="/admin/income"
@@ -405,41 +529,41 @@ function App() {
           }
         />
         <Route
-            path="/adminblog"
-            element={
-              <PrivateRoute>
-                <Layout>
-                  <DashboardLayout>
-                    <AdminBlog />
-                  </DashboardLayout>
-                </Layout>
-              </PrivateRoute>
-            }
+          path="/adminblog"
+          element={
+            <PrivateRoute>
+              <Layout>
+                <DashboardLayout>
+                  <AdminBlog />
+                </DashboardLayout>
+              </Layout>
+            </PrivateRoute>
+          }
         />
         <Route
-            path="/adminblog/detail/:id"
-            element={
-              <PrivateRoute>
-                <Layout>
-                  <DashboardLayout>
-                    <AdminBlogDetail />
-                  </DashboardLayout>
-                </Layout>
-              </PrivateRoute>
-            }
+          path="/adminblog/detail/:id"
+          element={
+            <PrivateRoute>
+              <Layout>
+                <DashboardLayout>
+                  <AdminBlogDetail />
+                </DashboardLayout>
+              </Layout>
+            </PrivateRoute>
+          }
         />
-          <Route
-              path="/adminblog/add"
-              element={
-                  <PrivateRoute>
-                      <Layout>
-                          <DashboardLayout>
-                              <AdminBlogAdd />
-                          </DashboardLayout>
-                      </Layout>
-                  </PrivateRoute>
-              }
-          />
+        <Route
+          path="/adminblog/add"
+          element={
+            <PrivateRoute>
+              <Layout>
+                <DashboardLayout>
+                  <AdminBlogAdd />
+                </DashboardLayout>
+              </Layout>
+            </PrivateRoute>
+          }
+        />
         <Route
           path="/winning-products"
           element={
@@ -502,28 +626,28 @@ function App() {
           }
         />
         <Route
-            path="/adminContact"
-            element={
-              <PrivateRoute>
-                <Layout>
-                  <DashboardLayout>
-                    <AdminContact />
-                  </DashboardLayout>
-                </Layout>
-              </PrivateRoute>
-            }
+          path="/adminContact"
+          element={
+            <PrivateRoute>
+              <Layout>
+                <DashboardLayout>
+                  <AdminContact />
+                </DashboardLayout>
+              </Layout>
+            </PrivateRoute>
+          }
         />
         <Route
-            path="/adminContact/:id"
-            element={
-              <PrivateRoute>
-                <Layout>
-                  <DashboardLayout>
-                    <ContactDetailPage />
-                  </DashboardLayout>
-                </Layout>
-              </PrivateRoute>
-            }
+          path="/adminContact/:id"
+          element={
+            <PrivateRoute>
+              <Layout>
+                <DashboardLayout>
+                  <ContactDetailPage />
+                </DashboardLayout>
+              </Layout>
+            </PrivateRoute>
+          }
         />
         <Route
           path="/*"

@@ -18,6 +18,7 @@ export const ProductsDetailsPage = () => {
   const { id } = useParams()
   const dispatch = useDispatch()
   const [userId, setUserId] = useState(null);
+  const [isOpenInput, setSsOpenInput] = useState(false);
   const [productDetail, setProductDetail] = useState({})
   const [imageFile, setImageFile] = useState([]);
   const [timeLeft, setTimeLeft] = useState(null);
@@ -99,8 +100,6 @@ export const ProductsDetailsPage = () => {
       return () => clearInterval(timer);
     }
   }, [productDetail?.end_date]);
-
-
 
 
   // bidding 
@@ -240,29 +239,12 @@ export const ProductsDetailsPage = () => {
     }
   }
 
+
   useEffect(() => {
-    console.log({
-      isLogin, timeLeftEndDate, userId
-    });
-
-    if (currentPrice?.price) {
-      if (isLogin && userId && timeLeftEndDate === null) {
-        console.log("da dau da");
-
-        try {
-          dispatch(auctionsuccess({ productId: id, sellerId: userId }))
-          if (!isLoading) {
-            toast.success("San pham cua ban da duoc dau gia thanh cong")
-          }
-
-          getProduct()
-        } catch (error) {
-          console.log(error);
-        }
-      }
-
+    if ((userId !== productDetail.buyerId) && (productDetail.isSell === true) && (productDetail.isSoldOut === false)) {
+      setSsOpenInput(true)
     }
-  }, [isLogin, userId, timeLeftEndDate])
+  }, [id, productDetail]);
 
   return (
     <>
@@ -388,13 +370,13 @@ export const ProductsDetailsPage = () => {
                 )
               }
               {
-                ((userId !== productDetail.buyerId) && (productDetail.isSell === true) && (productDetail.isSoldOut === false)) &&
+                isOpenInput &&
                 <div div className="p-5 px-10 shadow-s3 py-8">
                   <form onSubmit={onSubmitBidding} className="flex gap-3 justify-between">
                     <input className={commonClassNameOfInput} value={priceBidding} onChange={e => setPriceBidding(e.target.value)} type="number" name="price" />
-                    <button type="button" className="bg-gray-100 rounded-md px-5 py-3">
+                    {/* <button type="button" className="bg-gray-100 rounded-md px-5 py-3">
                       <AiOutlinePlus />
-                    </button>
+                    </button> */}
                     {/* cursor-not-allowed */}
                     <button type="submit" className={`py-3 px-8 rounded-lg ${"bg-gray-400 text-gray-700"}`}>
                       Submit
