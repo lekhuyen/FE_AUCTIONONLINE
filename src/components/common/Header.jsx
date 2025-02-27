@@ -310,9 +310,9 @@ export const Header = () => {
             <div className="flex items-center gap-14">
               <div>
                 {isHomePage && !isScrolled ? (
-                  <img src="../images/common/header-logo.png" alt="LogoImg" className="h-11" />
+                  <img src="../images/common/Biddora2.png" alt="LogoImg" className="h-11" />
                 ) : (
-                  <img src="../images/common/header-logo2.png" alt="LogoImg" className="h-11" />
+                  <img src="../images/common/Biddora.png" alt="LogoImg" className="h-11" />
                 )}
               </div>
               <div className="hidden lg:flex items-center justify-between gap-8 relative">
