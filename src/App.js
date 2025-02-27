@@ -370,7 +370,7 @@ function App() {
         />
 
         <Route
-          path="/aboutus"
+          path="/about"
           element={
             <Layout>
               <AboutUsComponents />

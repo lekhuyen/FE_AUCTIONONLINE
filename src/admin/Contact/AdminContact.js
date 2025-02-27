@@ -11,7 +11,13 @@ export const AdminContact = () => {
         const fetchContacts = async () => {
             try {
                 const response = await axios.get('http://localhost:8080/api/contact');
-                setContacts(response.data);
+                const sortedContacts = response.data.sort((a, b) => {
+                    // Sorting contacts by `receivetime` in descending order
+                    const timeA = new Date(a.receivetime[0], a.receivetime[1] - 1, a.receivetime[2], a.receivetime[3], a.receivetime[4], a.receivetime[5]);
+                    const timeB = new Date(b.receivetime[0], b.receivetime[1] - 1, b.receivetime[2], b.receivetime[3], b.receivetime[4], b.receivetime[5]);
+                    return timeB - timeA; // Sort in descending order (latest first)
+                });
+                setContacts(sortedContacts);
             } catch (error) {
                 console.error('Error fetching contacts:', error);
             }

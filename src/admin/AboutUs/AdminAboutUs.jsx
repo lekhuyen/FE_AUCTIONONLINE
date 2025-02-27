@@ -15,18 +15,78 @@ import {
 import {DeleteForever, Edit} from "@mui/icons-material";
 
 
+
 export const AdminAboutUs = () => {
+    const [isFirstSectionOpen, setIsFirstSectionOpen] = useState(false);
+    const [isSecondSectionOpen, setIsSecondSectionOpen] = useState(false);
+
+    const toggleFirstSection = () => setIsFirstSectionOpen(!isFirstSectionOpen);
+    const toggleSecondSection = () => setIsSecondSectionOpen(!isSecondSectionOpen);
+
+    return (
+        <div>
+            {/* Accordion for AdminAboutUsfirst */}
+            <div style={aboutusaccordionstyles.toggleButtonContainer}>
+                <button
+                    onClick={toggleFirstSection}
+                    style={aboutusaccordionstyles.toggleButton}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = aboutusaccordionstyles.toggleButtonHover.backgroundColor}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = '#4CAF50'}
+                >
+                    {isFirstSectionOpen ? "Collapse AdminAboutUsfirst" : "Expand AdminAboutUsfirst"}
+                    <span
+                        style={{
+                            ...aboutusaccordionstyles.toggleButtonIcon,
+                            transform: isFirstSectionOpen ? 'rotate(90deg)' : 'rotate(0)'
+                        }}
+                    >
+                        {' →'}
+                    </span>
+                </button>
+            </div>
+            {isFirstSectionOpen && (
+                <div style={aboutusaccordionstyles.cardContainer}>
+                    <AdminAboutUsfirst />
+                </div>
+            )}
+
+            {/* Accordion for AdminAboutUsCard */}
+            <div style={aboutusaccordionstyles.toggleButtonContainer}>
+                <button
+                    onClick={toggleSecondSection}
+                    style={aboutusaccordionstyles.toggleButton}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = aboutusaccordionstyles.toggleButtonHover.backgroundColor}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = '#4CAF50'}
+                >
+                    {isSecondSectionOpen ? "Collapse AdminAboutUsCard" : "Expand AdminAboutUsCard"}
+                    <span
+                        style={{
+                            ...aboutusaccordionstyles.toggleButtonIcon,
+                            transform: isSecondSectionOpen ? 'rotate(90deg)' : 'rotate(0)'
+                        }}
+                    >
+                        {' →'}
+                    </span>
+                </button>
+            </div>
+            {isSecondSectionOpen && (
+                <div style={aboutusaccordionstyles.cardContainer}>
+                    <AdminAboutUsCard />
+                </div>
+            )}
+        </div>
+    );
+}
+
+
+const AdminAboutUsfirst = () => {
     const [aboutUsData, setAboutUsData] = useState(null);
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [image1, setImage1] = useState(null);
     const [image2, setImage2] = useState(null);
-    const [isExpanded, setIsExpanded] = useState(false);
-    const [hasChanges, setHasChanges] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
-    const [selectedCard, setSelectedCard] = useState(null);
-    const [isCardOpen, setIsCardOpen] = useState(false); // State to toggle the card
-
+    const [hasChanges, setHasChanges] = useState(false);
 
     useEffect(() => {
         axios.get('http://localhost:8080/api/aboutus')
@@ -88,27 +148,7 @@ export const AdminAboutUs = () => {
             data: formData,
         })
             .then(() => {
-                if (!isEditMode) {
-                    axios.get('http://localhost:8080/api/aboutus')
-                        .then((response) => {
-                            if (response.data && response.data.length > 0) {
-                                const data = response.data[0];
-                                setAboutUsData(data);
-                                setTitle(data.title);
-                                setDescription(data.description);
-                                setImage1(data.aboutImage1);
-                                setImage2(data.aboutImage2);
-                                setIsEditMode(true);
-                                alert("New item added successfully!");
-                            }
-                        })
-                        .catch((error) => {
-                            console.error("Error fetching About Us data", error);
-                        });
-                } else {
-                    alert("Changes saved successfully!");
-                }
-
+                alert(isEditMode ? "Changes saved successfully!" : "New item added successfully!");
                 setHasChanges(false);
             })
             .catch((error) => {
@@ -117,120 +157,97 @@ export const AdminAboutUs = () => {
             });
     };
 
-    const toggleExpand = () => setIsExpanded(!isExpanded);
-
-    const handleCardSelect = (card) => {
-        setSelectedCard(card);
-        setIsCardOpen(true); // Open the card when selected
-    };
-
     return (
-        <div>
-            <div style={styles.pageContainer}>
-                {aboutUsData !== null ? (
-                    <div style={styles.container}>
-                        <div style={styles.toggleButtonContainer}>
-                            <button onClick={toggleExpand} style={styles.toggleButton}>
-                                {isExpanded ? "Collapse" : "Expand"} About Us Section
-                            </button>
-                        </div>
-
-                        {isExpanded && (
-                            <div style={styles.section}>
-                                <div style={styles.card}>
-                                    <h2 style={styles.cardTitle}>Title</h2>
-                                    <input
-                                        type="text"
-                                        value={title}
-                                        onChange={(e) => {
-                                            setTitle(e.target.value);
-                                            setHasChanges(true);
-                                        }}
-                                        style={styles.inputField}
-                                    />
-                                </div>
-
-                                <div style={styles.card}>
-                                    <h2 style={styles.cardTitle}>Description</h2>
-                                    <textarea
-                                        value={description}
-                                        onChange={(e) => {
-                                            setDescription(e.target.value);
-                                            setHasChanges(true);
-                                        }}
-                                        style={styles.textareaField}
-                                    />
-                                </div>
-
-                                <div style={styles.card}>
-                                    <h2 style={styles.cardTitle}>Image 1</h2>
-                                    <input
-                                        type="file"
-                                        onChange={(e) => handleImageChange(e, setImage1)}
-                                        style={styles.fileInput}
-                                    />
-                                    {image1 && typeof image1 === 'string' ? (
-                                        <img src={`http://localhost:8080/api/aboutus/AboutUsImages/${image1}`}
-                                             alt="Image 1 preview" style={styles.imagePreview}/>
-                                    ) : image1 && image1 instanceof File ? (
-                                        <img src={URL.createObjectURL(image1)} alt="Image 1 preview"
-                                             style={styles.imagePreview}/>
-                                    ) : null}
-                                </div>
-
-                                <div style={styles.card}>
-                                    <h2 style={styles.cardTitle}>Image 2</h2>
-                                    <input
-                                        type="file"
-                                        onChange={(e) => handleImageChange(e, setImage2)}
-                                        style={styles.fileInput}
-                                    />
-                                    {image2 && typeof image2 === 'string' ? (
-                                        <img src={`http://localhost:8080/api/aboutus/AboutUsImages/${image2}`}
-                                             alt="Image 2 preview" style={styles.imagePreview}/>
-                                    ) : image2 && image2 instanceof File ? (
-                                        <img src={URL.createObjectURL(image2)} alt="Image 2 preview"
-                                             style={styles.imagePreview}/>
-                                    ) : null}
-                                </div>
-
-                                <div style={styles.saveButtonContainer}>
-                                    <button onClick={handleSave} style={styles.saveButton}>
-                                        {isEditMode ? "Save Changes" : "Add New"}
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-
+        <div style={styles.pageContainer}>
+            {aboutUsData !== null ? (
+                <div style={styles.container}>
+                    {/* Title Section */}
+                    <div style={styles.accordionItem}>
+                        <h2 style={styles.cardTitle}>Title</h2>
+                        <input
+                            type="text"
+                            value={title}
+                            onChange={(e) => {
+                                setTitle(e.target.value);
+                                setHasChanges(true);
+                            }}
+                            style={styles.inputField}
+                        />
                     </div>
-                ) : (
-                    <div>Loading...</div>
-                )}
-            </div>
 
-            {/* Button to open/close AdminAboutUsCard with animation */}
-            <div style={styles.toggleButtonContainer}>
-                <button onClick={() => setIsCardOpen(!isCardOpen)} style={styles.toggleButton}>
-                    {isCardOpen ? "Close About Us Card" : "Open About Us Card"}
-                </button>
-            </div>
+                    {/* Description Section */}
+                    <div style={styles.accordionItem}>
+                        <h2 style={styles.cardTitle}>Description</h2>
+                        <textarea
+                            value={description}
+                            onChange={(e) => {
+                                setDescription(e.target.value);
+                                setHasChanges(true);
+                            }}
+                            style={styles.textareaField}
+                        />
+                    </div>
 
-            {/* Apply slide-in/fade-in transition when AdminAboutUsCard is visible */}
-            <div
-                style={{
-                    ...styles.cardContainer,
-                    opacity: isCardOpen ? 1 : 0,
-                    transform: isCardOpen ? 'translateX(0)' : 'translateX(100%)',
-                    transition: 'all 0.5s ease-in-out',
-                    position: 'relative',
-                }}
+                    {/* Image 1 Section */}
+                    <div style={styles.accordionItem}>
+                        <h2 style={styles.cardTitle}>Image 1</h2>
+                        <input
+                            type="file"
+                            onChange={(e) => handleImageChange(e, setImage1)}
+                            style={styles.fileInput}
+                        />
+                        {image1 && typeof image1 === 'string' ? (
+                            <img
+                                src={`http://localhost:8080/api/aboutus/AboutUsImages/${image1}`}
+                                alt="Image 1 preview"
+                                style={styles.imagePreview}
+                            />
+                        ) : image1 && image1 instanceof File ? (
+                            <img
+                                src={URL.createObjectURL(image1)}
+                                alt="Image 1 preview"
+                                style={styles.imagePreview}
+                            />
+                        ) : null}
+                    </div>
 
-            >
-                {isCardOpen && <AdminAboutUsCard/>} {/* Show the card when isCardOpen is true */}
-            </div>
+                    {/* Image 2 Section */}
+                    <div style={styles.accordionItem}>
+                        <h2 style={styles.cardTitle}>Image 2</h2>
+                        <input
+                            type="file"
+                            onChange={(e) => handleImageChange(e, setImage2)}
+                            style={styles.fileInput}
+                        />
+                        {image2 && typeof image2 === 'string' ? (
+                            <img
+                                src={`http://localhost:8080/api/aboutus/AboutUsImages/${image2}`}
+                                alt="Image 2 preview"
+                                style={styles.imagePreview}
+                            />
+                        ) : image2 && image2 instanceof File ? (
+                            <img
+                                src={URL.createObjectURL(image2)}
+                                alt="Image 2 preview"
+                                style={styles.imagePreview}
+                            />
+                        ) : null}
+                    </div>
+
+                    {/* Save Button */}
+                    <div style={styles.saveButtonContainer}>
+                        <button onClick={handleSave} style={styles.saveButton}>
+                            {isEditMode ? "Save Changes" : "Add New"}
+                        </button>
+                    </div>
+                </div>
+            ) : (
+                <div>Loading...</div>
+            )}
         </div>
     );
 };
+
 
 // ABOUT US CARD
 const AdminAboutUsCard = () => {
@@ -494,7 +511,6 @@ const AdminAboutUsCard = () => {
 const styles = {
     pageContainer: {
         padding: '32px',
-
     },
     container: {
         maxWidth: '1000px',
@@ -576,11 +592,42 @@ const styles = {
     cardContainer: {
         marginTop: '20px',
     },
-};
+
+    // Fancy Accordion Section Styles
+    accordionContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        marginTop: '20px',
+    },
+    accordionItem: {
+        backgroundColor: '#f9f9f9',  // Subtle background color for each item
+        padding: '20px',
+        marginBottom: '15px',
+        borderRadius: '10px',  // Rounded corners for the accordion items
+        border: '2px solid #4CAF50',  // Thicker green border to give it a fancy look
+        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',  // Light shadow for depth
+        transition: 'all 0.3s ease',  // Smooth transition effect
+    },
+    accordionItemHeader: {
+        fontSize: '20px',
+        fontWeight: '600',
+        color: '#333',
+        marginBottom: '10px',
+        cursor: 'pointer',  // Make the header clickable
+        transition: 'color 0.3s ease',
+    },
+    accordionItemContent: {
+        paddingTop: '10px',
+    },
+    accordionItemHover: {
+        backgroundColor: '#e0f7e0',  // Light green hover effect
+        borderColor: '#388e3c',  // Darker green border on hover
+    },
+}
 
 const aboutusstyles = {
     container: {
-        padding: '20px',
+        padding: '32px',
         maxWidth: '1200px',
         margin: '0 auto',
     },
@@ -588,15 +635,24 @@ const aboutusstyles = {
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-        borderRadius: '8px',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',  // This creates the shadow like in the first styles
+        borderRadius: '8px', // Rounded corners for cards
+        border: '1px solid #ccc', // Border around the card
     },
     cardImage: {
         objectFit: 'cover',
-        borderRadius: '8px 8px 0 0',
+        borderRadius: '8px 8px 0 0', // Same rounded corners for the top of the card
+        height: '200px', // Ensuring the image has consistent size
     },
     button: {
         width: '48%',
+        fontSize: '16px',
+        fontWeight: 'bold',
+        padding: '10px 16px',
+        borderRadius: '8px', // Rounded corners
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', // Same box shadow for buttons
+        border: '1px solid #ccc', // Border for buttons, just like input fields
+        transition: 'all 0.3s ease', // Smooth transition on hover or interaction
     },
     modalBox: {
         position: 'absolute',
@@ -605,30 +661,50 @@ const aboutusstyles = {
         transform: 'translate(-50%, -50%)',
         backgroundColor: 'white',
         padding: '32px',
-        borderRadius: '8px',
-        boxShadow: 24,
+        borderRadius: '8px', // Rounded corners for modals
+        boxShadow: 24, // Same shadow as previous styles
         width: '400px',
+        border: '1px solid #ccc', // Added border for consistency
     },
     textarea: {
         width: '100%',
         padding: '12px',
         fontSize: '16px',
-        borderRadius: '4px',
-        border: '1px solid #ccc',
+        borderRadius: '4px', // Rounded corners for textarea
+        border: '1px solid #ccc', // Border for the textarea to match input fields
         marginBottom: '20px',
     },
     fileInput: {
-        marginBottom: '20px',
+        marginTop: '12px',
+        marginBottom: '12px',
+        borderRadius: '4px', // Rounded corners for file input as well
+        border: '1px solid #ccc', // Adding border to match consistency
     },
     buttonContainer: {
         display: 'flex',
         justifyContent: 'space-between',
     },
     saveButton: {
-        width: '48%',
+        backgroundColor: '#4CAF50',
+        color: 'white',
+        padding: '12px 24px',
+        fontSize: '18px',
+        borderRadius: '8px', // Rounded corners
+        cursor: 'pointer',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', // Shadow for buttons
+        transition: 'all 0.3s ease', // Smooth transition effect
+        border: '1px solid #4CAF50', // Matching border to the button
     },
     cancelButton: {
-        width: '48%',
+        backgroundColor: '#f44336',
+        color: 'white',
+        border: 'none',
+        padding: '12px 24px',
+        fontSize: '18px',
+        borderRadius: '8px', // Rounded corners
+        cursor: 'pointer',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', // Shadow for buttons
+        transition: 'all 0.3s ease',
     },
     deleteModalBox: {
         position: 'absolute',
@@ -637,11 +713,57 @@ const aboutusstyles = {
         transform: 'translate(-50%, -50%)',
         backgroundColor: 'white',
         padding: '32px',
-        borderRadius: '8px',
-        boxShadow: 24,
+        borderRadius: '8px', // Rounded corners for delete modal
+        boxShadow: 24, // Same box shadow for delete modal
         width: '300px',
+        border: '1px solid #ccc', // Border for delete modal
     },
     deleteButton: {
-        width: '100%',
+        backgroundColor: '#f44336',
+        color: 'white',
+        padding: '12px 24px',
+        fontSize: '18px',
+        borderRadius: '8px', // Rounded corners for the delete button
+        cursor: 'pointer',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', // Shadow effect for the delete button
+        transition: 'all 0.3s ease', // Smooth transition
+        border: '1px solid #f44336', // Border matching button color
+    },
+};
+
+
+
+const aboutusaccordionstyles = {
+    toggleButtonContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        marginBottom: '20px',
+    },
+    toggleButton: {
+        backgroundColor: '#4CAF50',  // Green background color
+        color: 'white',
+        border: 'none',
+        padding: '12px 24px',
+        fontSize: '18px',
+        fontWeight: 'bold',
+        borderRadius: '25px',  // Rounded corners for a smoother button
+        cursor: 'pointer',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+        transition: 'all 0.3s ease',
+        display: 'flex',  // To align the text and icon properly
+        alignItems: 'center',  // Center the text and icon vertically
+    },
+    toggleButtonIcon: {
+        marginLeft: '10px',  // Spacing between the text and icon
+        fontSize: '20px',  // Size of the icon
+        transition: 'transform 0.3s ease',  // Smooth transition for rotating the icon
+    },
+    toggleButtonHover: {
+        backgroundColor: '#45a049',  // Darker green on hover
+        transform: 'scale(1.05)',  // Slightly enlarge the button for hover effect
+    },
+    cardContainer: {
+        padding: '10px',
+        marginTop: '10px',
     },
 };
