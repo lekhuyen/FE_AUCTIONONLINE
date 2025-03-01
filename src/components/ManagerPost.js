@@ -209,7 +209,8 @@ const ManagerPost = () => {
             <img className="w-[46px]" alt="" src="https://cdn-icons-png.flaticon.com/512/6596/6596121.png" />
             <div className="flex flex-col ">
               <span className="text-slate-800 font-bold">{userName}</span>
-              <span onClick={() => setAddNewProductStatus(1)} className="text-[14px] flex items-center text-[#306bd9] cursor-pointer"> <PiPlus /> Add new product </span>
+              <span onClick={() => setAddNewProductStatus(1)}
+                className="text-[14px] flex items-center text-[#306bd9] cursor-pointer"> <PiPlus /> Add new product </span>
             </div>
           </div>
           {
