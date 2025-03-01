@@ -11,6 +11,7 @@ import moment from 'moment';
 import { AiFillPicture } from "react-icons/ai";
 import { IoMdCloseCircle } from "react-icons/io";
 import ControlledCarousel from '../carousel/Carousel';
+import clsx from 'clsx';
 
 
 const cx = classNames.bind(styles)
@@ -119,6 +120,7 @@ const Chat = () => {
           const response = await axios.get(`users/${sellerId}`,
             { authRequired: true },
           )
+
           setRoomChatInfo(response.name)
         }
       } catch (error) {
@@ -138,7 +140,6 @@ const Chat = () => {
           const response = await axios.get(`chatroom/room/${userId}`,
             { authRequired: true },
           )
-          // console.log(response);
           response.forEach(data => {
             setNotiMessageChat(data.notification);
           });
@@ -168,6 +169,7 @@ const Chat = () => {
   }, [])
 
   const handleClickUserChat = async (item, userChat, index) => {
+
     setRoomId(item.roomId)
     const newPath = `/chat?item_id=${item.item_id}&buyerId=${item.userId}`;
     navigate(newPath)
@@ -408,6 +410,8 @@ const Chat = () => {
     "https://chat.chotot.com/emptyRoom2.png",
     "https://t4.ftcdn.net/jpg/01/52/26/99/360_F_152269999_krzVqnxRBfXeUQxNg2w3RlJHOUaHKoyu.jpg"
   ]
+  // console.log(listChatOfSeller);
+  const renderedRoomIds = new Set();
   return (
     <section className='flex justify-center'>
 
@@ -417,10 +421,16 @@ const Chat = () => {
             <div className="h-[40px] mt-3 p-2 border-2 mx-3 rounded-md">
               <input className="h-full w-full border-none outline-none" placeholder="Enter chat name" />
             </div>
-            <div className=" mt-3 ">
+            <div className={clsx(styles.custom_scroll, "mt-3 h-[90%] overflow-y-auto overflow-hidden")}>
               {
                 listChatOfSeller?.length > 0 && listChatOfSeller?.map((item, index) => {
-
+                  {/* map chạy từng item. */ }
+                  {/* Mỗi item nếu return về JSX thì sẽ được render. */ }
+                  {/* Nếu return null thì React bỏ qua item đó (coi như item này không tồn tại trong DOM). */ }
+                  if (renderedRoomIds.has(item.roomId)) {
+                    return null;
+                  }
+                  renderedRoomIds.add(item.roomId);
                   const isCurrentUserInRoom = item.roomId === roomId;  // Kiểm tra người dùng có đang trong phòng này không
                   const hasSentMessageRecently = messages.some(msg => msg.senderId === userId && msg.roomId === item.roomId);  // Kiểm tra người dùng có gửi tin nhắn chưa
 
@@ -457,18 +467,12 @@ const Chat = () => {
                         </div>
                         <div>
                           <p className="text-sm">{userId !== item?.userId ? item?.sellerName : item?.buyerName}</p>
-                          <span className="text-[12px] text-[#9B9B9B]">{item?.item_name}</span>
+                          <span className="text-[12px] text-[#9B9B9B]">item:{item?.item_name}</span>
                           <div className="h-[15px] flex items-center">
                             {/* text-[#9B9B9B] */}
-                            {
-                              notiMessage?.length > 0 && notiMessage?.map((msg, index) => {
-                                return (
-                                  <span className="text-[11px]  font-weight: bold text-black">
-                                    {msg[msg.length - 1].roomId === item.roomId ? msg[msg.length - 1].content : ""}
-                                  </span>
-                                )
-                              })
-                            }
+                            <span className="text-[11px]  font-weight: bold text-black">
+                              {item.listMessages[0]?.content || ""}
+                            </span>
                           </div>
                         </div>
                       </div>
