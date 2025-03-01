@@ -167,6 +167,7 @@ export const Header = () => {
       });
     };
     const client = Stomp.over(socketFactory);
+    client.debug = () => { };
 
     client.connect({ Authorization: `Bearer ${token}` }, () => {
 
