@@ -464,7 +464,7 @@ const Chat = () => {
                               notiMessage?.length > 0 && notiMessage?.map((msg, index) => {
                                 return (
                                   <span className="text-[11px]  font-weight: bold text-black">
-                                    {msg[msg.length - 1].roomId === item.setNotiMessageChat ? msg[msg.length - 1].content : ""}
+                                    {msg[msg.length - 1].roomId === item.roomId ? msg[msg.length - 1].content : ""}
                                   </span>
                                 )
                               })
