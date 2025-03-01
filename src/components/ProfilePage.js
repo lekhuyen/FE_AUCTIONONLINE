@@ -1,7 +1,8 @@
 import { jwtDecode } from 'jwt-decode';
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from '../utils/axios'
+import Swal from 'sweetalert2';
 const ProfilePage = () => {
   const [tokenInfo, setTokenInfo] = useState(null);
   const [userInfo, setUserInfo] = useState(null)
@@ -25,7 +26,6 @@ const ProfilePage = () => {
       axios.get(`http://localhost:8080/api/users/${userId}`)
         .then((response) => {
           setUserInfo(response);
-
         })
         .catch((error) => {
           console.error("Error fetching About Us Card data", error);
@@ -36,6 +36,25 @@ const ProfilePage = () => {
       getuserById(tokenInfo?.userid)
     }
   }, [tokenInfo?.userid])
+
+  const xemthongtin = () => {
+    Swal.fire({
+      // <p><strong>Số CCCD:</strong> ${userInfo.citizen.ciCode}</p>
+      title: `Thông tin bạn đã xác minh.`,
+      html: `
+      <div style="text-align: left;">
+      <p><strong>Tên:</strong> ${userInfo.citizen.fullName}</p>
+    <p><strong>Ngày sinh:</strong> ${userInfo.citizen.birthDate}</p>
+    <p><strong>Ngày cấp:</strong> ${userInfo.citizen.startDate}</p>
+    </div>
+    `,
+      confirmButtonText: "Ok",
+      // <p><strong>Địa chỉ:</strong> ${userInfo.citizen.address}</p>
+      customClass: {
+        confirmButton: "swal-confirm-button",
+      },
+    })
+  }
 
   return (
     <div className="mt-[90px] min-h-screen bg-gray-100 flex justify-center p-4">
@@ -48,7 +67,7 @@ const ProfilePage = () => {
             <div className="w-20 h-20 bg-blue-500 text-white flex items-center justify-center rounded-full text-3xl font-bold">
               d
             </div>
-            <h2 className="mt-3 text-xl font-bold">{userInfo?.username}</h2>
+            <h2 className="mt-3 text-xl font-bold">{userInfo?.name}</h2>
             <p className="text-gray-500 text-sm">Chưa có đánh giá</p>
           </div>
 
@@ -68,7 +87,10 @@ const ProfilePage = () => {
             <p>📅 Đã tham gia: <span className="font-medium">1 năm 4 tháng</span></p>
             <p>
               {userInfo?.isVerify ? (
-                "✅ Đã xác thực danh tính"
+                <>
+                  ✅ Đã xác thực danh tính
+                  <button onClick={xemthongtin} className='ml-2 text-green'>Xem</button>
+                </>
               ) : (
                 <Link to="/citizen-verify" className="text-red-500">
                   ❌ Bấm để xác minh danh tính
