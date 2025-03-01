@@ -9,6 +9,8 @@ const VideoCall = () => {
   const [remoteStreams, setRemoteStreams] = useState([]);
 
   const client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
+  AgoraRTC.setLogLevel(4);
+
   const channelName = "myRoom";  // Tên phòng (có thể lấy từ URL, input người dùng, ...)
   const uid = 12345;
   useEffect(() => {

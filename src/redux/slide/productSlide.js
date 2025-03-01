@@ -118,6 +118,9 @@ export const getAllProductByBuyer = createAsyncThunk("auction/buyer", async (use
 export const auctionsuccess = createAsyncThunk("category/auctionsuccess", async (data, thunkAPI) => {
   try {
     const response = await axios.post(`/bidding/success/${data.productId}/${data.sellerId}`, null, { authRequired: true, timeout: 10000 })
+
+    console.log(response);
+
     return response
   } catch (error) {
     // console.log(error.response.data.message);
@@ -215,7 +218,6 @@ export const productSlide = createSlice({
 
     //getAll
     builder.addCase(getAllProduct.pending, (state) => {
-      console.log("pending");
       state.isLoading = true;
       state.products = [];
     });
@@ -226,7 +228,6 @@ export const productSlide = createSlice({
     });
 
     builder.addCase(getAllProduct.rejected, (state, action) => {
-      console.log("rejected");
 
       // state.isLoading = true;
       state.products = [];
@@ -315,6 +316,8 @@ export const productSlide = createSlice({
     //chot dau gia
     builder.addCase(auctionsuccess.pending, (state) => {
       // state.isLoading = true;
+      console.log("pending");
+
     });
 
     builder.addCase(auctionsuccess.fulfilled, (state, action) => {
@@ -323,6 +326,7 @@ export const productSlide = createSlice({
 
     builder.addCase(auctionsuccess.rejected, (state, action) => {
       // state.isLoading = true;
+      console.log("rejected");
     });
 
 
