@@ -48,7 +48,6 @@ import VideoCall from "./components/VideoCall.js";
 import VideoChat from "./components/VideoChat.js";
 import Checkout from "./components/Checkout.js";
 import PaymentResult from "./components/PaymentResult.js";
-import ManagerPost from "./components/ManagerPost.js";
 import { jwtDecode } from "jwt-decode";
 import { debounce } from "lodash";
 import axios from "../src/utils/axios";
@@ -270,14 +269,7 @@ function App() {
             </Layout>
           }
         />
-        <Route
-          path="/manager-post"
-          element={
-            <Layout>
-              <ManagerPost />
-            </Layout>
-          }
-        />
+
         <Route
           path="/profile-page"
           element={
