@@ -215,6 +215,7 @@ const Chat = () => {
       });
     };
     const client = Stomp.over(socketFactory);
+    client.debug = () => { };
 
     client.connect({ Authorization: `Bearer ${token}` }, () => {
       console.log('Connected to WebSocket');

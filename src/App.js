@@ -54,6 +54,9 @@ import { debounce } from "lodash";
 import axios from "../src/utils/axios";
 import AddressForm from "./components/AddressForm.js";
 import ForgotPassword from "./components/ForgotPassword.js";
+import ProfilePage from "./components/ProfilePage.js";
+import QRScanner from "./components/QRScanner.js";
+import OCRReader from "./components/OCRReader.js";
 
 function App() {
   const navigate = useNavigate()
@@ -153,7 +156,7 @@ function App() {
 
           if (token) {
             try {
-              const response = await axios.post(`/bidding/success/${product.item_id}/${userId}`, null, {
+              const response = await axios.post(`/bidding/success/${product.item_id}/${product.user.id}`, null, {
                 headers: {
                   Authorization: `Bearer ${token}`,
                 },
@@ -171,7 +174,7 @@ function App() {
 
       setIsProcessing(false);
     }, 12 * 60 * 60 * 1000);
-
+    // 12 * 60 * 60 * 1000
     return () => clearInterval(interval);
 
   }, [dispatch, userId, products, isLoading, isProcessing]);
@@ -219,6 +222,7 @@ function App() {
     };
 
     const client = Stomp.over(socketFactory);
+    client.debug = () => { };
 
     client.connect({ Authorization: `Bearer ${token}` }, () => {
       // console.log("Connected to WebSocket");
@@ -274,6 +278,31 @@ function App() {
             </Layout>
           }
         />
+        <Route
+          path="/profile-page"
+          element={
+            <Layout>
+              <ProfilePage />
+            </Layout>
+          }
+        />
+        <Route
+          path="/citizen-verify"
+          element={
+            <Layout>
+              <QRScanner />
+            </Layout>
+          }
+        />
+        <Route
+          path="/ocr-reader"
+          element={
+            <Layout>
+              <OCRReader />
+            </Layout>
+          }
+        />
+
         <Route
           path="/login"
           element={

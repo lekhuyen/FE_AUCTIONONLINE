@@ -16,6 +16,7 @@ const VideoChat = () => {
 
   useEffect(() => {
     client.current = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+    AgoraRTC.setLogLevel(4);
   }, []);
 
   const joinChannel = async () => {
