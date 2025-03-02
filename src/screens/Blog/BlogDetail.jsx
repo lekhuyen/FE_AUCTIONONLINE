@@ -79,14 +79,16 @@ export const BlogDetail = () => {
                     {blog.blogImage && blog.blogImage.split(',').length > 1 && (
                         <div style={styles.additionalImagesContainer}>
                             <h4 style={styles.additionalImagesTitle}>More Images:</h4>
-                            {blog.blogImage.split(',').slice(1).map((imageName, index) => (
-                                <img
-                                    key={index}
-                                    src={`http://localhost:8080/api/blog/BlogImages/${imageName}`}
-                                    alt={`Blog Image ${index + 1}`}
-                                    style={styles.additionalImage}
-                                />
-                            ))}
+                            <div style={styles.additionalImagesWrapper}>
+                                {blog.blogImage.split(',').slice(1).map((imageName, index) => (
+                                    <img
+                                        key={index}
+                                        src={`http://localhost:8080/api/blog/BlogImages/${imageName}`}
+                                        alt={`Blog Image ${index + 1}`}
+                                        style={styles.additionalImage}
+                                    />
+                                ))}
+                            </div>
                         </div>
                     )}
                 </div>
@@ -128,12 +130,15 @@ const styles = {
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        padding: '20px',
+        padding: '40px 20px',
         fontFamily: 'Arial, sans-serif',
         gap: '20px',
+        maxWidth: '1200px',
+        margin: '0 auto',
     },
     mainContent: {
         flex: 3,
+        maxWidth: '75%',
     },
     sidebar: {
         flex: 1,
@@ -143,9 +148,10 @@ const styles = {
         boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
     },
     blogTitle: {
-        fontSize: '2rem',
+        fontSize: '2.5rem',
         fontWeight: 'bold',
         marginBottom: '10px',
+        color: '#333',
     },
     blogMeta: {
         fontSize: '1rem',
@@ -169,7 +175,7 @@ const styles = {
     },
     blogContent: {
         fontSize: '1.2rem',
-        lineHeight: '1.6',
+        lineHeight: '1.8',
         marginBottom: '20px',
         color: '#333',
     },
@@ -181,11 +187,15 @@ const styles = {
         fontWeight: 'bold',
         marginBottom: '10px',
     },
+    additionalImagesWrapper: {
+        display: 'flex',
+        gap: '15px',
+        flexWrap: 'wrap',
+    },
     additionalImage: {
         width: '100%',
         height: 'auto',
         maxWidth: '300px',
-        marginRight: '15px',
         marginBottom: '15px',
         borderRadius: '5px',
     },
@@ -193,6 +203,7 @@ const styles = {
         fontSize: '1.5rem',
         fontWeight: 'bold',
         marginBottom: '10px',
+        color: '#333',
     },
     recentPostsList: {
         listStyle: 'none',
