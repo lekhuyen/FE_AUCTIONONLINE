@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from '../utils/axios'
 import Swal from 'sweetalert2';
+import ManagerPost from './ManagerPost';
 const ProfilePage = () => {
   const [tokenInfo, setTokenInfo] = useState(null);
   const [userInfo, setUserInfo] = useState(null)
@@ -111,8 +112,8 @@ const ProfilePage = () => {
         </div>
 
         {/* Khu vực tin đăng */}
-        <div className="w-2/3 p-4">
-          <div className="border-b pb-2 flex space-x-6">
+        <div className="w-full overflow-auto">
+          {/* <div className="border-b pb-2 flex space-x-6">
             <button className="font-bold text-orange-500 border-b-2 border-orange-500">Đang hiển thị (0)</button>
             <button className="text-gray-600">Đã bán (0)</button>
           </div>
@@ -120,10 +121,11 @@ const ProfilePage = () => {
           <div className="flex flex-col items-center justify-center h-64">
             <img src="https://static.chotot.com/storage/chotot-icons/svg/no-post.svg" alt="No Post" className="w-24 h-24" />
             <p className="text-gray-600 mt-2">Bạn chưa có tin đăng nào</p>
-            <button className="mt-3 bg-orange-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-orange-600">
+            <Link to={'/manager-post'} className="mt-3 bg-orange-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-orange-600">
               ĐĂNG TIN NGAY
-            </button>
-          </div>
+            </Link>
+          </div> */}
+          <ManagerPost />
         </div>
 
       </div>
