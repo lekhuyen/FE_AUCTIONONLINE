@@ -2,14 +2,14 @@
 import clothingImage from '../Contact/Images/clothing.jpg';
 import artImage from '../Contact/Images/art_with_frame.jpg';
 import bookImage from '../Contact/Images/book.jpg';
-import electronicImage from '../Contact/Images/computer_set.jpg';
+import electronicImage from '../Contact/Images/computer_about_us.jpg';
 import bellImage from '../Contact/Images/bell_icon.png';
 import appStoreImage from '../Contact/Images/download_the_app_store.png';
 import newLogo from '../Contact/Images/new_logo.jpg';
 import abcLogo from '../Contact/Images/abc_logo.png';
 import cnnLogo from '../Contact/Images/Cnn_logo.png';
 import nbcLogo from '../Contact/Images/NBC_logo.jpg';
-import foxLogo from '../Contact/Images/FOX_logo.png';
+import foxLogo from '../Contact/Images/Fox_image_logo.jpg';
 import { useState, useEffect } from 'react';
 
 export const AboutUsComponents = () => {
