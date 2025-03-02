@@ -69,16 +69,16 @@ const ProfilePage = () => {
               d
             </div>
             <h2 className="mt-3 text-xl font-bold">{userInfo?.name}</h2>
-            <p className="text-gray-500 text-sm">Chưa có đánh giá</p>
+            <p className="text-gray-500 text-sm">No Rating</p>
           </div>
 
           {/* Các nút */}
           <div className="mt-4 space-y-3">
             <button className="w-full bg-orange-500 text-white py-2 rounded-lg font-semibold hover:bg-orange-600">
-              Chia sẻ trang của bạn
+              Share Your Profile
             </button>
             <button className="w-full border py-2 rounded-lg font-semibold hover:bg-gray-100">
-              Chỉnh sửa trang cá nhân
+              Reset Password
             </button>
           </div>
 
