@@ -413,7 +413,7 @@ const Chat = () => {
   // console.log(listChatOfSeller);
   const renderedRoomIds = new Set();
   return (
-    <section className='flex justify-center'>
+    <section className='flex justify-center' style={{ backgroundImage: "url('/images/common/chat_bg.jpg')" }}>
 
       <div className="bg-white shadow-s3 w-1/2 h-screen rounded-xl flex ">
         <div className="mt-[83px] w-full flex">
