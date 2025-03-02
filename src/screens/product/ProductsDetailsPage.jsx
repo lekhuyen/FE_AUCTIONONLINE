@@ -231,10 +231,10 @@ export const ProductsDetailsPage = () => {
     if (isLogin) {
       try {
         Swal.fire({
-          title: `Congratulations!`,
-          text: "Bạn có muốn chốt giá không?",
+          title: `Bạn muốn chốt giá?`,
+          text: "Bấn 'OK' để chốt, 'Cancel' để hủy",
           confirmButtonText: "Ok",
-          cancelButtonText: "Hủy",
+          cancelButtonText: "Cancel",
           showCancelButton: true,
           customClass: {
             confirmButton: "swal-confirm-button",
