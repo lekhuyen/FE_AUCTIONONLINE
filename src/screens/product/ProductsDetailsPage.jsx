@@ -1,9 +1,7 @@
 import { Body, Caption, Container, Title } from "../../router";
-import { IoIosStar, IoIosStarHalf, IoIosStarOutline } from "react-icons/io";
 import { commonClassNameOfInput } from "../../components/common/Design";
-import { AiOutlinePlus } from "react-icons/ai";
 import { useEffect, useState } from "react";
-import { NavLink, useParams } from "react-router-dom";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
 import axios from '../../utils/axios'
 import { jwtDecode } from "jwt-decode";
 import { calculateTimeLeft, useLoginExpired } from "../../utils/helper";
@@ -12,9 +10,11 @@ import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
 import { useDispatch, useSelector } from "react-redux";
 import { auctionsuccess } from "../../redux/slide/productSlide";
+import Swal from "sweetalert2";
 
 
 export const ProductsDetailsPage = () => {
+  const navigate = useNavigate()
   const { id } = useParams()
   const dispatch = useDispatch()
   const [userId, setUserId] = useState(null);
@@ -31,9 +31,13 @@ export const ProductsDetailsPage = () => {
   const [stompClient, setStompClient] = useState(null);
   // const [notification, setNotification] = useState('')
 
+  const [isSoldout, setIsSoldout] = useState(false)
+
   const { isLoading } = useSelector(state => state.product)
 
   const getProduct = async () => {
+    console.log("goi laij");
+
     try {
       const response = await axios.get(`auction/${id}`,
         { authRequired: true },
@@ -53,6 +57,7 @@ export const ProductsDetailsPage = () => {
           isSell: response.result.sell,
           isSoldOut: response.result.soldout
         }
+        setIsSoldout(response.result.soldout)
         setImageFile(response.result.images)
         setProductDetail(product)
       }
@@ -220,24 +225,42 @@ export const ProductsDetailsPage = () => {
     sellingProduct()
   }, [id, isDuration])
 
+
   //chot gia
   const handleAuctionSuccess = async (id) => {
     if (isLogin) {
       try {
-        // const response = await axios.post(`bidding/success/${productDetail.item_id}/${userId}`, null, { authRequired: true })
-        dispatch(auctionsuccess({ productId: id, sellerId: userId }))
-        if (!isLoading) {
-          toast.success("Ban da cho qua thanh cong")
-        }
-
-        getProduct()
+        Swal.fire({
+          title: `Congratulations!`,
+          text: "Bạn có muốn chốt giá không?",
+          confirmButtonText: "Ok",
+          cancelButtonText: "Hủy",
+          showCancelButton: true,
+          customClass: {
+            confirmButton: "swal-confirm-button",
+          },
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            const actionResult = await dispatch(auctionsuccess({ productId: id, sellerId: userId }));
+            console.log(actionResult);
+            if (auctionsuccess.fulfilled.match(actionResult)) {
+              toast.success("Bạn đã chốt giá thành công!");
+              setIsSoldout(true);
+            } else {
+              toast.error("Chốt giá thất bại, vui lòng thử lại.");
+            }
+          } else {
+            toast.info("Bạn đã hủy chốt giá.");
+          }
+        });
       } catch (error) {
         console.log(error);
       }
     } else {
-      triggerLoginExpired()
+      triggerLoginExpired();
     }
   }
+
 
 
   useEffect(() => {
@@ -245,6 +268,29 @@ export const ProductsDetailsPage = () => {
       setSsOpenInput(true)
     }
   }, [id, productDetail]);
+
+  // item, userId !== item?.userId ? item?.sellerName : item?.buyerName,
+  const handleCreateRoom = async (productId) => {
+    try {
+      if (productId && userId) {
+        const response = await axios.post(`chatroom/room/${productId}`, {
+          buyerId: userId
+        },
+          { authRequired: true },
+        )
+        console.log(response);
+        if (response != null) {
+          navigate(`/chat?item_id=${productId}&buyerId=${userId}`, {
+            state: { isCreate: true, sellerName: response?.sellerName, room: response?.roomId }
+          });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
 
   return (
     <>
@@ -262,7 +308,7 @@ export const ProductsDetailsPage = () => {
                   {productDetail.item_name}
                 </Title>
                 {
-                  productDetail.isSoldOut === true && <div><p className="text-red-700 font-bold">soldout*</p></div>
+                  isSoldout && <div><p className="text-red-700 font-bold">soldout*</p></div>
                 }
               </div>
               <div className="flex gap-5">
@@ -346,7 +392,7 @@ export const ProductsDetailsPage = () => {
               <Title className="flex items-center gap-2 my-5">
                 Price:<Caption>${productDetail.starting_price}</Caption>
               </Title>
-              <Title className={`flex items-center gap-2 ${productDetail.isSoldOut ? 'text-red-700' : ''}`}>
+              <Title className={`flex items-center gap-2 ${isSoldout ? 'text-red-700' : ''}`}>
                 Current bid:<Caption className="text-3xl">${currentPrice.price || 0} </Caption>
               </Title>
 
@@ -354,14 +400,17 @@ export const ProductsDetailsPage = () => {
               {
                 (userId !== productDetail.buyerId && productDetail.isSoldOut === false) && (
                   <div className="w-[200px] h-[40px] bg-green border rounded-md flex justify-center items-center">
-                    <NavLink to={`/chat?item_id=${productDetail.item_id}&buyerId=${productDetail.buyerId}`} type="button" className="font-medium text-white">
+                    <button
+                      onClick={() => handleCreateRoom(productDetail.item_id)}
+                      // to={`/chat?item_id=${productDetail.item_id}&buyerId=${productDetail.buyerId}`} 
+                      type="button" className="font-medium text-white">
                       Chat now
-                    </NavLink>
+                    </button>
                   </div>
                 )
               }
               {
-                userId === productDetail.buyerId && (productDetail.isSoldOut === false) && (productDetail.isSell === true) && (
+                userId === productDetail.buyerId && !isSoldout && (
                   <div onClick={() => handleAuctionSuccess(productDetail?.item_id)} className="w-[200px] cursor-pointer h-[40px] bg-green border rounded-md flex justify-center items-center">
                     <button className="font-medium text-white">
                       This price
@@ -370,7 +419,7 @@ export const ProductsDetailsPage = () => {
                 )
               }
               {
-                isOpenInput &&
+                isOpenInput && productDetail.isSoldOut === false &&
                 <div div className="p-5 px-10 shadow-s3 py-8">
                   <form onSubmit={onSubmitBidding} className="flex gap-3 justify-between">
                     <input className={commonClassNameOfInput} value={priceBidding} onChange={e => setPriceBidding(e.target.value)} type="number" name="price" />
