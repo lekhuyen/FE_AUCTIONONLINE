@@ -119,7 +119,9 @@ const ManagerPost = () => {
 
   const handlePayment = (id) => {
     const uniqueOrderId = `order_${id}_${Date.now()}`;
-    const product = Array.isArray(productsOfBuyer).length > 0 ? productsOfBuyer?.find(product => product.item_id === id) : [];
+    const product = Array.isArray(productsOfBuyer) && productsOfBuyer.length > 0
+      ? productsOfBuyer.find(product => product.item_id === id)
+      : null; console.log(productsOfBuyer);
     if (product?.bidding?.price) {
       checkout(id, product?.bidding?.price, uniqueOrderId)
         .then((res) => {
