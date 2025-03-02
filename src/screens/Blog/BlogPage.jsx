@@ -27,52 +27,86 @@ export const BlogPage = () => {
     // Filters blogs based on date
     const filterBlogsByDate = (filter) => {
         const currentDate = new Date();
+        // Strip the time portion of the current date
+        currentDate.setHours(0, 0, 0, 0); // Set time to 00:00:00 for accurate comparison
+
         let filtered;
+
+        // Helper function to compare dates ignoring time
+        const isSameDay = (date1, date2) => {
+            return (
+                date1.getDate() === date2.getDate() &&
+                date1.getMonth() === date2.getMonth() &&
+                date1.getFullYear() === date2.getFullYear()
+            );
+        };
 
         switch (filter) {
             case 'today':
                 filtered = blogs.filter((blog) => {
                     const blogDate = new Date(blog.blogDate);
-                    return (
-                        blogDate.getDate() === currentDate.getDate() &&
-                        blogDate.getMonth() === currentDate.getMonth() &&
-                        blogDate.getFullYear() === currentDate.getFullYear()
-                    );
+                    blogDate.setHours(0, 0, 0, 0); // Strip time from blog date
+                    return isSameDay(blogDate, currentDate) && blogDate <= currentDate; // Only allow today or earlier blogs
+                });
+                break;
+
+            case 'yesterday':
+                const yesterday = new Date(currentDate);
+                yesterday.setDate(currentDate.getDate() - 1); // Get yesterday's date
+                yesterday.setHours(0, 0, 0, 0); // Strip time from yesterday
+
+                filtered = blogs.filter((blog) => {
+                    const blogDate = new Date(blog.blogDate);
+                    blogDate.setHours(0, 0, 0, 0); // Strip time from blog date
+                    return isSameDay(blogDate, yesterday) && blogDate <= currentDate; // Only allow yesterday or earlier blogs
                 });
                 break;
 
             case 'this-week':
                 const startOfWeek = currentDate.getDate() - currentDate.getDay(); // Get start of the week (Sunday)
                 const endOfWeek = startOfWeek + 6; // Get end of the week (Saturday)
+
                 filtered = blogs.filter((blog) => {
                     const blogDate = new Date(blog.blogDate);
+                    blogDate.setHours(0, 0, 0, 0); // Strip time from blog date
                     const blogDay = blogDate.getDate();
-                    return blogDay >= startOfWeek && blogDay <= endOfWeek;
+                    return blogDay >= startOfWeek && blogDay <= endOfWeek && blogDate <= currentDate; // Only allow dates <= today
                 });
                 break;
 
             case 'this-month':
                 filtered = blogs.filter((blog) => {
                     const blogDate = new Date(blog.blogDate);
-                    return blogDate.getMonth() === currentDate.getMonth() && blogDate.getFullYear() === currentDate.getFullYear();
+                    blogDate.setHours(0, 0, 0, 0); // Strip time from blog date
+                    return blogDate.getMonth() === currentDate.getMonth() &&
+                        blogDate.getFullYear() === currentDate.getFullYear() &&
+                        blogDate <= currentDate; // Only allow dates <= today
                 });
                 break;
 
             case 'this-year':
                 filtered = blogs.filter((blog) => {
                     const blogDate = new Date(blog.blogDate);
-                    return blogDate.getFullYear() === currentDate.getFullYear();
+                    blogDate.setHours(0, 0, 0, 0); // Strip time from blog date
+                    return blogDate.getFullYear() === currentDate.getFullYear() && blogDate <= currentDate; // Only allow dates <= today
                 });
                 break;
 
             default:
-                filtered = blogs;
+                filtered = blogs.filter((blog) => {
+                    const blogDate = new Date(blog.blogDate);
+                    blogDate.setHours(0, 0, 0, 0); // Strip time from blog date
+                    return blogDate <= currentDate; // Filter out future blogs
+                });
         }
 
         setFilteredBlogs(filtered);
         setCurrentPage(1); // Reset to first page after filter change
         setTotalPages(Math.ceil(filtered.length / blogsPerPage)); // Recalculate total pages
     };
+
+
+
 
     // Handle pagination
     const handlePageChange = (pageNumber) => {
