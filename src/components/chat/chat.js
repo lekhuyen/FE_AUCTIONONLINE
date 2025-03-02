@@ -17,11 +17,11 @@ import clsx from 'clsx';
 const cx = classNames.bind(styles)
 
 const Chat = () => {
-
+  const navigate = useNavigate()
+  const location = useLocation();
+  const { isCreate, sellerName, room } = location.state || {}
   const endOfMessagesRef = useRef(null)
   // const textareaRef = useRef(null);
-  const navigate = useNavigate()
-  const location = useLocation()
   const searchParams = new URLSearchParams(location.search);
   const productId = searchParams.get('item_id');
   const sellerId = searchParams.get('buyerId');
@@ -85,32 +85,33 @@ const Chat = () => {
 
 
   // create room
-  const createRoom = async () => {
-    try {
-      if (sellerId !== userId) {
-        const response = await axios.post(`chatroom/room/${productId}`, {
-          buyerId: userId
-        },
-          { authRequired: true },
-        )
-        if (response) setListChatOfSeller(prev => [response, ...prev])
-        // setRoom(prevRoom => {
-        //   if (prevRoom.roomId !== response.id || prevRoom !== response.date) {
-        //     return { roomId: response.id, date: response.date }
-        //   }
-        //   return prevRoom
-        // })
-      }
+  // const createRoom = async () => {
+  //   try {
+  //     if (sellerId !== userId) {
+  //       const response = await axios.post(`chatroom/room/${productId}`, {
+  //         buyerId: userId
+  //       },
+  //         { authRequired: true },
+  //       )
+  //       if (response) setListChatOfSeller(prev => [response, ...prev])
 
-    } catch (error) {
-      console.log(error);
-    }
-  }
-  useEffect(() => {
-    if (productId && userId) {
-      createRoom();
-    }
-  }, [productId, userId])
+  //       // setRoom(prevRoom => {
+  //       //   if (prevRoom.roomId !== response.id || prevRoom !== response.date) {
+  //       //     return { roomId: response.id, date: response.date }
+  //       //   }
+  //       //   return prevRoom
+  //       // })
+  //     }
+
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
+  // useEffect(() => {
+  //   if (productId && userId) {
+  //     createRoom();
+  //   }
+  // }, [productId, userId])
 
   //buyerInfo
   useEffect(() => {
@@ -120,8 +121,10 @@ const Chat = () => {
           const response = await axios.get(`users/${sellerId}`,
             { authRequired: true },
           )
+          if (response != null && !isCreate && !sellerName) {
+            setRoomChatInfo(response.name)
 
-          setRoomChatInfo(response.name)
+          }
         }
       } catch (error) {
         console.log(error);
@@ -168,11 +171,23 @@ const Chat = () => {
     }
   }, [])
 
+  useEffect(() => {
+    const handleClickUserChatt = async (sellerName) => {
+
+      setRoomChatInfo(sellerName);
+      setRoomId(room)
+      setIsChat(true);
+    }
+    if (isCreate && sellerName) {
+      handleClickUserChatt(sellerName);
+    }
+  }, [isCreate, room, sellerName])
+
   const handleClickUserChat = async (item, userChat, index) => {
 
     setRoomId(item.roomId)
-    const newPath = `/chat?item_id=${item.item_id}&buyerId=${item.userId}`;
-    navigate(newPath)
+    // const newPath = `/chat?item_id=${item.item_id}&buyerId=${item.userId}`;
+    // navigate(newPath)
     setRoomChatInfo(userChat);
     setIsChat(true);
 
@@ -413,7 +428,7 @@ const Chat = () => {
   // console.log(listChatOfSeller);
   const renderedRoomIds = new Set();
   return (
-    <section className='flex justify-center'>
+    <section className='flex justify-center' style={{ backgroundImage: "url('/images/common/chat_bg.jpg')" }}>
 
       <div className="bg-white shadow-s3 w-1/2 h-screen rounded-xl flex ">
         <div className="mt-[83px] w-full flex">
