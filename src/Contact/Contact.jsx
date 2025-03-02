@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { FiFacebook, FiGlobe } from 'react-icons/fi';
+import contactImage from '../Contact/Images/Contact_Hammer.jpg';
 import axios from 'axios';
 
 export const Contact = () => {
@@ -18,7 +20,6 @@ export const Contact = () => {
     const [formError, setFormError] = useState('');
     const [formSubmitted, setFormSubmitted] = useState(false);
 
-    // Fetch country codes and interested in options from the API
     useEffect(() => {
         const fetchOptions = async () => {
             try {
@@ -52,7 +53,6 @@ export const Contact = () => {
         fetchOptions();
     }, []);
 
-    // Function to map country name to phone code
     const getCountryPhoneCode = (country) => {
         const countryCodeMap = {
             US: "+1",
@@ -78,13 +78,11 @@ export const Contact = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Check if a valid country code is selected
         if (!formData.countryCode || formData.countryCode === '') {
             setFormError('Please select a valid country code.');
             return;
         }
 
-        // Validate the phone number
         if (!validatePhone(formData.phone)) {
             setFormError('Please enter a valid 10-digit phone number.');
             return;
@@ -96,7 +94,6 @@ export const Contact = () => {
             const response = await axios.post('http://localhost:8080/api/contact', formData);
             setFormSubmitted(true);
         } catch (error) {
-            // Handle specific error codes
             if (error.response) {
                 if (error.response.status === 401) {
                     setFormError('Unauthorized request. Please log in and try again.');
@@ -115,7 +112,6 @@ export const Contact = () => {
     };
 
     const handleOkClick = () => {
-        // Reset the form and reload the page
         setFormSubmitted(false);
         setFormData({
             name: '',
@@ -126,7 +122,7 @@ export const Contact = () => {
             message: ''
         });
         setFormError('');
-        window.location.reload();  // Reload the page to reset everything
+        window.location.reload();
     };
 
     return (
@@ -252,26 +248,33 @@ export const Contact = () => {
             <div style={mapStyles.container}>
                 <div style={mapStyles.mapContainer}>
                     <iframe
-                        src="https://maps.app.goo.gl/zowaSd1f92o8UdTt7"
-                        width="100%"
-                        height="100%"
+                        src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d2973.2186448107423!2d-87.8695875!3d41.8235898!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x880e4a1c469f4ec7%3A0x61a00d8b25ba5501!2sWestern%20Suburbs%2C%20507%20E%20Woodlawn%20Ave%2C%20La%20Grange%20Park%2C%20IL%2060526%2C%20USA!5e0!3m2!1sen!2s!4v1740899441081!5m2!1sen!2s"
+                        width="600"
+                        height="450"
                         style={mapStyles.map}
-                        frameBorder="0"
-                        allowFullScreen
-                        title="Google Map"
-                    ></iframe>
+                        allowFullScreen=""
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade">
+                    </iframe>
                 </div>
                 <div style={mapStyles.infoContainer}>
                     <h2 style={mapStyles.heading}>Contact Information</h2>
-                    <p style={mapStyles.infoText}><strong>Location:</strong> 123 Example St, City, Country</p>
-                    <p style={mapStyles.infoText}><strong>Phone:</strong> +1 (123) 456-7890</p>
-                    <p style={mapStyles.infoText}><strong>Email:</strong> example@example.com</p>
+                    <p style={mapStyles.infoText}><strong>Location:</strong> Western Suburbs, 507 E Woodlawn Ave, La Grange Park, IL 60526, USA</p>
+                    <p style={mapStyles.infoText}><strong>Phone:</strong> +1 (464) 113-5652</p>
+                    <p style={mapStyles.infoText}><strong>Email:</strong> Biddora@gmail.com</p>
                     <div style={mapStyles.socialLinks}>
-                        <a href="https://facebook.com" style={mapStyles.socialLink} target="_blank" rel="noopener noreferrer">Facebook</a>
-                        <a href="https://google.com" style={mapStyles.socialLink} target="_blank" rel="noopener noreferrer">Google</a>
+                        <a href="https://facebook.com" style={mapStyles.socialLink} target="_blank"
+                           rel="noopener noreferrer">
+                            <FiFacebook size={30}/>
+                        </a>
+                        <a href="https://google.com" style={mapStyles.socialLink} target="_blank"
+                           rel="noopener noreferrer">
+                            <FiGlobe size={30}/>
+                        </a>
                     </div>
                 </div>
             </div>
+
         </div>
     );
 };
@@ -283,11 +286,15 @@ const styles = {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
+        backgroundImage: `url(${contactImage})`,  // Use imported image
+        backgroundSize: 'cover',  // Make sure the image covers the entire area
+        backgroundPosition: 'center',
+        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',  // Shadow to make it look like shadow effect
     },
     heading: {
         fontSize: '36px',
         fontWeight: 700,
-        color: '#1e1e1e',
+        color: '#fff', // Change text color for contrast against the background
         textAlign: 'center',
         marginBottom: '32px',
     },
@@ -296,8 +303,8 @@ const styles = {
         maxWidth: '600px',
         backgroundColor: '#fff',
         padding: '24px',
-        borderRadius: '8px',  // Keep border-radius to smooth edges, but remove the box-shadow
-        marginBottom: '32px',  // Adding space between form and map
+        borderRadius: '8px',
+        marginBottom: '32px',
     },
     row: {
         display: 'flex',
@@ -319,7 +326,7 @@ const styles = {
         width: '100%',
         padding: '12px',
         fontSize: '16px',
-        border: '1px solid #ccc',  // Change to a softer border color or remove completely
+        border: '1px solid #ccc',
         borderRadius: '4px',
         marginBottom: '16px',
     },
@@ -327,7 +334,7 @@ const styles = {
         width: '100%',
         padding: '12px',
         fontSize: '16px',
-        border: '1px solid #ccc',  // Change to a softer border color or remove completely
+        border: '1px solid #ccc',
         borderRadius: '4px',
         marginBottom: '16px',
     },
@@ -340,21 +347,21 @@ const styles = {
         width: '120px',
         padding: '12px',
         fontSize: '16px',
-        border: '1px solid #ccc',  // Change to a softer border color or remove completely
+        border: '1px solid #ccc',
         borderRadius: '4px',
     },
     phoneInput: {
         flex: '1',
         padding: '12px',
         fontSize: '16px',
-        border: '1px solid #ccc',  // Change to a softer border color or remove completely
+        border: '1px solid #ccc',
         borderRadius: '4px',
     },
     textarea: {
         width: '100%',
         padding: '12px',
         fontSize: '16px',
-        border: '1px solid #ccc',  // Change to a softer border color or remove completely
+        border: '1px solid #ccc',
         borderRadius: '4px',
         marginBottom: '16px',
         minHeight: '100px',
@@ -380,7 +387,7 @@ const styles = {
         padding: '24px',
         borderRadius: '8px',
         textAlign: 'center',
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',  // Remove shadow if needed
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
     },
     thankYouHeading: {
         fontSize: '24px',
@@ -458,4 +465,3 @@ const mapStyles = {
         marginRight: '15px',
     },
 };
-

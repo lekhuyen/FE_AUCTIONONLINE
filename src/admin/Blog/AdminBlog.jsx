@@ -37,7 +37,7 @@ export const AdminBlog = () => {
             <h1>Admin - Blog Management</h1>
 
             {/* Add Blog Button */}
-            <Link to="/adminblog/add" style={styles.addButton}>
+            <Link to="/admin-blog/add" style={styles.addButton}>
                 Add Blog
             </Link>
 
@@ -61,7 +61,7 @@ export const AdminBlog = () => {
                         <td style={styles.tableCell}>{new Date(blog.blogDate).toLocaleDateString()}</td>
                         <td style={styles.tableCell}>
                             {/* Detail Button */}
-                            <Link to={`/adminblog/detail/${blog.id}`} style={styles.button}>
+                            <Link to={`/admin-blog/detail/${blog.id}`} style={styles.button}>
                                 Detail
                             </Link>
 

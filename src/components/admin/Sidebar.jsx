@@ -8,7 +8,7 @@ import { User1 } from "../hero/Hero";
 import { IoIosLogOut } from "react-icons/io";
 import { CgProductHunt } from "react-icons/cg";
 import { TbCurrencyDollar } from "react-icons/tb";
-import { FiUser } from "react-icons/fi";
+import { FiUser, FiMail, FiEdit} from "react-icons/fi";
 import { FaPlusCircle } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -118,6 +118,21 @@ export const Sidebar = () => {
                 </span>
                 <span>Income</span>
               </CustomNavLink>
+
+              <CustomNavLink href="/admin-contact" isActive={location.pathname === "/admin-contact"} className={className}>
+                <span>
+                  <FiMail size={22} /> {/* Contact Icon */}
+                </span>
+                <span>Contact</span>
+              </CustomNavLink>
+
+              <CustomNavLink href="/admin-blog" isActive={location.pathname === "/admin-blog"} className={className}>
+                <span>
+                  <FiEdit size={22} /> {/* Blog Icon */}
+                </span>
+                <span>Blog</span>
+              </CustomNavLink>
+
             </>
           )}
 
