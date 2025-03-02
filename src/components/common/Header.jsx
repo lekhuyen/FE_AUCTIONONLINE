@@ -378,7 +378,7 @@ export const Header = () => {
                 {/* quan ly sp cua user */}
                 {
                   isLoggedIn && (
-                    <CustomNavLink href="/manager-post" className={`${isScrolled || !isHomePage ? "text-black" : "text-white"}`} >
+                    <CustomNavLink href="/profile-page" className={`${isScrolled || !isHomePage ? "text-black" : "text-white"}`} >
                       <FaRegListAlt />
                     </CustomNavLink>
                   )

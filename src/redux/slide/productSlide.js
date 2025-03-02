@@ -275,7 +275,7 @@ export const productSlide = createSlice({
 
     builder.addCase(getAllProductByBuyer.rejected, (state, action) => {
       state.isLoading = true;
-      state.productsOfBuyer = action.payload;
+      state.productsOfBuyer = [];
     });
 
 
