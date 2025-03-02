@@ -387,7 +387,7 @@ export const ProductsDetailsPage = () => {
                 <Caption>December 31, 2024 12:00 am</Caption>
               </Title>
               <Title className="flex items-center gap-2 my-5">
-                Timezone: <Caption>UTC 0</Caption>
+                Timezone: <Caption>UTC+7</Caption>
               </Title>
               <Title className="flex items-center gap-2 my-5">
                 Price:<Caption>${productDetail.starting_price}</Caption>
