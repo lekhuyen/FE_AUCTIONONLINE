@@ -346,7 +346,10 @@ export const Header = () => {
                             {
                               categories?.data?.length > 0 && categories?.data?.map((category, index) => (
                                 <Link key={index} to={`/product-list/${category?.category_id}`}>
-                                  <li key={category?.category_id} className="border-b-[1px] p-1 cursor-pointer">
+                                  <li 
+                                    key={category?.category_id} 
+                                    className="border-b-[1px] p-1 cursor-pointer hover:bg-emerald-500 hover:text-white"
+                                  >
                                     {category?.category_name}
                                   </li>
                                 </Link>
