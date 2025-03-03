@@ -419,7 +419,7 @@ export const Header = () => {
                   {
                     showNotifiProduct && (
                       <div className="absolute w-[360px] top-[33px] overflow-hidden bg-white shadow-lg rounded-sm p-2">
-                        <div className="w-full"><h3 className="text-[24px]">Thong bao</h3></div>
+                        <div className="w-full"><h3 className="text-[24px]">Notification</h3></div>
                         <div className={clsx(styles.custom_scroll, 'overflow-y-auto max-h-[400px]')}>
                           {
                             notificationProduct?.length > 0 && (currentUser?.sub === "admin@gmail.com") && notificationProduct?.map((item, index) => (
@@ -430,8 +430,8 @@ export const Header = () => {
                                   <div className="w-[50px]  flex-shrink-0"><img className="w-full" alt="" src="https://cdn-icons-png.flaticon.com/512/6596/6596121.png" /></div>
                                   <div>
                                     <p className="whitespace-normal overflow-hidden text-ellipsis text-[14px]">
-                                      <span className="font-bold">{item.creator.id !== userId ? item.creator.name : "Bạn"} </span>
-                                      {item.creator.id !== userId ? "vừa tạo một sản phẩm mới" : "vừa tạo một sản phẩm mới hãy chờ admin xét duyệt!"}
+                                      <span className="font-bold">{item.creator.id !== userId ? item.creator.name : "You"} </span>
+                                      {item.creator.id !== userId ? "have just created a new product" : "have just created a new product, kindly wait for the admin approval!"}
                                     </p>
                                     <p className="text-blue-500 text-[12px]">{moment(item.createdAt).fromNow()}</p>
                                   </div>
@@ -452,8 +452,8 @@ export const Header = () => {
                                       <p className="whitespace-normal overflow-hidden text-ellipsis text-[14px]">
                                         <span className="font-bold">{item.creator.id !== userId ? item.creator.name : "Bạn"} </span>
                                         {item.creator.id !== userId
-                                          ? "vừa tạo một sản phẩm mới"
-                                          : "vừa tạo một sản phẩm mới hãy chờ admin xét duyệt!"}
+                                          ? "have just created a new product"
+                                          : "have just created a new product, kindly wait for the admin approval!"}
                                       </p>
                                     </>
                                   );
@@ -461,7 +461,7 @@ export const Header = () => {
                                   content = (
                                     <>
                                       <p className="whitespace-normal overflow-hidden text-ellipsis text-[14px]">
-                                        <span className="font-bold">Sản phẩm của bạn </span> đã được duyệt
+                                        <span className="font-bold">Your product </span> is approved!
                                       </p>
                                     </>
                                   );
