@@ -42,7 +42,7 @@ export const AdminBlogAdd = () => {
             });
 
             // Redirect to the admin blog list page after successful creation
-            navigate('/adminblog');
+            navigate('/admin-blog');
         } catch (error) {
             setError('Error adding blog');
             setIsSubmitting(false);
