@@ -46,11 +46,11 @@ const ManagerPost = () => {
 
 
   const listMenu = [
-    { name: 'Đang hiển thị' },
-    { name: 'Hết hạn' },
-    { name: 'Chờ duyệt' },
-    { name: 'Đấu giá thành công' },
-    { name: 'Đã bán' },
+    { name: 'Opening' },
+    { name: 'Expired' },
+    { name: 'Pending' },
+    { name: 'Success bidding' },
+    { name: 'Sold' },
   ]
   const [isLogin] = useState(localStorage.getItem('isIntrospect') || false)
   useEffect(() => {
@@ -352,27 +352,27 @@ const ManagerPost = () => {
               {
                 clickMenu === 4 && productSoldOut?.length > 0 && productSoldOut?.slice(0, visibleCountIsActive).map((product, index) => (
                   <div key={product.item_id} className="border-b border-gray-400">
-                    <p className="text-[14px]">Ten san pham: <span className="text-[16px] font-bold">{product.item_name}</span></p>
+                    <p className="text-[14px]">Product Name: <span className="text-[16px] font-bold">{product.item_name}</span></p>
                     <p className="text-[14px]">Price: <span className="text-[16px] font-bold">{product?.bidding?.price}</span></p>
-                    <p className="text-[14px]">Ngay ban: <span className="text-[16px] font-bold">{moment(product.end_date).format("DD/MM/YYYY")}</span></p>
-                    <p className="text-[14px]">Nguoi mua: <span className="text-[16px] font-bold">{product?.buyer?.name}</span></p>
-                    <p className="text-[14px]">STD: <span className="text-[16px] font-bold">{product?.buyer?.phone}</span></p>
+                    <p className="text-[14px]">Sold Date: <span className="text-[16px] font-bold">{moment(product.end_date).format("DD/MM/YYYY")}</span></p>
+                    <p className="text-[14px]">Buyer: <span className="text-[16px] font-bold">{product?.buyer?.name}</span></p>
+                    <p className="text-[14px]">Phone Number: <span className="text-[16px] font-bold">{product?.buyer?.phone}</span></p>
                     <p className="text-[14px]">Address: <span className="text-[16px] font-bold">{product?.buyer?.address}</span></p>
-                    <p className="text-[14px]">Thanh toan: <span className={clsx("text-[16px] font-bold", product?.paid === false ? "" : "text-red-500")}>{product?.paid === true ? "Da thanh toan" : "Chua thanh toan"}</span></p>
+                    <p className="text-[14px]">Payment: <span className={clsx("text-[16px] font-bold", product?.paid === false ? "" : "text-red-500")}>{product?.paid === true ? "Da thanh toan" : "Chua thanh toan"}</span></p>
                   </div>
                 ))
               }
               {clickMenu === 4 && visibleCountIsActive < isActive.length && (
                 <div className="text-center mt-4 pb-1">
                   <button onClick={handleShowMoreisActive} className="px-4 py-0 bg-blue-500 text-white rounded-md">
-                    Xem thêm
+                    View More
                   </button>
                 </div>
               )}
               {clickMenu === 4 && visibleCountIsActive > 5 && (
                 <div className="text-center mt-4 pb-1">
                   <button onClick={handleShowLessIsActive} className="px-4 py-0 bg-red-500 text-white rounded-md">
-                    Ẩn bớt
+                    Show Less
                   </button>
                 </div>
               )}
@@ -382,14 +382,14 @@ const ManagerPost = () => {
             {clickMenu === 2 && visibleCountIsCheck < isCheck.length && (
               <div className="text-center mt-4 pb-1">
                 <button onClick={handleShowMoreisCheck} className="px-4 py-0 bg-blue-500 text-white rounded-md">
-                  Xem thêm
+                View More
                 </button>
               </div>
             )}
             {clickMenu === 2 && visibleCountIsCheck > 5 && (
               <div className="text-center mt-4 pb-1">
                 <button onClick={handleShowLessIsCheck} className="px-4 py-0 bg-red-500 text-white rounded-md">
-                  Ẩn bớt
+                Show Less
                 </button>
               </div>
             )}
@@ -398,14 +398,14 @@ const ManagerPost = () => {
             {clickMenu === 0 && visibleCountIsActive < isActive?.length && (
               <div className="text-center mt-4 pb-1">
                 <button onClick={handleShowMoreisActive} className="px-4 py-0 bg-blue-500 text-white rounded-md">
-                  Xem thêm
+                  View More
                 </button>
               </div>
             )}
             {clickMenu === 0 && visibleCountIsActive > 5 && (
               <div className="text-center mt-4 pb-1">
                 <button onClick={handleShowLessIsActive} className="px-4 py-0 bg-red-500 text-white rounded-md">
-                  Ẩn bớt
+                Show Less
                 </button>
               </div>
             )}
@@ -496,7 +496,7 @@ const ManagerPost = () => {
                 />
                 {
                   invlidImages &&
-                  <small style={{ color: 'red' }}>This fields is invalid</small>
+                  <small style={{ color: 'red' }}>This field is invalid</small>
                 }
               </div>
               {

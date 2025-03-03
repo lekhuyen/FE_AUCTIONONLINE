@@ -15,17 +15,17 @@ export default function QRScanner() {
         navigate("/ocr-reader", { state: { qrText: decodedText } });
       })
       .catch(() => {
-        setError("Không tìm thấy mã QR trong ảnh. Vui lòng chọn ảnh khác.");
+        setError("Invalid QR. Please try again.");
       });
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-5">
       <div className="bg-white shadow-xl rounded-2xl p-6 w-full max-w-md space-y-4">
-        <h1 className="text-2xl font-bold text-center text-gray-700">Chụp ảnh mã QR thẻ CCCD của bạn</h1>
+        <h1 className="text-2xl font-bold text-center text-gray-700">Capture the QR code on your identification card</h1>
 
         <div className="w-full h-64 bg-gray-200 flex items-center justify-center text-gray-500 rounded-lg">
-          Chưa có ảnh nào
+          Not Available
         </div>
 
         <input
@@ -45,7 +45,7 @@ export default function QRScanner() {
           onClick={() => fileInputRef.current.click()}
           className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-300"
         >
-          Chọn ảnh để quét QR
+          Click to choose an image with QR Code
         </button>
 
         {error && <p className="text-red-500 text-center">{error}</p>}

@@ -552,8 +552,8 @@ export const Header = () => {
                                           notifi.auction === true ? (
                                             <>
                                               <p className="whitespace-normal overflow-hidden text-ellipsis text-[14px]">
-                                                <span className="font-bold">San pham <span className="font-bold">{notifi.productName}</span> cua ban </span>
-                                                da duoc dau gia thanh cong cua ban voi muc gia {notifi.price}
+                                                <span className="font-bold"> The product named <span className="font-bold">{notifi.productName}</span> of you </span>
+                                                was successfully bid with a price of {notifi.price}
                                               </p>
                                             </>
                                           )
@@ -562,8 +562,8 @@ export const Header = () => {
                                               <>
                                                 <p className="whitespace-normal overflow-hidden text-ellipsis text-[14px]">
                                                   <span className="font-bold">{notifi.buyerName} </span>
-                                                  da dau gia san pham <span className="font-bold">{notifi.productName} </span>
-                                                  cua ban voi muc gia {notifi.price}
+                                                  already bid a product named <span className="font-bold">{notifi.productName} </span>
+                                                  of you with a price of {notifi.price}
                                                 </p>
                                               </>
                                             )
@@ -589,8 +589,8 @@ export const Header = () => {
                                           notifi.auction === true ? (
                                             <>
                                               <p className="whitespace-normal overflow-hidden text-ellipsis text-[15px]">
-                                                <span className="font-bold">Chúc mừng bạn </span>
-                                                da dau gia thanh cong san pham <span className="font-bold">{notifi.productName}</span> voi muc gia {notifi.price}
+                                                <span className="font-bold">Congratulations, you have</span>
+                                                already made a successful bid for a product called <span className="font-bold">{notifi.productName}</span> with a price of {notifi.price}
                                               </p>
                                             </>
                                           )
@@ -598,8 +598,8 @@ export const Header = () => {
                                             (
                                               <>
                                                 <p className="whitespace-normal overflow-hidden text-ellipsis text-[15px]">
-                                                  <span className="font-bold">Ban </span>
-                                                  da dau gia thanh cong san pham <span className="font-bold">{notifi.productName}</span> voi muc gia {notifi.price}
+                                                  <span className="font-bold">You have</span>
+                                                  already made a successful bid for a product called <span className="font-bold">{notifi.productName}</span> with a price of {notifi.price}
                                                 </p>
                                               </>
                                             )
@@ -625,14 +625,14 @@ export const Header = () => {
                 {
                   !isLoggedIn && (
                     <CustomNavLink href="/login" className={`${isScrolled || !isHomePage ? "text-black" : "text-white"}`}>
-                      Sign in
+                      Sign In
                     </CustomNavLink>
                   )
                 }
                 {
                   !isLoggedIn && (
                     <CustomNavLink href="/register" className={`${!isHomePage || isScrolled ? "bg-green" : "bg-white"} px-8 py-2 rounded-full text-primary shadow-md`}>
-                      Join
+                      Sign Up
                     </CustomNavLink>
                   )
                 }
