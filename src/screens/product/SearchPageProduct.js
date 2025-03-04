@@ -145,7 +145,7 @@ const SearchPageProduct = () => {
       {
         products?.data?.length === 0 && (
           <div className="flex m-auto">
-            <h2>Khong co san phan nao</h2>
+            <h2>No Available Product</h2>
           </div>)
       }
       <div className="mt-8 flex justify-end">
