@@ -209,13 +209,13 @@ export const Register = () => {
             <input type="email" name="email" value={email} onChange={handleInputChange} className={commonClassNameOfInput} placeholder="Enter Your Email" />
           </div>
           <div className="py-2 font-[500] text-gray_100">
-            <label>Tỉnh/Thành phố:</label>
+            <label>Province/City:</label>
             <select
               value={selectedProvince}
               onChange={handleProvinceChange}
               className={clsx(commonClassNameOfInput)}
             >
-              <option value="">-- Chọn tỉnh/thành phố --</option>
+              <option value="">-- Select province/city--</option>
               {provinces.map(province => (
                 <option key={province.code} value={province.code}>
                   {province.name}
@@ -223,14 +223,14 @@ export const Register = () => {
               ))}
             </select>
 
-            <label>Huyện/Quận:</label>
+            <label>District:</label>
             <select
               value={selectedDistrict}
               onChange={handleDistrictChange}
               disabled={!selectedProvince}
               className={clsx(commonClassNameOfInput)}
             >
-              <option value="">-- Chọn huyện/quận --</option>
+              <option value="">-- Select District --</option>
               {districts.map(district => (
                 <option key={district.code} value={district.code}>
                   {district.name}
@@ -238,14 +238,14 @@ export const Register = () => {
               ))}
             </select>
 
-            <label>Xã/Phường:</label>
+            <label>Commune/Ward:</label>
             <select
               value={selectedWard}
               onChange={handleWardChange}
               disabled={!selectedDistrict}
               className={clsx(commonClassNameOfInput)}
             >
-              <option value="">-- Chọn xã/phường --</option>
+              <option value="">-- Select Commune/Ward --</option>
               {wards.map(ward => (
                 <option key={ward.code} value={ward.code}>
                   {ward.name}
@@ -262,7 +262,7 @@ export const Register = () => {
               value={addressDetail}
               onChange={handleAddressChange}
               className={commonClassNameOfInput}
-              placeholder="Nhập địa chỉ chi tiết (số nhà, đường...)"
+              placeholder="Enter detailed address (house number, street...)"
             />
           </div>
 
@@ -285,7 +285,7 @@ export const Register = () => {
           </div>
           <PrimaryButton className="w-full rounded-none my-5">CREATE ACCOUNT</PrimaryButton>
           <div className="text-center border py-4 rounded-lg mt-4">
-            <Title>OR SIGNUP WITH</Title>
+            <Title>OR SIGN UP WITH</Title>
             <div className="flex items-center justify-center gap-5 mt-5">
               <button className="flex items-center gap-2 bg-red-500 text-white p-3 px-5 rounded-sm">
                 <FaGoogle />
@@ -293,7 +293,7 @@ export const Register = () => {
               </button>
               <button className="flex items-center gap-2 bg-indigo-500 text-white p-3 px-5 rounded-sm">
                 <FaFacebook />
-                <p className="text-sm">SIGNUP WHIT FACEBOOK</p>
+                <p className="text-sm">SIGN UP WITH FACEBOOK</p>
               </button>
             </div>
           </div>
