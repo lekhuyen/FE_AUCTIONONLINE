@@ -1,10 +1,8 @@
-import { Container, PrimaryButton, ProfileCard, Title } from "./Design";
+import { Container, Title } from "./Design";
 import { FiPhoneOutgoing } from "react-icons/fi";
 import { MdOutlineAttachEmail } from "react-icons/md";
 import { IoLocationOutline } from "react-icons/io5";
-import { FaInstagram } from "react-icons/fa";
-import { CiLinkedin, CiTwitter } from "react-icons/ci";
-import { AiOutlineYoutube } from "react-icons/ai";
+
 import { useLocation } from "react-router-dom";
 
 export const Footer = () => {
@@ -12,7 +10,7 @@ export const Footer = () => {
   const isHomePage = location.pathname === "/";
   return (
     <>
-      <footer className=" relative bg-primary py-16 mt-16">
+      <footer className=" relative bg-primary py-16">
         {isHomePage && <div className="bg-white w-full py-20 -mt-10 rounded-b-[40px] z-10 absolute top-0"></div>}
 
         <Container className={`${isHomePage ? "mt-32" : "mt-0"} flex flex-col md:flex-row justify-between gap-12`}>
