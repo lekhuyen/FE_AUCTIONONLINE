@@ -11,9 +11,7 @@ const Streamer = ({ username, roomId, isCreator }) => {
   const ws = useRef(null);
   const peersRef = useRef({});
 
-
-  const [showModalListProduct, setShowModalListProduct] = useState(false)
-
+  const [showModalListProduct, setShowModalListProduct] = useState(false);
   const [products, setProducts] = useState([]);
   const [pinnedProduct, setPinnedProduct] = useState(null);
   const [showProductForm, setShowProductForm] = useState(false);
@@ -21,9 +19,10 @@ const Streamer = ({ username, roomId, isCreator }) => {
     id: '',
     name: '',
     price: 0,
-    imageUrl: '',
+    imageUrl: '', // Đây sẽ là URL tạm thời để hiển thị ảnh
     link: ''
   });
+  const [imagePreview, setImagePreview] = useState(''); // Thêm state để lưu URL preview ảnh
 
   const stopLive = () => {
     if (!isCreator) {
@@ -128,13 +127,14 @@ const Streamer = ({ username, roomId, isCreator }) => {
       id: newProduct.id,
       name: newProduct.name,
       price: parseFloat(newProduct.price),
-      imageUrl: newProduct.imageUrl || 'https://via.placeholder.com/150',
+      imageUrl: imagePreview || 'https://via.placeholder.com/150', // Sử dụng URL preview nếu có, nếu không thì dùng placeholder
       link: newProduct.link || '#'
     };
     if (ws.current?.readyState === WebSocket.OPEN) {
       console.log(`Streamer ${username} in room ${roomId} sending addProduct:`, product);
       ws.current.send(JSON.stringify(product));
       setNewProduct({ id: '', name: '', price: 0, imageUrl: '', link: '' });
+      setImagePreview(''); // Reset preview sau khi gửi
       setShowProductForm(false);
     } else {
       console.error(`WebSocket is not open for ${username} in room ${roomId}`);
@@ -157,6 +157,16 @@ const Streamer = ({ username, roomId, isCreator }) => {
       ws.current.send(JSON.stringify({
         type: 'unpinProduct'
       }));
+    }
+  };
+
+  // Xử lý file upload và tạo URL tạm thời để hiển thị
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file); // Tạo URL tạm thời từ file
+      setImagePreview(imageUrl); // Lưu URL để hiển thị ảnh preview
+      setNewProduct({ ...newProduct, imageUrl: file }); // Lưu file gốc vào newProduct
     }
   };
 
@@ -453,6 +463,7 @@ const Streamer = ({ username, roomId, isCreator }) => {
         }
       };
     };
+
     navigator.mediaDevices.getUserMedia({ video: true, audio: true })
       .then(stream => {
         if (isMounted) {
@@ -496,9 +507,9 @@ const Streamer = ({ username, roomId, isCreator }) => {
 
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-white mt-[75px]">
-      <div className="flex flex-1 overflow-hidden ">
+      <div className="flex flex-1 overflow-hidden">
         {/* Viewer Videos (bên trái) */}
-        <div className="w-1/4 flex flex-col p-4 overflow-y-auto">
+        <div className="w-1/3 flex flex-col p-4 overflow-y-auto">
           <h3 className="text-lg font-semibold mb-2">Participants</h3>
           {[...remoteStreams.entries()].map(([peerId, stream]) => {
             const status = peerStatuses.get(peerId) || { micEnabled: true, cameraEnabled: true };
@@ -532,7 +543,7 @@ const Streamer = ({ username, roomId, isCreator }) => {
         </div>
 
         {/* Streamer Video (bên phải) */}
-        <div className="w-full h-full flex flex-col p-4">
+        <div className="w-2/3 flex flex-col p-4">
           <h3 className="text-lg font-semibold mb-2">Main Video</h3>
           <div className="relative flex-1">
             <video
@@ -559,11 +570,9 @@ const Streamer = ({ username, roomId, isCreator }) => {
 
       {/* Controls (dưới cùng) */}
       <div className="flex justify-center gap-4 p-4 bg-gray-800">
-
         <button
           onClick={() => setShowProductForm(true)}
-          className="text-white bg-[#32c36c] hover:bg-[#2aa85e] focus:ring-4 
-  focus:outline-none focus:ring-green-300 font-medium rounded-lg  text-sm px-5 py-2.5 text-center transition-all"
+          className="text-white bg-[#32c36c] hover:bg-[#2aa85e] focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-all"
         >
           Add New Product
         </button>
@@ -573,16 +582,14 @@ const Streamer = ({ username, roomId, isCreator }) => {
         ) : (
           <div className="grid grid-cols-3 gap-4 w-1/2">
             <button
-              onClick={() => { setShowModalListProduct(!showModalListProduct) }}
-              className="text-white bg-[#32c36c] hover:bg-[#2aa85e] focus:ring-4 
-  focus:outline-none focus:ring-green-300 font-medium w-[150px] rounded-lg text-sm px-5 py-2.5 text-center transition-all"
+              onClick={() => setShowModalListProduct(!showModalListProduct)}
+              className="text-white bg-[#32c36c] hover:bg-[#2aa85e] focus:ring-4 focus:outline-none focus:ring-green-300 font-medium w-[150px] rounded-lg text-sm px-5 py-2.5 text-center transition-all"
               type="button"
             >
               List Product
             </button>
 
-            {
-              showModalListProduct &&
+            {showModalListProduct && (
               <div id="default-modal" tabIndex="-1" aria-hidden="true" className="overflow-y-auto overflow-x-hidden fixed top-0 left-0 right-0 z-50 flex justify-center items-center w-full h-screen bg-black/50">
                 <div className="relative p-4 w-full m-auto top-[75px] max-w-2xl max-h-full">
                   <div className="relative bg-white rounded-lg shadow-sm dark:bg-gray-700 flex flex-col items-center">
@@ -606,22 +613,20 @@ const Streamer = ({ username, roomId, isCreator }) => {
                             <button
                               onClick={() => handlePinProduct(product.id)}
                               disabled={pinnedProduct && pinnedProduct.id === product.id}
-                              className={`mt-2 w-[150px] py-2 rounded-md ${pinnedProduct && pinnedProduct.id === product.id ? 'bg-gray-500' : ' bg-[#32c36c]  '} text-white hover:opacity-80`}
+                              className={`mt-2 w-[150px] py-2 rounded-md ${pinnedProduct && pinnedProduct.id === product.id ? 'bg-gray-500' : 'bg-[#32c36c]'} text-white hover:opacity-80`}
                             >
                               Pin Product
                             </button>
                           </div>
                         </div>
-
                       ))}
                     </div>
-
 
                     {/* Footer */}
                     <div className="flex items-center justify-end p-4 border-t border-gray-200 dark:border-gray-600 w-full">
                       <button
                         onClick={() => setShowModalListProduct(false)}
-                        className="py-2.5 px-5 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 hover:text-white hover:white hover:bg-[#2aa85e] focus:outline-none focus:ring-4 focus:ring-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:text-white"
+                        className="py-2.5 px-5 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 hover:text-white hover:bg-[#2aa85e] focus:outline-none focus:ring-4 focus:ring-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:text-white"
                       >
                         Close
                       </button>
@@ -629,10 +634,9 @@ const Streamer = ({ username, roomId, isCreator }) => {
                   </div>
                 </div>
               </div>
-            }
+            )}
           </div>
         )}
-
 
         <button
           onClick={toggleMic}
@@ -687,23 +691,21 @@ const Streamer = ({ username, roomId, isCreator }) => {
               className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          {/* <div className="mb-2">
-            <label className="block text-sm font-medium">Description: </label>
-            <input
-              type="text"
-              value={newProduct.description}
-              onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
-              className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div> */}
           <div className="mb-2">
-            <label className="block text-sm font-medium">Image URL: </label>
+            <label className="block text-sm font-medium">Image: </label>
             <input
-              type="text"
-              value={newProduct.imageUrl}
-              onChange={(e) => setNewProduct({ ...newProduct, imageUrl: e.target.value })}
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
               className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            {imagePreview && (
+              <img
+                src={imagePreview}
+                alt="Preview"
+                className="mt-2 w-32 h-32 object-cover rounded-md"
+              />
+            )}
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium">Product Link: </label>
@@ -717,12 +719,15 @@ const Streamer = ({ username, roomId, isCreator }) => {
           <div className="flex justify-end gap-2">
             <button
               onClick={handleAddProduct}
-              className=" bg-[#32c36c] hover:bg-[#2aa85e]  text-white px-4 py-2 rounded-md "
+              className="bg-[#32c36c] hover:bg-[#2aa85e] text-white px-4 py-2 rounded-md"
             >
               Add Product
             </button>
             <button
-              onClick={() => setShowProductForm(false)}
+              onClick={() => {
+                setShowProductForm(false);
+                setImagePreview(''); // Reset preview khi đóng form
+              }}
               className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
             >
               Cancel
@@ -730,8 +735,6 @@ const Streamer = ({ username, roomId, isCreator }) => {
           </div>
         </div>
       )}
-
-      <div className="h-[80px]"></div>
 
       {pinnedProduct && (
         <div className="absolute top-14 right-4 bg-white p-4 rounded-lg shadow-lg text-black">

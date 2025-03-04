@@ -100,7 +100,7 @@ export default function OCRReader() {
         handleVerifyCitizen(result)
 
       } else {
-        toast.warning("Xin hãy chọn ảnh khác để quét lại!");
+        toast.warning("Please try again with another image!");
       }
 
     }
@@ -121,7 +121,7 @@ export default function OCRReader() {
         setLoading(false);
       })
       .catch(() => {
-        setError("Không thể đọc nội dung ảnh.");
+        setError("Invalid QR Code");
         setLoading(false);
       });
   };
@@ -129,7 +129,7 @@ export default function OCRReader() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-5">
       <div className="bg-white shadow-xl rounded-2xl p-6 w-full max-w-md space-y-4">
-        <h1 className="text-2xl font-bold text-center text-gray-700">Tải ảnh sau của thẻ CCCD của bạn</h1>
+        <h1 className="text-2xl font-bold text-center text-gray-700">Capture the QR code on the back of your ID card</h1>
 
         {/* <div className="bg-green-100 text-green-700 p-3 rounded-lg w-full">
           QR Code: {qrText}
@@ -139,7 +139,7 @@ export default function OCRReader() {
           {imagePreview ? (
             <img src={imagePreview} alt="Chọn ảnh" className="object-contain max-h-full" />
           ) : (
-            <p>Chưa có ảnh nào</p>
+            <p>Not Available</p>
           )}
         </div>
 
@@ -159,10 +159,10 @@ export default function OCRReader() {
           onClick={() => fileInputRef.current.click()}
           className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-300"
         >
-          Chọn ảnh để đọc nội dung
+          Click to choose an image with QR Code
         </button>
 
-        {loading && <p className="text-blue-500 text-center">Đang đọc nội dung ảnh...</p>}
+        {loading && <p className="text-blue-500 text-center">Pending...</p>}
         {error && <p className="text-red-500 text-center">{error}</p>}
         {/* {ocrResult && (
           <div className="p-3 bg-gray-100 rounded-lg text-sm break-words">

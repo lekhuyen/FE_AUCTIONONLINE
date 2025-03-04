@@ -387,7 +387,7 @@ export const ProductsDetailsPage = () => {
                 <Caption>December 31, 2024 12:00 am</Caption>
               </Title>
               <Title className="flex items-center gap-2 my-5">
-                Timezone: <Caption>UTC 0</Caption>
+                Timezone: <Caption>UTC+7</Caption>
               </Title>
               <Title className="flex items-center gap-2 my-5">
                 Price:<Caption>${productDetail.starting_price}</Caption>
@@ -467,7 +467,7 @@ export const ProductsDetailsPage = () => {
                     create and capture value. The market is open for players in every kind of field. Are you a collector.
                   </Caption>
                   <br />
-                  <Title level={4}>Product Overview</Title>
+                  {/* <Title level={4}>Product Overview</Title>
                   <div className="flex justify-between gap-5">
                     <div className="mt-4 capitalize w-1/2">
                       <div className="flex justify-between border-b py-3">
@@ -520,7 +520,7 @@ export const ProductsDetailsPage = () => {
                         <img src="https://bidout-wp.b-cdn.net/wp-content/uploads/2022/10/Image-14.jpg" alt="" className="w-full h-full object-cover rounded-xl" />
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               )}
               {activeTab === "auctionHistory" && <AuctionHistory />}

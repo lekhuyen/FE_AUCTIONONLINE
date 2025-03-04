@@ -1,13 +1,15 @@
 import { useState } from "react";
 import axios from "../utils/axios";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";  // Importing react-toastify
+import 'react-toastify/dist/ReactToastify.css';  // Importing the CSS for styling
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [step, setStep] = useState(1); // 1: Nhập email, 2: Nhập OTP, 3: Đổi mật khẩu
-  const navigate = useNavigate()
+  const [step, setStep] = useState(1); // 1: Enter email, 2: Enter OTP, 3: Reset password
+  const navigate = useNavigate();
 
   const handleSendOTP = async () => {
     try {
@@ -16,13 +18,13 @@ const ForgotPassword = () => {
           'Content-Type': 'application/json'
         }
       });
-      console.log("Gửi OTP thành công:", response);
+      console.log("OTP sent successfully:", response);
 
-      alert("OTP đã được gửi đến email của bạn!");
+      toast.success("OTP has been sent to your email!"); // Display success toast
       setStep(2);
     } catch (error) {
-      console.error("Lỗi khi gửi OTP:", error);
-      alert("Không thể gửi OTP, vui lòng kiểm tra lại email!");
+      console.error("Error sending OTP:", error);
+      toast.error("Unable to send OTP, please check your email!"); // Display error toast
     }
   };
 
@@ -30,90 +32,92 @@ const ForgotPassword = () => {
     try {
       const response = await axios.post(`users/verify-otp?email=${email}&otp=${otp}`);
 
-      alert("OTP hợp lệ, vui lòng nhập mật khẩu mới!");
+      toast.success("OTP is valid, please enter a new password!"); // Display success toast
       setStep(3);
     } catch (error) {
-      console.error("Lỗi khi xác thực OTP:", error);
-      alert("OTP không hợp lệ!");
+      console.error("Error verifying OTP:", error);
+      toast.error("Invalid OTP!"); // Display error toast
     }
   };
 
   const handleResetPassword = async () => {
     try {
       await axios.post(`users/reset-password?email=${email}&otp=${otp}&newPassword=${newPassword}`);
-      alert("Mật khẩu đã được đặt lại thành công!");
-      // setStep(1);
+      toast.success("Password has been successfully reset!"); // Display success toast
       setEmail("");
       setOtp("");
       setNewPassword("");
       navigate("/login");
     } catch (error) {
-      console.error("Lỗi khi đặt lại mật khẩu:", error);
-      alert("Không thể đặt lại mật khẩu, vui lòng thử lại!");
+      console.error("Error resetting password:", error);
+      toast.error("Unable to reset password, please try again!"); // Display error toast
     }
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md mt-28">
-      <h2 className="text-2xl font-bold text-center mb-4">Quên Mật Khẩu</h2>
+      <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md mt-28">
+        <h2 className="text-2xl font-bold text-center mb-4">Forgot Password</h2>
 
-      {step === 1 && (
-        <div>
-          <label className="block text-sm font-medium">Nhập email của bạn:</label>
-          <input
-            type="email"
-            className="w-full p-2 border border-gray-300 rounded mt-1 outline-none"
-            placeholder="Nhập email..."
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <button
-            className="w-full bg-blue-500 text-white p-2 rounded mt-3"
-            onClick={handleSendOTP}
-          >
-            Gửi OTP
-          </button>
-        </div>
-      )}
+        {step === 1 && (
+            <div>
+              <label className="block text-sm font-medium">Enter your email:</label>
+              <input
+                  type="email"
+                  className="w-full p-2 border border-gray-300 rounded mt-1 outline-none"
+                  placeholder="Enter email..."
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+              />
+              <button
+                  className="w-full bg-blue-500 text-white p-2 rounded mt-3"
+                  onClick={handleSendOTP}
+              >
+                Send OTP
+              </button>
+            </div>
+        )}
 
-      {step === 2 && (
-        <div>
-          <label className="block text-sm font-medium">Nhập mã OTP:</label>
-          <input
-            type="text"
-            className="w-full p-2 border border-gray-300 rounded mt-1"
-            placeholder="Nhập OTP..."
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
-          />
-          <button
-            className="w-full bg-blue-500 bg-green-500 text-white p-2 rounded mt-3"
-            onClick={handleVerifyOTP}
-          >
-            Xác thực OTP
-          </button>
-        </div>
-      )}
+        {step === 2 && (
+            <div>
+              <label className="block text-sm font-medium">Enter OTP:</label>
+              <input
+                  type="text"
+                  className="w-full p-2 border border-gray-300 rounded mt-1"
+                  placeholder="Enter OTP..."
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+              />
+              <button
+                  className="w-full bg-blue-500 text-white p-2 rounded mt-3"
+                  onClick={handleVerifyOTP}
+              >
+                Verify OTP
+              </button>
+            </div>
+        )}
 
-      {step === 3 && (
-        <div>
-          <label className="block text-sm font-medium">Nhập mật khẩu mới:</label>
-          <input
-            type="password"
-            className="w-full p-2 border border-gray-300 rounded mt-1"
-            placeholder="Nhập mật khẩu mới..."
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-          />
-          <button
-            className="w-full bg-red-500 text-white p-2 rounded mt-3"
-            onClick={handleResetPassword}
-          >
-            Đặt lại mật khẩu
-          </button>
-        </div>
-      )}
-    </div>
+        {step === 3 && (
+            <div>
+              <label className="block text-sm font-medium">Enter new password:</label>
+              <input
+                  type="password"
+                  className="w-full p-2 border border-gray-300 rounded mt-1"
+                  placeholder="Enter new password..."
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+              />
+              <button
+                  className="w-full bg-red-500 text-white p-2 rounded mt-3"
+                  onClick={handleResetPassword}
+              >
+                Reset Password
+              </button>
+            </div>
+        )}
+
+        {/* Toast Container for displaying toasts */}
+        <ToastContainer />
+      </div>
   );
 };
 

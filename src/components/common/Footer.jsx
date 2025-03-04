@@ -15,9 +15,9 @@ export const Footer = () => {
 
         <Container className={`${isHomePage ? "mt-32" : "mt-0"} flex flex-col md:flex-row justify-between gap-12`}>
           <div className="w-full md:w-1/3">
-            <img src="../images/common/header-logo.png" alt="" />
+            <img src="../images/common/Biddora2.png" alt="" width="160px" />
             <br />
-            <p className="text-gray-300">Biddora - market place for all.</p>
+            <p className="text-gray-300">Your Marketplace, Where Every Bid Unlocks Endless Possibilities!</p>
             {/* <div className="bg-gray-300 h-[1px] my-8"></div>
             <Title className=" font-normal text-gray-100">Get The Latest Updates</Title>
             <div className="flex items-center justify-between mt-5">

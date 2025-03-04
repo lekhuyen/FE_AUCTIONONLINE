@@ -69,46 +69,46 @@ const ProfilePage = () => {
               d
             </div>
             <h2 className="mt-3 text-xl font-bold">{userInfo?.name}</h2>
-            <p className="text-gray-500 text-sm">Chưa có đánh giá</p>
+            <p className="text-gray-500 text-sm">No Rating</p>
           </div>
 
           {/* Các nút */}
           <div className="mt-4 space-y-3">
             <button className="w-full bg-orange-500 text-white py-2 rounded-lg font-semibold hover:bg-orange-600">
-              Chia sẻ trang của bạn
+              Share Your Profile
             </button>
             <button className="w-full border py-2 rounded-lg font-semibold hover:bg-gray-100">
-              Chỉnh sửa trang cá nhân
+              Reset Password
             </button>
           </div>
 
           {/* Thông tin khác */}
           <div className="mt-4 text-sm space-y-2 text-gray-600">
-            <p>📩 Phản hồi chat: Chưa có thông tin</p>
-            <p>📅 Đã tham gia: <span className="font-medium">1 năm 4 tháng</span></p>
+            <p>📩 Reply chat: ...</p>
+            <p>📅 Enrolled: <span className="font-medium">1 year 4 months</span></p>
             <p>
               {userInfo?.isVerify ? (
                 <>
-                  ✅ Đã xác thực danh tính
-                  <button onClick={xemthongtin} className='ml-2 text-green'>Xem</button>
+                  ✅ Verified
+                  <button onClick={xemthongtin} className='ml-2 text-green'>View</button>
                 </>
               ) : (
                 <Link to="/citizen-verify" className="text-red-500">
-                  ❌ Bấm để xác minh danh tính
+                  ❌ Click to Verify
                 </Link>
               )}
             </p>
-            <p>📍 Địa chỉ: Chưa cung cấp</p>
+            <p>📍 Address: ...</p>
           </div>
 
           {/* Hộp hồ sơ xin việc */}
-          <div className="mt-6 p-3 bg-gray-50 border rounded-lg">
+          {/* <div className="mt-6 p-3 bg-gray-50 border rounded-lg">
             <p className="font-semibold">Hồ sơ xin việc</p>
             <p className="text-sm text-gray-500">Hồ sơ xin việc của bạn trên chuyên trang Việc Làm Tốt</p>
             <button className="mt-2 text-blue-500 font-semibold hover:underline">
               Tạo hồ sơ xin việc
             </button>
-          </div>
+          </div> */}
         </div>
 
         {/* Khu vực tin đăng */}

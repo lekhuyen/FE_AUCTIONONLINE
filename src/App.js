@@ -401,7 +401,7 @@ function App() {
         />
 
         <Route
-          path="/aboutus"
+          path="/about"
           element={
             <Layout>
               <AboutUsComponents />
@@ -560,7 +560,7 @@ function App() {
           }
         />
         <Route
-          path="/adminblog"
+          path="/admin-blog"
           element={
             <PrivateRoute>
               <Layout>
@@ -572,7 +572,7 @@ function App() {
           }
         />
         <Route
-          path="/adminblog/detail/:id"
+          path="/admin-blog/detail/:id"
           element={
             <PrivateRoute>
               <Layout>
@@ -584,7 +584,7 @@ function App() {
           }
         />
         <Route
-          path="/adminblog/add"
+          path="/admin-blog/add"
           element={
             <PrivateRoute>
               <Layout>
@@ -657,7 +657,7 @@ function App() {
           }
         />
         <Route
-          path="/adminContact"
+          path="/admin-contact"
           element={
             <PrivateRoute>
               <Layout>
