@@ -450,7 +450,7 @@ export const Header = () => {
                                   content = (
                                     <>
                                       <p className="whitespace-normal overflow-hidden text-ellipsis text-[14px]">
-                                        <span className="font-bold">{item.creator.id !== userId ? item.creator.name : "Bạn"} </span>
+                                        <span className="font-bold">{item.creator.id !== userId ? item.creator.name : "You"} </span>
                                         {item.creator.id !== userId
                                           ? "have just created a new product"
                                           : "have just created a new product, kindly wait for the admin approval!"}
