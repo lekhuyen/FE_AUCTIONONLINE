@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { FaArrowLeft } from 'react-icons/fa';  // Import FontAwesome icon
+import { toast, ToastContainer } from 'react-toastify';  // Import react-toastify
+import 'react-toastify/dist/ReactToastify.css';  // Import toast styles
 
 export const ContactDetailPage = () => {
     const { id } = useParams(); // Get the contact ID from the URL
@@ -8,6 +11,7 @@ export const ContactDetailPage = () => {
     const [contact, setContact] = useState(null);
     const [replyMessage, setReplyMessage] = useState('');
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null); // New state for error handling
 
     useEffect(() => {
         const fetchContactDetails = async () => {
@@ -17,7 +21,10 @@ export const ContactDetailPage = () => {
                 setContact(response.data);
                 setLoading(false);
             } catch (error) {
+                setError('Failed to load contact details. Please try again later.');
+                setLoading(false);
                 console.error('Error fetching contact details:', error);
+                toast.error('Error fetching contact details, please try again later.');  // Display error toast
             }
         };
 
@@ -34,10 +41,11 @@ export const ContactDetailPage = () => {
         try {
             await axios.put(`http://localhost:8080/api/contact/${id}`, updatedContact);
             setContact(updatedContact); // Update the contact with the new reply time and message
-            alert('Reply sent successfully!');
-            navigate('/adminContact'); // Redirect to the admin page after replying
+            toast.success('Reply sent successfully!'); // Display success toast
+            setReplyMessage(''); // Clear the reply message input
         } catch (error) {
             console.error('Error updating contact reply:', error);
+            toast.error('Failed to send reply. Please try again later.');  // Display error toast
         }
     };
 
@@ -57,8 +65,16 @@ export const ContactDetailPage = () => {
         return formattedDate.toLocaleString(); // Format as needed
     };
 
+    const handleReturnClick = () => {
+        navigate('/admin-contact'); // Navigate back to the previous page (adjust the path as needed)
+    };
+
     if (loading) {
         return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div>{error}</div>; // Display error if there's an issue fetching the data
     }
 
     return (
@@ -72,23 +88,45 @@ export const ContactDetailPage = () => {
                 <p><strong style={styles.bold}>Message:</strong> {contact.message}</p>
             </div>
 
-            <div style={styles.replyContainer}>
-                <p style={styles.replyLabel}><strong>Reply Message:</strong></p>
-                <textarea
-                    style={styles.textarea}
-                    rows="4"
-                    value={replyMessage}
-                    onChange={(e) => setReplyMessage(e.target.value)}
-                    placeholder="Enter your reply"
-                ></textarea>
-            </div>
+            {/* Show reply form only if replyMessage is not set */}
+            {contact.replyMessage === "" && (
+                <div>
+                    <div style={styles.replyContainer}>
+                        <p style={styles.replyLabel}><strong>Reply Message:</strong></p>
+                        <textarea
+                            style={styles.textarea}
+                            rows="4"
+                            value={replyMessage}
+                            onChange={(e) => setReplyMessage(e.target.value)}
+                            placeholder="Enter your reply"
+                        ></textarea>
+                    </div>
 
-            <button
-                style={styles.replyButton}
-                onClick={handleReplySubmit}
-            >
-                Reply
+                    <button
+                        style={styles.replyButton}
+                        onClick={handleReplySubmit}
+                        disabled={!replyMessage.trim()} // Disable button if replyMessage is empty
+                    >
+                        Reply
+                    </button>
+                </div>
+            )}
+
+            {/* Show the sent reply message after submission */}
+            {contact.replyMessage && (
+                <div style={styles.sentReplyContainer}>
+                    <p style={styles.replyLabel}><strong>Sent Reply:</strong></p>
+                    <p>{contact.replyMessage}</p>
+                </div>
+            )}
+
+            {/* Return Button */}
+            <button style={styles.returnButton} onClick={handleReturnClick}>
+                <FaArrowLeft style={styles.returnIcon} /> Return
             </button>
+
+            {/* Toast Container for displaying toasts */}
+            <ToastContainer />
         </div>
     );
 };
@@ -166,5 +204,28 @@ const styles = {
     },
     replyButtonHover: {
         backgroundColor: '#218838',
+    },
+    sentReplyContainer: {
+        marginTop: '20px',
+        padding: '15px',
+        backgroundColor: '#f1f1f1',
+        borderRadius: '8px',
+        boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
+    },
+    returnButton: {
+        backgroundColor: '#f8f9fa',
+        color: '#007bff',
+        padding: '12px 20px',
+        fontSize: '16px',
+        border: '1px solid #007bff',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        width: 'auto',
+        marginTop: '20px',
+    },
+    returnIcon: {
+        marginRight: '8px',
     },
 };
