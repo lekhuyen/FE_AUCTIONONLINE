@@ -56,6 +56,7 @@ import ForgotPassword from "./components/ForgotPassword.js";
 import ProfilePage from "./components/ProfilePage.js";
 import QRScanner from "./components/QRScanner.js";
 import OCRReader from "./components/OCRReader.js";
+import CreateRoom from "./components/videocall/CreateRoom.js";
 
 function App() {
   const navigate = useNavigate()
@@ -278,6 +279,15 @@ function App() {
             </Layout>
           }
         />
+        <Route
+          path="/create-room"
+          element={
+            <Layout>
+              <CreateRoom />
+            </Layout>
+          }
+        />
+
         <Route
           path="/citizen-verify"
           element={
