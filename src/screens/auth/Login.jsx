@@ -115,16 +115,16 @@ export const Login = () => {
             <div className="flex items-center justify-center gap-5 mt-5">
               <button className="flex items-center gap-2 bg-red-500 text-white p-3 px-5 rounded-sm">
                 <FaGoogle />
-                <p className="text-sm">SIGNIN WHIT GOOGLE</p>
+                <p className="text-sm">SIGNIN WITH GOOGLE</p>
               </button>
               <button className="flex items-center gap-2 bg-indigo-500 text-white p-3 px-5 rounded-sm">
                 <FaFacebook />
-                <p className="text-sm">SIGNIN WHIT FACEBOOK</p>
+                <p className="text-sm">SIGNIN WITH FACEBOOK</p>
               </button>
             </div>
           </div>
           <p className="text-center mt-5">
-            By clicking the signup button, you create a Cobiro account, and you agree to Cobiros <span className="text-green underline">Terms & Conditions</span> &
+            By clicking the signup button, you create a Biddora account, and you agree to Biddora <span className="text-green underline">Terms & Conditions</span> &
             <span className="text-green underline"> Privacy Policy </span> .
           </p>
         </form>
