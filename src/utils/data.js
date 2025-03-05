@@ -30,6 +30,11 @@ export const menulists = [
     path: "/contact",
     link: "Contact",
   },
+  {
+    id: 7,
+    path: "/room-chat",
+    link: "Chat Video",
+  },
 ];
 
 export const categorylists = [

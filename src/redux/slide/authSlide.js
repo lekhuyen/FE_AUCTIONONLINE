@@ -32,7 +32,6 @@ export const login = createAsyncThunk("auth/login", async (userDate, thunkAPI) =
   try {
     const response = await axios.post("auth/login", userDate)
     localStorage.setItem("token", response.result.token)
-    console.log(response);
 
     return response.result.token
 
@@ -78,10 +77,10 @@ export const authSlide = createSlice({
       state.isLoggedIn = false;
       state.message = "";
     },
-    logout(state) {
-      localStorage.removeItem("token");
-      state.isLoggedIn = false;
-    }
+    // logout(state) {
+    //   localStorage.removeItem("token");
+    //   state.isLoggedIn = false;
+    // }
   },
   extraReducers: (builder) => {
 
