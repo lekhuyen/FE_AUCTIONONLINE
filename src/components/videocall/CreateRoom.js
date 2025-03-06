@@ -165,7 +165,7 @@ function CreateRoom() {
   }
 
   return (
-    <div className="relative min-h-screen bg-gray-900">
+    <div className="relative h-screen mt-[75px] bg-gray-900">
 
       <button
         onClick={handleReset}

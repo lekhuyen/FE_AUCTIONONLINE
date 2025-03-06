@@ -274,14 +274,13 @@ export const ProductsDetailsPage = () => {
     try {
       if (productId && userId) {
         const response = await axios.post(`chatroom/room/${productId}`, {
-          buyerId: userId
+          buyerId: userId,
         },
           { authRequired: true },
         )
-        console.log(response);
         if (response != null) {
           navigate(`/chat?item_id=${productId}&buyerId=${userId}`, {
-            state: { isCreate: true, sellerName: response?.sellerName, room: response?.roomId }
+            state: { isCreate: true, sellerName: response?.sellerName, room: response?.roomId, seller: response?.sellerId }
           });
         }
       }
