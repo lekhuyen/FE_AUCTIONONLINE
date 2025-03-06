@@ -18,7 +18,7 @@ const initialState = {
   starting_price: "",
   start_date: "",
   end_date: "",
-  bid_step: "",
+  // bid_step: "",
   category_id: "",
 };
 const ManagerPost = () => {
@@ -168,6 +168,7 @@ const ManagerPost = () => {
     e.preventDefault()
 
     const invalids = validateForm(productValue, setInvalidFields)
+    console.log(invalids);
 
     const formData = new FormData()
 
@@ -177,7 +178,7 @@ const ManagerPost = () => {
     formData.append('starting_price', productValue.starting_price)
     formData.append('start_date', productValue.start_date)
     formData.append('end_date', productValue.end_date)
-    formData.append('bid_step', productValue.bid_step)
+    // formData.append('bid_step', productValue.bid_step)
     formData.append('userId', userId)
 
     if (imageFile.length > 0) {
@@ -382,14 +383,14 @@ const ManagerPost = () => {
             {clickMenu === 2 && visibleCountIsCheck < isCheck.length && (
               <div className="text-center mt-4 pb-1">
                 <button onClick={handleShowMoreisCheck} className="px-4 py-0 bg-blue-500 text-white rounded-md">
-                View More
+                  View More
                 </button>
               </div>
             )}
             {clickMenu === 2 && visibleCountIsCheck > 5 && (
               <div className="text-center mt-4 pb-1">
                 <button onClick={handleShowLessIsCheck} className="px-4 py-0 bg-red-500 text-white rounded-md">
-                Show Less
+                  Show Less
                 </button>
               </div>
             )}
@@ -405,7 +406,7 @@ const ManagerPost = () => {
             {clickMenu === 0 && visibleCountIsActive > 5 && (
               <div className="text-center mt-4 pb-1">
                 <button onClick={handleShowLessIsActive} className="px-4 py-0 bg-red-500 text-white rounded-md">
-                Show Less
+                  Show Less
                 </button>
               </div>
             )}
