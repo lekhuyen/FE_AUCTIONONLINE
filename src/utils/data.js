@@ -50,29 +50,29 @@ export const categorylists = [
   },
   {
     id: 3,
-    image: "../images/category/c3.png",
-    title: "sports",
+    image: "../images/category/art.jpg",
+    title: "arts",
   },
   {
     id: 4,
-    image: "../images/category/musical.png",
-    title: "instruments",
+    image: "../images/category/watch.jpg",
+    title: "watches",
   },
   {
     id: 5,
-    image: "../images/category/c6.png",
-    title: "jewelries",
+    image: "../images/category/coin.jpg",
+    title: "coins",
   },
-  {
-    id: 6,
-    image: "../images/category/toy.png",
-    title: "toys",
-  },
-  {
-    id: 7,
-    image: "../images/category/c7.png",
-    title: "clothes",
-  },
+  // {
+  //   id: 6,
+  //   image: "../images/category/toy.png",
+  //   title: "toys",
+  // },
+  // {
+  //   id: 7,
+  //   image: "../images/category/c7.png",
+  //   title: "clothes",
+  // },
 ];
 
 export const productlists = [

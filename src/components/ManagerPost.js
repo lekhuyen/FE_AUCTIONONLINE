@@ -164,6 +164,40 @@ const ManagerPost = () => {
     }
   }
 
+  const handleFileUpload = (e) => {
+    if (!e.target.files || e.target.files.length === 0) {
+      setImageFile([]); // If no file is selected, reset the state
+      setInvlidImages(false); // No invalid images since no file was uploaded
+      return;
+    }
+
+    const files = e.target.files;
+    const maxFileSize = 5 * 1024 * 1024; // 5MB limit
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg", "image/webp"];
+
+    const validFiles = Array.from(files).filter(file => {
+      if (!allowedTypes.includes(file.type)) {
+        console.warn(`Invalid file type: ${file.name}`);
+        return false;
+      }
+      if (file.size > maxFileSize) {
+        console.warn(`File size too large: ${file.name}`);
+        return false;
+      }
+      return true;
+    });
+
+    if (validFiles.length === 0) {
+      setInvlidImages(true); // Show error if no valid files
+      setImageFile([]); // Clear the state if all files are invalid
+    } else {
+      setInvlidImages(false);
+      setImageFile(validFiles); // Store only valid files
+    }
+  };
+
+
+
   const handleCreateProduct = (e) => {
     e.preventDefault()
 
@@ -422,42 +456,59 @@ const ManagerPost = () => {
             <form onSubmit={handleCreateProduct} encType="multipart/form-data">
               <div className="w-full">
                 <Caption className="mb-2">Name *</Caption>
-                <input type="text" name="item_name" value={item_name} onChange={handleChangeAuction} className={`${commonClassNameOfInput}`} placeholder="Name" />
+                <input type="text" name="item_name" value={item_name} onChange={handleChangeAuction}
+                       className={`${commonClassNameOfInput}`} placeholder="Name"/>
                 {
-                  invalidFields?.some(el => el.name === "item_name") && productValue.item_name === '' &&
-                  <small style={{ color: 'red' }}>{invalidFields?.find(el => el.name === "item_name").message}</small>
+                    invalidFields?.some(el => el.name === "item_name") && productValue.item_name === '' &&
+                    <small style={{color: 'red'}}>{invalidFields?.find(el => el.name === "item_name").message}</small>
                 }
               </div>
               <div className="py-5">
                 <Caption className="mb-2">Category *</Caption>
                 <CategoryDropDown
-                  value={selectedCategory}
-                  options={categories.data?.map((category) => ({
-                    label: category.category_name,
-                    value: category.category_id,
-                  }))}
-                  placeholder="Select a category"
-                  handleCategoryChange={handleCategoryChange}
-                  className={`${commonClassNameOfInput}`} />
+                    value={selectedCategory}
+                    options={categories.data?.map((category) => ({
+                      label: category.category_name,
+                      value: category.category_id,
+                    }))}
+                    placeholder="Select a category"
+                    handleCategoryChange={handleCategoryChange}
+                    className={`${commonClassNameOfInput}`}/>
               </div>
-              <div className="flex items-center gap-5 my-4">
+              <div className="w-full">
+                <Caption className="mb-2">Start price</Caption>
+                <input
+                    type="number"
+                    name="starting_price"
+                    value={starting_price}
+                    onChange={handleChangeAuction}
+                    placeholder="Start price"
+                    className={`${commonClassNameOfInput}`}
+                />
+                {invalidFields?.some(el => el.name === "starting_price") &&
+                    <small style={{ color: 'red' }}>
+                      {invalidFields?.find(el => el.name === "starting_price").message}
+                    </small>
+                }
+              </div>
+
+              {/*Start date*/}
+
+              {/*
                 <div className="w-1/2">
-                  <Caption className="mb-2">Start price </Caption>
-                  <input type="number" name="starting_price" value={starting_price} onChange={handleChangeAuction} placeholder="Start price" className={`${commonClassNameOfInput}`} />
+                  <Caption className="mb-2">Start date</Caption>
+                  <input onFocus={() => setInvalidFields([])} type="date" name="start_date" value={start_date}
+                         onChange={handleChangeAuction} placeholder="Start date"
+                         className={`${commonClassNameOfInput}`}/>
                   {
-                    invalidFields?.some(el => el.name === "starting_price") &&
-                    <small style={{ color: 'red' }}>{invalidFields?.find(el => el.name === "starting_price").message}</small>
+                      invalidFields?.some(el => el.name === "start_date") &&
+                      <small style={{ color: 'red' }}>
+                        {invalidFields?.find(el => el.name === "start_date").message}
+                      </small>
                   }
                 </div>
-                <div className="w-1/2">
-                  <Caption className="mb-2">Start date </Caption>
-                  <input onFocus={() => setInvalidFields([])} type="date" name="start_date" value={start_date} onChange={handleChangeAuction} placeholder="Start date" className={`${commonClassNameOfInput}`} />
-                  {
-                    invalidFields?.some(el => el.name === "start_date") &&
-                    <small style={{ color: 'red' }}>{invalidFields?.find(el => el.name === "start_date").message}</small>
-                  }
-                </div>
-              </div>
+                */
+              }
               <div className="flex items-center gap-5 my-4">
                 {/* <div className="w-1/2">
                   <Caption className="mb-2">Bid step</Caption>
@@ -467,47 +518,65 @@ const ManagerPost = () => {
                     <small style={{ color: 'red' }}>{invalidFields?.find(el => el.name === "bid_step").message}</small>
                   }
                 </div> */}
-                <div className="w-full">
-                  <Caption className="mb-2">End date </Caption>
-                  <input onFocus={() => setInvalidFields([])} type="date" name="end_date" value={end_date} onChange={handleChangeAuction} placeholder="End date" className={`${commonClassNameOfInput}`} />
-                  {
-                    invalidFields?.some(el => el.name === "end_date") &&
-                    <small style={{ color: 'red' }}>{invalidFields?.find(el => el.name === "end_date").message}</small>
-                  }
-                </div>
+                {/*<div className="w-full">*/}
+                {/*  <Caption className="mb-2">End date </Caption>*/}
+                {/*  <input onFocus={() => setInvalidFields([])} type="date" name="end_date" value={end_date}*/}
+                {/*         onChange={handleChangeAuction} placeholder="End date" className={`${commonClassNameOfInput}`}/>*/}
+                {/*  {*/}
+                {/*      invalidFields?.some(el => el.name === "end_date") &&*/}
+                {/*      <small style={{color: 'red'}}>{invalidFields?.find(el => el.name === "end_date").message}</small>*/}
+                {/*  }*/}
+                {/*</div>*/}
               </div>
 
               <div>
                 <Caption className="mb-2">Description *</Caption>
-                <textarea name="description" value={description} onChange={handleChangeAuction} className={`${commonClassNameOfInput}`} cols="30" rows="5"></textarea>
+                <textarea name="description" value={description} onChange={handleChangeAuction}
+                          className={`${commonClassNameOfInput}`} cols="30" rows="5"></textarea>
                 {
-                  invalidFields?.some(el => el.name === "description") && productValue.description === '' &&
-                  <small style={{ color: 'red' }}>{invalidFields?.find(el => el.name === "description").message}</small>
+                    invalidFields?.some(el => el.name === "description") && productValue.description === '' &&
+                    <small style={{color: 'red'}}>{invalidFields?.find(el => el.name === "description").message}</small>
                 }
               </div>
-              <div>
-                <Caption className="mb-2">Image </Caption>
-                <input type="file"
-                  multiple="multiple"
-                  onChange={handleImagesChange}
-                  className={`${commonClassNameOfInput}`}
-                  name="images"
-                  ref={fileInputRef}
-                />
-                {
-                  invlidImages &&
-                  <small style={{ color: 'red' }}>This field is invalid</small>
-                }
+              <div className="flex items-center gap-5 my-4">
+                {/* Image Upload */}
+                <div className="w-1/2">
+                  <Caption className="mb-2">Upload Product Image</Caption>
+                  <input
+                      type="file"
+                      multiple="multiple"
+                      accept="image/*"
+                      onChange={handleImagesChange}
+                      className={`${commonClassNameOfInput}`}
+                      name="images"
+                      ref={fileInputRef}
+                  />
+                  {invlidImages && <small style={{color: "red"}}>This field is invalid</small>}
+                </div>
+
+                {/* File Upload (PDF) */}
+                <div className="w-1/2">
+                  <Caption className="mb-2">Upload Certification (PDF)</Caption>
+                  <input
+                      type="file"
+                      multiple
+                      accept="file/*"
+                      onChange={handleFileUpload}
+                      ref={fileInputRef}
+                  />
+                  {invlidImages && <small style={{ color: 'red' }}>Invalid image file(s). Please upload valid images.</small>}
+                </div>
               </div>
+
               {
-                isLogin &&
-                <PrimaryButton type="submit" className="rounded-none my-5">
-                  CREATE
-                </PrimaryButton>
+                  isLogin &&
+                  <PrimaryButton type="submit" className="rounded-none my-5">
+                    CREATE
+                  </PrimaryButton>
               }
             </form>
           </div>
-        )
+          )
       }
     </>
   );
