@@ -7,11 +7,14 @@ const Viewer = ({ username, roomId, isCreator }) => {
   const [cameraEnabled, setCameraEnabled] = useState(true);
   const [peerStatuses, setPeerStatuses] = useState(new Map());
   const [streamerId, setStreamerId] = useState(null);
+  const [raisedHand, setRaisedHand] = useState(false);
   const ws = useRef(null);
   const peersRef = useRef({});
-
   const [products, setProducts] = useState([]);
   const [pinnedProduct, setPinnedProduct] = useState(null);
+  // Thêm trạng thái cho bình luận
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState('');
 
   const toggleMic = () => {
     if (!localVideoRef.current?.srcObject) {
@@ -57,6 +60,34 @@ const Viewer = ({ username, roomId, isCreator }) => {
         micEnabled,
         cameraEnabled: newCameraState
       }));
+    }
+  };
+
+  const toggleRaiseHand = () => {
+    const newRaisedHandState = !raisedHand;
+    setRaisedHand(newRaisedHandState);
+    if (ws.current?.readyState === WebSocket.OPEN) {
+      ws.current.send(JSON.stringify({
+        type: 'raiseHand',
+        id: username,
+        raised: newRaisedHandState
+      }));
+      console.log(`${username} sent raiseHand: ${newRaisedHandState}`);
+    }
+  };
+
+  // Hàm gửi bình luận
+  const sendComment = () => {
+    if (!newComment.trim()) return;
+    if (ws.current?.readyState === WebSocket.OPEN) {
+      const commentData = {
+        type: 'comment',
+        content: newComment,
+        timestamp: Date.now(),
+      };
+      ws.current.send(JSON.stringify(commentData));
+      setNewComment('');
+      console.log(`${username} sent comment: ${newComment}`);
     }
   };
 
@@ -317,6 +348,14 @@ const Viewer = ({ username, roomId, isCreator }) => {
             } else if (data.type === 'unpinProduct') {
               console.log(`Viewer ${username} in room ${roomId} unpinned product`);
               setPinnedProduct(null);
+            } else if (data.type === 'comments') { // Nhận danh sách bình luận ban đầu
+              setComments(data.comments || []);
+            } else if (data.type === 'comment') { // Nhận bình luận mới
+              setComments(prev => [...prev, {
+                username: data.username,
+                content: data.content,
+                timestamp: data.timestamp,
+              }]);
             } else if (peerId) {
               handleSignal(peerId, data);
             }
@@ -349,6 +388,7 @@ const Viewer = ({ username, roomId, isCreator }) => {
       };
       setupWebSocket();
     };
+
     navigator.mediaDevices.getUserMedia({ video: true, audio: true })
       .then(stream => {
         if (isMounted) {
@@ -381,7 +421,7 @@ const Viewer = ({ username, roomId, isCreator }) => {
   const viewerStreams = new Map([...remoteStreams.entries()].filter(([peerId]) => peerId !== streamerId && peerId !== username));
 
   return (
-    <div className="flex flex-col h-screen bg-gray-900 text-white mt-[75px]">
+    <div className="flex flex-col  h-[90%] bg-gray-900 text-white">
       <div className="flex flex-1 overflow-hidden">
         {/* Viewer Videos (bên trái) */}
         <div className="w-1/3 flex flex-col p-4 overflow-y-auto">
@@ -438,11 +478,11 @@ const Viewer = ({ username, roomId, isCreator }) => {
           </div>
         </div>
 
-        {/* Streamer Video (bên phải) */}
-        <div className="w-2/3 flex flex-col p-4">
+        {/* Streamer Video (bên phải) với khung chat cao hơn */}
+        <div className="w-2/3 h-[90%] flex flex-col p-4">
           <h3 className="text-lg font-semibold mb-2">Main Video</h3>
           {streamerStream && streamerId !== username ? (
-            <div className="relative flex-1">
+            <div className="relative h-full">
               <video
                 ref={ref => {
                   if (ref && ref.srcObject !== streamerStream) {
@@ -452,13 +492,44 @@ const Viewer = ({ username, roomId, isCreator }) => {
                 }}
                 autoPlay
                 playsInline
-                className="w-full h-[95%] object-cover rounded-md border border-gray-700"
+                className="w-full h-full object-cover rounded-md border border-gray-700"
               />
               {!(peerStatuses.get(streamerId)?.cameraEnabled ?? true) && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-70 text-white rounded-md">
                   Camera Off
                 </div>
               )}
+              {/* Khung chat cao nửa màn hình, input/send đẹp hơn */}
+              <div className="absolute bottom-2 right-4 w-1/4 flex flex-col">
+                <div className="max-h-1/2 overflow-hidden"> {/* Chiều cao tối đa là nửa màn hình */}
+                  {comments.map((comment, index) => (
+                    <div
+                      key={index}
+                      className="text-white text-sm mb-1 p-1 bg-gray-800 bg-opacity-70 rounded-lg animate-slide-up"
+                      style={{ animation: `slide-up 5s linear` }}
+                    >
+                      <span className="font-semibold">{comment.username}:</span> {comment.content}
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-2 flex items-center">
+                  <input
+                    type="text"
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && sendComment()}
+                    placeholder="Say something..."
+                    className="w-full p-2 text-sm text-white bg-gray-700 border border-gray-600 rounded-l-md 
+                    focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
+                  />
+                  <button
+                    onClick={sendComment}
+                    className="bg-gray-700 text-white text-sm px-4 py-[9px] rounded-r-md hover:border-gray-600 transition-colors duration-200"
+                  >
+                    Send
+                  </button>
+                </div>
+              </div>
               <div className="text-sm mt-2">
                 <span className="mr-2">{streamerId}</span>
                 <span className="text-gray-400">
@@ -478,13 +549,19 @@ const Viewer = ({ username, roomId, isCreator }) => {
           onClick={toggleMic}
           className={`px-4 py-2 rounded-md ${micEnabled ? 'bg-red-600' : 'bg-green-600'} hover:opacity-80`}
         >
-          {micEnabled ? 'Mute Micaaaa' : 'Unmute Mic'}
+          {micEnabled ? 'Mute Mic' : 'Unmute Mic'}
         </button>
         <button
           onClick={toggleCamera}
           className={`px-4 py-2 rounded-md ${cameraEnabled ? 'bg-red-600' : 'bg-green-600'} hover:opacity-80`}
         >
           {cameraEnabled ? 'Stop Video' : 'Start Video'}
+        </button>
+        <button
+          onClick={toggleRaiseHand}
+          className={`px-4 py-2 rounded-md ${raisedHand ? 'bg-yellow-600' : 'bg-blue-600'} hover:opacity-80`}
+        >
+          {raisedHand ? 'Lower Hand' : 'Raise Hand'}
         </button>
       </div>
 
@@ -510,6 +587,7 @@ const Viewer = ({ username, roomId, isCreator }) => {
       )}
     </div>
   );
+
 };
 
 export default Viewer;
