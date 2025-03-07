@@ -57,6 +57,9 @@ import ProfilePage from "./components/ProfilePage.js";
 import QRScanner from "./components/QRScanner.js";
 import OCRReader from "./components/OCRReader.js";
 import CreateRoom from "./components/videocall/CreateRoom.js";
+import MyFavorites from "./MyFavorites.jsx";
+import ProductSalesPage from "./ProductSalesPage.jsx";
+import StripeCheckoutButton from "./StripeCheckoutButton.js";
 
 function App() {
   const navigate = useNavigate()
@@ -276,6 +279,15 @@ function App() {
           element={
             <Layout>
               <ProfilePage />
+            </Layout>
+          }
+        />
+
+        <Route
+          path="/payment"
+          element={
+            <Layout>
+              <StripeCheckoutButton />
             </Layout>
           }
         />
@@ -620,6 +632,18 @@ function App() {
           }
         />
         <Route
+          path="/favorites"
+          element={
+            <PrivateRoute>
+              <Layout>
+                <DashboardLayout>
+                  <MyFavorites />
+                </DashboardLayout>
+              </Layout>
+            </PrivateRoute>
+          }
+        />
+        <Route
           path="/category"
           element={
             <PrivateRoute>
@@ -680,6 +704,19 @@ function App() {
             </PrivateRoute>
           }
         />
+        <Route
+          path="/thongke"
+          element={
+            <PrivateRoute>
+              <Layout>
+                <DashboardLayout>
+                  <ProductSalesPage />
+                </DashboardLayout>
+              </Layout>
+            </PrivateRoute>
+          }
+        />
+
         <Route
           path="/*"
           element={

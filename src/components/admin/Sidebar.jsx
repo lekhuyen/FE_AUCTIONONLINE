@@ -8,13 +8,14 @@ import { User1 } from "../hero/Hero";
 import { IoIosLogOut } from "react-icons/io";
 import { CgProductHunt } from "react-icons/cg";
 import { TbCurrencyDollar } from "react-icons/tb";
-import { FiUser, FiMail, FiEdit} from "react-icons/fi";
+import { FiUser, FiMail, FiEdit } from "react-icons/fi";
 import { FaPlusCircle } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { RESET } from "../../redux/slide/authSlide";
 import React, { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
+import { IoBarChartOutline } from "react-icons/io5";
 
 
 export const Sidebar = () => {
@@ -98,6 +99,12 @@ export const Sidebar = () => {
                 </span>
                 <span>All User</span>
               </CustomNavLink>
+              <CustomNavLink href="/payment" isActive={location.pathname === "/payment"} className={className}>
+                <span>
+                  <FiUser size={22} />
+                </span>
+                <span>Payment</span>
+              </CustomNavLink>
 
               <CustomNavLink href="/product/admin" isActive={location.pathname === "/product/admin"} className={className}>
                 <span>
@@ -148,6 +155,16 @@ export const Sidebar = () => {
             </span>
             <span>My Favorites</span>
           </CustomNavLink>
+
+          <CustomNavLink href="/thongke" isActive={location.pathname === "/thongke"} className={className}>
+            <span>
+              <IoBarChartOutline size={22} />
+            </span>
+            <span>Thống kê</span>
+          </CustomNavLink>
+
+
+
           <CustomNavLink href="/profile" isActive={location.pathname === "/profile"} className={className}>
             <span>
               <IoSettingsOutline size={22} />
