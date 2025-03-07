@@ -1,7 +1,7 @@
 import { Body, Caption, Container, Title } from "../../router";
 import { commonClassNameOfInput } from "../../components/common/Design";
 import { useEffect, useState } from "react";
-import {  useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from '../../utils/axios'
 import { jwtDecode } from "jwt-decode";
 import { calculateTimeLeft, useLoginExpired } from "../../utils/helper";
@@ -13,11 +13,9 @@ import { auctionsuccess } from "../../redux/slide/productSlide";
 import Swal from "sweetalert2";
 import { followAuctioneer, unfollowAuctioneer, checkIfFollowing, getComments, addComment } from "../../api"; // Thêm dòng này
 
-
-
 export const ProductsDetailsPage = () => {
   const navigate = useNavigate()
-  const { id } = useParams()  
+  const { id } = useParams()
   const dispatch = useDispatch()
   const [userId, setUserId] = useState(null);
   const [isOpenInput, setSsOpenInput] = useState(false);
@@ -41,108 +39,114 @@ export const ProductsDetailsPage = () => {
 
   const handleFollow = async () => {
     if (!userId) {
-      alert("Please login to follow seller!");
+      alert("Vui lòng đăng nhập để follow người bán!");
       return;
     }
 
-    console.log("📌 Bắt đầu follow:", userId, productDetail.buyerId);
-    const response = await followAuctioneer(userId, productDetail.buyerId);
-    console.log("✅ Kết quả follow API:", response);
+    try {
+      console.log("📌 Gửi request follow:", userId, productDetail.buyerId);
+      const response = await followAuctioneer(userId, productDetail.buyerId);
 
-    if (response) {
-      setIsFollowing(true);
-      alert("You have followed the seller!");
-      window.location.reload(); // ✅ Tải lại trang để cập nhật danh sách MyFavorites
+      if (response) {
+        setIsFollowing(true);
+        alert("Bạn đã follow người bán!");
+      }
+    } catch (error) {
+      console.error("❌ Lỗi khi follow:", error);
     }
   };
 
   const handleUnfollow = async () => {
-    console.log("📌 Bắt đầu hủy follow:", userId, productDetail.buyerId);
-    const response = await unfollowAuctioneer(userId, productDetail.buyerId);
-    console.log("✅ Kết quả unfollow API:", response);
+    try {
+      console.log("📌 Bắt đầu hủy follow:", userId, productDetail.buyerId);
+      const response = await unfollowAuctioneer(userId, productDetail.buyerId);
 
-    if (response) {
-      setIsFollowing(false);
-      alert("Bạn đã hủy theo dõi người bán!");
+      if (response) {
+        setIsFollowing(false);
+        alert("Bạn đã hủy theo dõi người bán!");
+      }
+    } catch (error) {
+      console.error("❌ Lỗi khi unfollow:", error);
     }
   };
 
-    // Cập nhật chi tiết sản phẩm và bình luận khi component render
-    useEffect(() => {
-      const fetchProductDetails = async () => {
-        try {
-          const response = await axios.get(`/details/${id}`);
-          if (response.data) {
-            setProductDetail(response.data);
-            // Kiểm tra seller_id có hợp lệ không
-            if (!response.data.seller_id) {
-              console.error("❌ seller_id không hợp lệ");
-            } else {
-              console.log("📌 seller_id hợp lệ:", response.data.seller_id);
-            }
-          }
-        } catch (error) {
-          console.error("❌ Lỗi khi tải chi tiết sản phẩm:", error);
-        }
-      };
-    
-      fetchProductDetails();
-    }, [id]);
-    
-    
-    
-    
-  
-    // Lấy danh sách bình luận của người bán
-    const fetchComments = async (sellerId) => {
-      if (sellerId) {
-        const commentData = await getComments(sellerId);
-        setComments(commentData || []);
-      }
-    };
-  
-    useEffect(() => {
-      if (activeTab === "reviews" && productDetail.seller_id) {
-        fetchComments(productDetail.seller_id); // ✅ Gọi API bình luận khi mở tab Reviews
-      }
-    }, [activeTab, productDetail.seller_id]);
-  
-    // Thay đổi tab active
-    const handleTabClick = (tab) => {
-      setActiveTab(tab);
-    };
-  
-    // Gửi bình luận mới
-    const handleCommentSubmit = async () => {
-      if (!newComment.trim()) return alert("Vui lòng nhập nội dung bình luận!");
-    
-      // Đảm bảo auctioneerId được lấy từ seller_id
-      const auctioneerId = productDetail.seller_id;
-    
-      console.log("🔑 Gửi bình luận với dữ liệu:", {
-        userId,
-        auctioneerId, // Kiểm tra xem auctioneerId có hợp lệ không
-        content: newComment,
-      });
-    
-      // Kiểm tra auctioneerId trước khi gửi bình luận
-      if (!auctioneerId) {
-        console.error("❌ auctioneerId không hợp lệ");
-        alert("auctioneerId không hợp lệ");
-        return;  // Ngừng việc gửi bình luận nếu auctioneerId không hợp lệ
-      }
-    
-      const response = await addComment(userId, auctioneerId, newComment); // Gửi API bình luận
-      if (response) {
-        setComments([...comments, { userName: "Bạn", content: newComment }]);
-        setNewComment("");
-      }
-    };
-    
-    
-    
-    
-    
+
+  // Cập nhật chi tiết sản phẩm và bình luận khi component render
+  // useEffect(() => {
+  //   const fetchProductDetails = async () => {
+  //     try {
+  //       const response = await axios.get(`/details/${id}`);
+  //       if (response.data) {
+  //         setProductDetail(response.data);
+  //         // Kiểm tra seller_id có hợp lệ không
+  //         if (!response.data.seller_id) {
+  //           console.error("❌ seller_id không hợp lệ");
+  //         } else {
+  //           console.log("📌 seller_id hợp lệ:", response.data.seller_id);
+  //         }
+  //       }
+  //     } catch (error) {
+  //       console.error("❌ Lỗi khi tải chi tiết sản phẩm:", error);
+  //     }
+  //   };
+
+  //   fetchProductDetails();
+  // }, [id]);
+
+
+
+
+
+  // Lấy danh sách bình luận của người bán
+  const fetchComments = async (sellerId) => {
+    if (sellerId) {
+      const commentData = await getComments(sellerId);
+      setComments(commentData || []);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === "reviews" && productDetail.seller_id) {
+      fetchComments(productDetail.seller_id); // ✅ Gọi API bình luận khi mở tab Reviews
+    }
+  }, [activeTab, productDetail.seller_id]);
+
+  // Thay đổi tab active
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+  };
+
+  // Gửi bình luận mới
+  const handleCommentSubmit = async () => {
+    if (!newComment.trim()) return alert("Vui lòng nhập nội dung bình luận!");
+
+    // Đảm bảo auctioneerId được lấy từ seller_id
+    const auctioneerId = productDetail.seller_id;
+
+    console.log("🔑 Gửi bình luận với dữ liệu:", {
+      userId,
+      auctioneerId, // Kiểm tra xem auctioneerId có hợp lệ không
+      content: newComment,
+    });
+
+    // Kiểm tra auctioneerId trước khi gửi bình luận
+    if (!auctioneerId) {
+      console.error("❌ auctioneerId không hợp lệ");
+      alert("auctioneerId không hợp lệ");
+      return;  // Ngừng việc gửi bình luận nếu auctioneerId không hợp lệ
+    }
+
+    const response = await addComment(userId, auctioneerId, newComment); // Gửi API bình luận
+    if (response) {
+      setComments([...comments, { userName: "Bạn", content: newComment }]);
+      setNewComment("");
+    }
+  };
+
+
+
+
+
 
   useEffect(() => {
     const checkFollowStatus = async () => {
@@ -161,7 +165,7 @@ export const ProductsDetailsPage = () => {
   //const { isLoading } = useSelector(state => state.product)
 
 
-    const getProduct = async () => {
+  const getProduct = async () => {
     console.log("goi laij");
 
     try {
@@ -356,8 +360,8 @@ export const ProductsDetailsPage = () => {
     if (isLogin) {
       try {
         Swal.fire({
-          title: `Bạn muốn chốt giá?`,
-          text: "Bấn 'OK' để chốt, 'Cancel' để hủy",
+          title: `Want to close the price?`,
+          text: "Click 'OK' to confirm, 'Cancel' to cancel",
           confirmButtonText: "Ok",
           cancelButtonText: "Cancel",
           showCancelButton: true,
@@ -369,13 +373,13 @@ export const ProductsDetailsPage = () => {
             const actionResult = await dispatch(auctionsuccess({ productId: id, sellerId: userId }));
             console.log(actionResult);
             if (auctionsuccess.fulfilled.match(actionResult)) {
-              toast.success("Bạn đã chốt giá thành công!");
+              toast.success("You have successfully closed the price!");
               setIsSoldout(true);
             } else {
-              toast.error("Chốt giá thất bại, vui lòng thử lại.");
+              toast.error("Closing price failed, please try again.");
             }
           } else {
-            toast.info("Bạn đã hủy chốt giá.");
+            toast.info("You have canceled the price.");
           }
         });
       } catch (error) {
@@ -528,10 +532,10 @@ export const ProductsDetailsPage = () => {
                 Timezone: <Caption>UTC+7</Caption>
               </Title>
               <Title className="flex items-center gap-2 my-5">
-                Price:<Caption>${productDetail.starting_price}</Caption>
+                Price:<Caption>${productDetail.starting_price?.toLocaleString('en-US')}</Caption>
               </Title>
               <Title className={`flex items-center gap-2 ${isSoldout ? 'text-red-700' : ''}`}>
-                Current bid:<Caption className="text-3xl">${currentPrice.price || 0} </Caption>
+                Current bid:<Caption className="text-3xl">  ${currentPrice.price?.toLocaleString('en-US') || '0'}</Caption>
               </Title>
 
 

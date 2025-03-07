@@ -536,7 +536,7 @@ export const Header = () => {
                   {
                     showNotification && (
                       <div className="absolute w-[360px] top-[33px] right-1 overflow-hidden bg-white shadow-lg rounded-sm p-2">
-                        <div className="w-full"><h3 className="text-[24px]">Thong bao</h3></div>
+                        <div className="w-full"><h3 className="text-[24px]">Notification</h3></div>
                         <div className={clsx(styles.custom_scroll, 'overflow-y-auto max-h-[400px]')}>
                           {userId && notifications?.length > 0 && notifications?.map((notifi, index) => {
                             return (

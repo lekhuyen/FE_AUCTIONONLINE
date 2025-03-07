@@ -1,4 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
+import axios from "axios";
+// import MyFavorites from "./MyFavorites";
+import MyFavorites from "../MyFavorites";
+
 import { CiEdit } from 'react-icons/ci';
 import { PiPlus } from "react-icons/pi";
 import { TiEyeOutline } from 'react-icons/ti';
@@ -46,11 +50,12 @@ const ManagerPost = () => {
 
 
   const listMenu = [
-    { name: 'Opening' },
+    { name: 'Success bidding' },
     { name: 'Expired' },
     { name: 'Pending' },
-    { name: 'Success bidding' },
+    { name: 'Opending' },
     { name: 'Sold' },
+    { name: 'My Favorites' }
   ]
   const [isLogin] = useState(localStorage.getItem('isIntrospect') || false)
   useEffect(() => {
@@ -119,18 +124,53 @@ const ManagerPost = () => {
 
   const handlePayment = (id) => {
     const uniqueOrderId = `order_${id}_${Date.now()}`;
-    const product = Array.isArray(productsOfBuyer) && productsOfBuyer.length > 0
-      ? productsOfBuyer.find(product => product.item_id === id)
-      : null; console.log(productsOfBuyer);
+    const product = productsOfBuyer?.find(product => product.item_id === id);
+
     if (product?.bidding?.price) {
+      // Lưu thông tin thanh toán
+      localStorage.setItem("paymentInfo", JSON.stringify({
+        productName: product.name,
+        amount: product.bidding.price,
+      }));
+
       checkout(id, product?.bidding?.price, uniqueOrderId)
         .then((res) => {
-          // setUrl(res.data.data?.paymentUrl)
-          window.location.href = res.data.data?.paymentUrl
+          if (res.data.data?.paymentUrl) {
+            window.location.href = res.data.data.paymentUrl;
+          } else {
+            // Nếu không có paymentUrl, chuyển hướng đến trang thất bại
+            window.location.href = "/payment-failure";
+          }
         })
-        .catch((err) => console.error(err));
+        .catch(() => {
+          // Nếu có lỗi, chuyển hướng đến trang thất bại
+          window.location.href = "/payment-failure";
+        });
     }
-  }
+  };
+
+
+  // const handlePayment = async (id) => {
+  //   console.log("🔍 Đang gửi yêu cầu thanh toán cho productId:", id);
+
+  //   try {
+  //     const response = await axios.post(
+  //       `http://localhost:8080/api/stripe/create-checkout-session/${id}`,
+  //       {},
+  //       { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+  //     );
+
+  //     if (response.data.url) {
+  //       window.location.href = response.data.url; // Chuyển đến trang thanh toán Stripe
+  //     } else {
+  //       console.error("❌ Không lấy được URL thanh toán từ API");
+  //     }
+  //   } catch (error) {
+  //     console.error("❌ Lỗi khi tạo session Stripe:", error);
+  //   }
+  // };
+
+
 
   // add product
 
@@ -353,7 +393,7 @@ const ManagerPost = () => {
                         )
                       }
                       {
-                        clickMenu === 3 && (
+                        clickMenu === 0 && (
                           productsOfBuyer &&
                           productsOfBuyer?.length > 0 &&
                           productsOfBuyer?.filter(product => product?.buyer?.id === userId)?.map((product) => (
@@ -370,9 +410,15 @@ const ManagerPost = () => {
                               </td>
                               <td className="px-0 py-5">
                                 <div className="w-[100px] h-[40px] bg-green border rounded-md flex justify-center items-center">
-                                  <button onClick={() => handlePayment(product.item_id)} type="button" className="font-medium text-white">
-                                    {product.paid === false ? "Payment" : "Paid"}
+
+                                  <button onClick={() => handlePayment(product.item_id)} type="button"
+                                    className={`font-medium px-4 py-2 rounded ${product.paid ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 text-white"}`}
+                                    disabled={product.paid}>
+                                    {product.paid ? "Paid" : "Pay with Stripe 💳"}
                                   </button>
+
+
+
                                 </div>
                               </td>
                             </tr>
@@ -397,6 +443,7 @@ const ManagerPost = () => {
                   </div>
                 ))
               }
+
               {clickMenu === 4 && visibleCountIsActive < isActive.length && (
                 <div className="text-center mt-4 pb-1">
                   <button onClick={handleShowMoreisActive} className="px-4 py-0 bg-blue-500 text-white rounded-md">
@@ -411,6 +458,7 @@ const ManagerPost = () => {
                   </button>
                 </div>
               )}
+
             </div>
 
             {/* cho duyet */}
@@ -444,6 +492,9 @@ const ManagerPost = () => {
                 </button>
               </div>
             )}
+            {
+              clickMenu === 5 && <MyFavorites userId={userId} /> // ✅ Hiển thị MyFavorites khi click vào "My Favorites"
+            }
           </>
         )
       }
@@ -458,38 +509,38 @@ const ManagerPost = () => {
               <div className="w-full">
                 <Caption className="mb-2">Name *</Caption>
                 <input type="text" name="item_name" value={item_name} onChange={handleChangeAuction}
-                       className={`${commonClassNameOfInput}`} placeholder="Name"/>
+                  className={`${commonClassNameOfInput}`} placeholder="Name" />
                 {
-                    invalidFields?.some(el => el.name === "item_name") && productValue.item_name === '' &&
-                    <small style={{color: 'red'}}>{invalidFields?.find(el => el.name === "item_name").message}</small>
+                  invalidFields?.some(el => el.name === "item_name") && productValue.item_name === '' &&
+                  <small style={{ color: 'red' }}>{invalidFields?.find(el => el.name === "item_name").message}</small>
                 }
               </div>
               <div className="py-5">
                 <Caption className="mb-2">Category *</Caption>
                 <CategoryDropDown
-                    value={selectedCategory}
-                    options={categories.data?.map((category) => ({
-                      label: category.category_name,
-                      value: category.category_id,
-                    }))}
-                    placeholder="Select a category"
-                    handleCategoryChange={handleCategoryChange}
-                    className={`${commonClassNameOfInput}`}/>
+                  value={selectedCategory}
+                  options={categories.data?.map((category) => ({
+                    label: category.category_name,
+                    value: category.category_id,
+                  }))}
+                  placeholder="Select a category"
+                  handleCategoryChange={handleCategoryChange}
+                  className={`${commonClassNameOfInput}`} />
               </div>
               <div className="w-full">
                 <Caption className="mb-2">Start price</Caption>
                 <input
-                    type="number"
-                    name="starting_price"
-                    value={starting_price}
-                    onChange={handleChangeAuction}
-                    placeholder="Start price"
-                    className={`${commonClassNameOfInput}`}
+                  type="number"
+                  name="starting_price"
+                  value={starting_price}
+                  onChange={handleChangeAuction}
+                  placeholder="Start price"
+                  className={`${commonClassNameOfInput}`}
                 />
                 {invalidFields?.some(el => el.name === "starting_price") &&
-                    <small style={{ color: 'red' }}>
-                      {invalidFields?.find(el => el.name === "starting_price").message}
-                    </small>
+                  <small style={{ color: 'red' }}>
+                    {invalidFields?.find(el => el.name === "starting_price").message}
+                  </small>
                 }
               </div>
 
@@ -533,10 +584,10 @@ const ManagerPost = () => {
               <div>
                 <Caption className="mb-2">Description *</Caption>
                 <textarea name="description" value={description} onChange={handleChangeAuction}
-                          className={`${commonClassNameOfInput}`} cols="30" rows="5"></textarea>
+                  className={`${commonClassNameOfInput}`} cols="30" rows="5"></textarea>
                 {
-                    invalidFields?.some(el => el.name === "description") && productValue.description === '' &&
-                    <small style={{color: 'red'}}>{invalidFields?.find(el => el.name === "description").message}</small>
+                  invalidFields?.some(el => el.name === "description") && productValue.description === '' &&
+                  <small style={{ color: 'red' }}>{invalidFields?.find(el => el.name === "description").message}</small>
                 }
               </div>
               <div className="flex items-center gap-5 my-4">
@@ -544,40 +595,40 @@ const ManagerPost = () => {
                 <div className="w-1/2">
                   <Caption className="mb-2">Upload Product Image</Caption>
                   <input
-                      type="file"
-                      multiple="multiple"
-                      accept="image/*"
-                      onChange={handleImagesChange}
-                      className={`${commonClassNameOfInput}`}
-                      name="images"
-                      ref={fileInputRef}
+                    type="file"
+                    multiple="multiple"
+                    accept="image/*"
+                    onChange={handleImagesChange}
+                    className={`${commonClassNameOfInput}`}
+                    name="images"
+                    ref={fileInputRef}
                   />
-                  {invlidImages && <small style={{color: "red"}}>This field is invalid</small>}
+                  {invlidImages && <small style={{ color: "red" }}>This field is invalid</small>}
                 </div>
 
                 {/* File Upload (PDF) */}
                 <div className="w-1/2">
                   <Caption className="mb-2">Upload Certification (PDF)</Caption>
                   <input
-                      type="file"
-                      multiple
-                      accept="file/*"
-                      onChange={handleFileUpload}
-                      ref={fileInputRef}
+                    type="file"
+                    multiple
+                    accept="file/*"
+                    onChange={handleFileUpload}
+                    ref={fileInputRef}
                   />
                   {invlidImages && <small style={{ color: 'red' }}>Invalid image file(s). Please upload valid images.</small>}
                 </div>
               </div>
 
               {
-                  isLogin &&
-                  <PrimaryButton type="submit" className="rounded-none my-5">
-                    CREATE
-                  </PrimaryButton>
+                isLogin &&
+                <PrimaryButton type="submit" className="rounded-none my-5">
+                  CREATE
+                </PrimaryButton>
               }
             </form>
           </div>
-          )
+        )
       }
     </>
   );
