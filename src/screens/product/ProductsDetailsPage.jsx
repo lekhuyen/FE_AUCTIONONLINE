@@ -1,8 +1,8 @@
 import { Body, Caption, Container, Title } from "../../router";
 import { commonClassNameOfInput } from "../../components/common/Design";
 import { useEffect, useState } from "react";
-import {  useNavigate, useParams } from "react-router-dom";
-import axios from '../../utils/axios'
+import { useNavigate, useParams } from "react-router-dom";
+import axios from '../../utis/axios'
 import { jwtDecode } from "jwt-decode";
 import { calculateTimeLeft, useLoginExpired } from "../../utils/helper";
 import { toast } from "react-toastify";
@@ -41,6 +41,113 @@ export const ProductsDetailsPage = () => {
 
   const handleFollow = async () => {
     if (!userId) {
+
+        alert("Vui lòng đăng nhập để follow người bán!");
+        return;
+    }
+
+    try {
+        console.log("📌 Gửi request follow:", userId, productDetail.buyerId);
+        const response = await followAuctioneer(userId, productDetail.buyerId);
+
+        if (response) {
+            setIsFollowing(true);
+            alert("Bạn đã follow người bán!");
+        }
+    } catch (error) {
+        console.error("❌ Lỗi khi follow:", error);
+    }
+};
+
+
+
+
+  const handleUnfollow = async () => {
+    try {
+      console.log("📌 Bắt đầu hủy follow:", userId, productDetail.buyerId);
+      const response = await unfollowAuctioneer(userId, productDetail.buyerId);
+
+      if (response) {
+        setIsFollowing(false);
+        alert("Bạn đã hủy theo dõi người bán!");
+      }
+    } catch (error) {
+      console.error("❌ Lỗi khi unfollow:", error);
+    }
+  };
+
+
+  // Cập nhật chi tiết sản phẩm và bình luận khi component render
+  // useEffect(() => {
+  //   const fetchProductDetails = async () => {
+  //     try {
+  //       const response = await axios.get(`/details/${id}`);
+  //       if (response.data) {
+  //         setProductDetail(response.data);
+  //         // Kiểm tra seller_id có hợp lệ không
+  //         if (!response.data.seller_id) {
+  //           console.error("❌ seller_id không hợp lệ");
+  //         } else {
+  //           console.log("📌 seller_id hợp lệ:", response.data.seller_id);
+  //         }
+  //       }
+  //     } catch (error) {
+  //       console.error("❌ Lỗi khi tải chi tiết sản phẩm:", error);
+  //     }
+  //   };
+
+  //   fetchProductDetails();
+  // }, [id]);
+
+
+
+
+
+  // Lấy danh sách bình luận của người bán
+  const fetchComments = async (sellerId) => {
+    if (sellerId) {
+      const commentData = await getComments(sellerId);
+      setComments(commentData || []);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === "reviews" && productDetail.seller_id) {
+      fetchComments(productDetail.seller_id); // ✅ Gọi API bình luận khi mở tab Reviews
+    }
+  }, [activeTab, productDetail.seller_id]);
+
+  // Thay đổi tab active
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+  };
+
+  // Gửi bình luận mới
+  const handleCommentSubmit = async () => {
+    if (!newComment.trim()) return alert("Vui lòng nhập nội dung bình luận!");
+
+    // Đảm bảo auctioneerId được lấy từ seller_id
+    const auctioneerId = productDetail.seller_id;
+
+    console.log("🔑 Gửi bình luận với dữ liệu:", {
+      userId,
+      auctioneerId, // Kiểm tra xem auctioneerId có hợp lệ không
+      content: newComment,
+    });
+
+    // Kiểm tra auctioneerId trước khi gửi bình luận
+    if (!auctioneerId) {
+      console.error("❌ auctioneerId không hợp lệ");
+      alert("auctioneerId không hợp lệ");
+      return;  // Ngừng việc gửi bình luận nếu auctioneerId không hợp lệ
+    }
+
+    const response = await addComment(userId, auctioneerId, newComment); // Gửi API bình luận
+    if (response) {
+      setComments([...comments, { userName: "Bạn", content: newComment }]);
+      setNewComment("");
+    }
+  };
       alert("Please login to follow seller!");
       return;
     }
@@ -138,10 +245,6 @@ export const ProductsDetailsPage = () => {
         setNewComment("");
       }
     };
-    
-    
-    
-    
     
 
   useEffect(() => {
