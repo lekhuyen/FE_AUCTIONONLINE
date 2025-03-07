@@ -189,9 +189,9 @@ export const UserList = () => {
                     <NavLink to={`/product/update/${user.id}`} type="button" className="font-medium text-green">
                       <CiEdit size={25} />
                     </NavLink>
-                    <button className="font-medium text-red-500" onClick={() => handleDeleteUser(user.id)}>
+                    {/* <button className="font-medium text-red-500" onClick={() => handleDeleteUser(user.id)}>
                       <MdOutlineDeleteOutline size={25} />
-                    </button>
+                    </button> */}
                   </td>
                 </tr>
               ))

@@ -234,9 +234,9 @@ export const Table = () => {
                     <NavLink to={`/product/update/${product.item_id}`} type="button" className="font-medium text-green">
                       <CiEdit size={25} />
                     </NavLink>
-                    <button className="font-medium text-red-500" onClick={() => handleDeleteProduct(product.item_id)}>
+                    {/* <button className="font-medium text-red-500" onClick={() => handleDeleteProduct(product.item_id)}>
                       <MdOutlineDeleteOutline size={25} />
-                    </button>
+                    </button> */}
                   </td>
                 </tr>
               ))
