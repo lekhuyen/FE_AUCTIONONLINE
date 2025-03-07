@@ -73,14 +73,14 @@ const ProfilePage = () => {
           </div>
 
           {/* Các nút */}
-          <div className="mt-4 space-y-3">
+           <div className="mt-4 space-y-3">
             <button className="w-full bg-orange-500 text-white py-2 rounded-lg font-semibold hover:bg-orange-600">
               Share Your Profile
             </button>
             <button className="w-full border py-2 rounded-lg font-semibold hover:bg-gray-100">
               Reset Password
             </button>
-          </div>
+          </div> 
 
           {/* Thông tin khác */}
           <div className="mt-4 text-sm space-y-2 text-gray-600">
