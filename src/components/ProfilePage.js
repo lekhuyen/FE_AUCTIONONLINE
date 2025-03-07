@@ -8,6 +8,16 @@ const ProfilePage = () => {
   const [tokenInfo, setTokenInfo] = useState(null);
   const [userInfo, setUserInfo] = useState(null)
 
+  const [balance, setBalance] = useState(null);
+
+  useEffect(() => {
+    axios.get("http://localhost:8080/api/stripe/balance", {
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+    })
+      .then(response => setBalance(response.data))
+      .catch(error => console.error("❌ Lỗi khi lấy số dư:", error));
+  }, []);
+  
 
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -98,7 +108,21 @@ const ProfilePage = () => {
                 </Link>
               )}
             </p>
-            <p>📍 Address: ...</p>
+            <p>📍 Address: {userInfo?.address}</p>
+            <p>📩 Email: {userInfo?.email}</p>
+            <p>📞 Phone: {userInfo?.phone}</p>
+            <p className="mt-3 text-xl font-bold">
+              {userInfo?.money?.toLocaleString("vi-VN")} VNĐ
+            </p>
+            <div>
+              <h2>Số dư tài khoản</h2>
+              {balance ? (
+                <p><strong>${balance.available[0].amount / 100}</strong> USD</p>
+              ) : (
+                <p>Đang tải...</p>
+              )}
+            </div>
+
           </div>
 
           {/* Hộp hồ sơ xin việc */}

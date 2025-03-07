@@ -1,7 +1,7 @@
 import { Body, Caption, Container, Title } from "../../router";
 import { commonClassNameOfInput } from "../../components/common/Design";
 import { useEffect, useState } from "react";
-import { NavLink, useNavigate, useParams } from "react-router-dom";
+import {  useNavigate, useParams } from "react-router-dom";
 import axios from '../../utils/axios'
 import { jwtDecode } from "jwt-decode";
 import { calculateTimeLeft, useLoginExpired } from "../../utils/helper";
@@ -11,11 +11,13 @@ import { Stomp } from "@stomp/stompjs";
 import { useDispatch, useSelector } from "react-redux";
 import { auctionsuccess } from "../../redux/slide/productSlide";
 import Swal from "sweetalert2";
+import { followAuctioneer, unfollowAuctioneer, checkIfFollowing, getComments, addComment } from "../../api"; // Thêm dòng này
+
 
 
 export const ProductsDetailsPage = () => {
   const navigate = useNavigate()
-  const { id } = useParams()
+  const { id } = useParams()  
   const dispatch = useDispatch()
   const [userId, setUserId] = useState(null);
   const [isOpenInput, setSsOpenInput] = useState(false);
@@ -24,18 +26,142 @@ export const ProductsDetailsPage = () => {
   const [timeLeft, setTimeLeft] = useState(null);
   const [timeLeftEndDate, setTimeLeftEndDate] = useState(null);
   const [isDuration, setIsDuration] = useState(false)
-  const [isLogin, setIsLogin] = useState(localStorage.getItem('isIntrospect') || false)
+  const [isLogin] = useState(localStorage.getItem('isIntrospect') || false)
   const { triggerLoginExpired } = useLoginExpired();
   const [priceBidding, setPriceBidding] = useState('')
   const [currentPrice, setCurrentPrice] = useState(0)
   const [stompClient, setStompClient] = useState(null);
   // const [notification, setNotification] = useState('')
+  const [comments, setComments] = useState([]); // ✅ State lưu danh sách bình luận
+  const [newComment, setNewComment] = useState(""); // ✅ State lưu bình luận mới
+  const [activeTab, setActiveTab] = useState("description"); // ✅ Đặt trong function component
+
+  //truong
+  const [isFollowing, setIsFollowing] = useState(false);
+
+  const handleFollow = async () => {
+    if (!userId) {
+      alert("Please login to follow seller!");
+      return;
+    }
+
+    console.log("📌 Bắt đầu follow:", userId, productDetail.buyerId);
+    const response = await followAuctioneer(userId, productDetail.buyerId);
+    console.log("✅ Kết quả follow API:", response);
+
+    if (response) {
+      setIsFollowing(true);
+      alert("You have followed the seller!");
+      window.location.reload(); // ✅ Tải lại trang để cập nhật danh sách MyFavorites
+    }
+  };
+
+  const handleUnfollow = async () => {
+    console.log("📌 Bắt đầu hủy follow:", userId, productDetail.buyerId);
+    const response = await unfollowAuctioneer(userId, productDetail.buyerId);
+    console.log("✅ Kết quả unfollow API:", response);
+
+    if (response) {
+      setIsFollowing(false);
+      alert("Bạn đã hủy theo dõi người bán!");
+    }
+  };
+
+    // Cập nhật chi tiết sản phẩm và bình luận khi component render
+    useEffect(() => {
+      const fetchProductDetails = async () => {
+        try {
+          const response = await axios.get(`/details/${id}`);
+          if (response.data) {
+            setProductDetail(response.data);
+            // Kiểm tra seller_id có hợp lệ không
+            if (!response.data.seller_id) {
+              console.error("❌ seller_id không hợp lệ");
+            } else {
+              console.log("📌 seller_id hợp lệ:", response.data.seller_id);
+            }
+          }
+        } catch (error) {
+          console.error("❌ Lỗi khi tải chi tiết sản phẩm:", error);
+        }
+      };
+    
+      fetchProductDetails();
+    }, [id]);
+    
+    
+    
+    
+  
+    // Lấy danh sách bình luận của người bán
+    const fetchComments = async (sellerId) => {
+      if (sellerId) {
+        const commentData = await getComments(sellerId);
+        setComments(commentData || []);
+      }
+    };
+  
+    useEffect(() => {
+      if (activeTab === "reviews" && productDetail.seller_id) {
+        fetchComments(productDetail.seller_id); // ✅ Gọi API bình luận khi mở tab Reviews
+      }
+    }, [activeTab, productDetail.seller_id]);
+  
+    // Thay đổi tab active
+    const handleTabClick = (tab) => {
+      setActiveTab(tab);
+    };
+  
+    // Gửi bình luận mới
+    const handleCommentSubmit = async () => {
+      if (!newComment.trim()) return alert("Vui lòng nhập nội dung bình luận!");
+    
+      // Đảm bảo auctioneerId được lấy từ seller_id
+      const auctioneerId = productDetail.seller_id;
+    
+      console.log("🔑 Gửi bình luận với dữ liệu:", {
+        userId,
+        auctioneerId, // Kiểm tra xem auctioneerId có hợp lệ không
+        content: newComment,
+      });
+    
+      // Kiểm tra auctioneerId trước khi gửi bình luận
+      if (!auctioneerId) {
+        console.error("❌ auctioneerId không hợp lệ");
+        alert("auctioneerId không hợp lệ");
+        return;  // Ngừng việc gửi bình luận nếu auctioneerId không hợp lệ
+      }
+    
+      const response = await addComment(userId, auctioneerId, newComment); // Gửi API bình luận
+      if (response) {
+        setComments([...comments, { userName: "Bạn", content: newComment }]);
+        setNewComment("");
+      }
+    };
+    
+    
+    
+    
+    
+
+  useEffect(() => {
+    const checkFollowStatus = async () => {
+      if (userId && productDetail.buyerId) {
+        const isFollowed = await checkIfFollowing(userId, productDetail.buyerId);
+        console.log("🚀 Trạng thái follow từ API:", isFollowed);
+        setIsFollowing(isFollowed);
+      }
+    };
+
+    checkFollowStatus();
+  }, [userId, productDetail.buyerId]);
 
   const [isSoldout, setIsSoldout] = useState(false)
 
-  const { isLoading } = useSelector(state => state.product)
+  //const { isLoading } = useSelector(state => state.product)
 
-  const getProduct = async () => {
+
+    const getProduct = async () => {
     console.log("goi laij");
 
     try {
@@ -55,7 +181,9 @@ export const ProductsDetailsPage = () => {
           bid_step: response.result.bid_step,
           buyerId: response.result.user.id,
           isSell: response.result.sell,
-          isSoldOut: response.result.soldout
+          isSoldOut: response.result.soldout,
+          sellerName: response.result.user.name,
+          seller_id: response.result.user.id
         }
         setIsSoldout(response.result.soldout)
         setImageFile(response.result.images)
@@ -69,11 +197,8 @@ export const ProductsDetailsPage = () => {
     getProduct()
   }, [id])
 
-  const [activeTab, setActiveTab] = useState("description");
 
-  const handleTabClick = (tab) => {
-    setActiveTab(tab);
-  };
+
 
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -303,14 +428,27 @@ export const ProductsDetailsPage = () => {
               </div>
             </div>
             <div className="w-1/2">
-              <div className="flex items-center">
-                <Title level={2} className="capitalize">
-                  {productDetail.item_name}
-                </Title>
-                {
-                  isSoldout && <div><p className="text-red-700 font-bold">soldout*</p></div>
-                }
+              <div className="flex items-center justify-between w-full">
+                {/* Tên sản phẩm */}
+                <div className="flex items-center">
+                  <Title level={2} className="capitalize">{productDetail.item_name}</Title>
+                  {isSoldout && <div><p className="text-red-700 font-bold">soldout*</p></div>}
+                </div>
+
+                <p className="ml-4 text-gray-600">
+                  👤 Seller: <span className="font-bold">{productDetail.sellerName}</span>
+                </p>
+                {/* Nút Theo Dõi Người Bán */}
+                <button
+                  className={`follow-btn ${isFollowing ? "active" : ""}`}
+                  onClick={isFollowing ? handleUnfollow : handleFollow}
+                >
+                  {isFollowing ? "❌ Unfollow" : "➕ Follow seller"}
+                </button>
+
               </div>
+
+
               <div className="flex gap-5">
                 {/* <div className="flex text-green ">
                   <IoIosStar size={20} />
@@ -437,110 +575,102 @@ export const ProductsDetailsPage = () => {
           </div>
           <div className="details mt-8">
             <div className="flex items-center gap-5">
-              <button className={`rounded-md px-10 py-4 text-black shadow-s3 ${activeTab === "description" ? "bg-green text-white" : "bg-white"}`} onClick={() => handleTabClick("description")}>
+              <button className={`tab-btn ${activeTab === "description" ? "active" : ""}`} onClick={() => handleTabClick("description")}>
                 Description
               </button>
-              <button className={`rounded-md px-10 py-4 text-black shadow-s3 ${activeTab === "auctionHistory" ? "bg-green text-white" : "bg-white"}`} onClick={() => handleTabClick("auctionHistory")}>
+              <button className={`tab-btn ${activeTab === "auctionHistory" ? "active" : ""}`} onClick={() => handleTabClick("auctionHistory")}>
                 Auction History
               </button>
-              <button className={`rounded-md px-10 py-4 text-black shadow-s3 ${activeTab === "reviews" ? "bg-green text-white" : "bg-white"}`} onClick={() => handleTabClick("reviews")}>
-                Reviews(2)
+              <button className={`tab-btn ${activeTab === "reviews" ? "active" : ""}`} onClick={() => handleTabClick("reviews")}>
+                Reviews ({comments.length})
               </button>
-              <button className={`rounded-md px-10 py-4 text-black shadow-s3 ${activeTab === "moreProducts" ? "bg-green text-white" : "bg-white"}`} onClick={() => handleTabClick("moreProducts")}>
+              <button className={`tab-btn ${activeTab === "moreProducts" ? "active" : ""}`} onClick={() => handleTabClick("moreProducts")}>
                 More Products
               </button>
             </div>
 
             <div className="tab-content mt-8">
               {activeTab === "description" && (
-                <div className="description-tab shadow-s3 p-8 rounded-md">
+                <div className="shadow-s3 p-8 rounded-md">
                   <Title level={4}>Description</Title>
-                  <br />
-                  <Caption className="leading-7">
-                    If you’ve been following the crypto space, you’ve likely heard of Non-Fungible Tokens (Biddings), more popularly referred to as ‘Crypto Collectibles.’ The world of Biddings is
-                    growing rapidly. It seems there is no slowing down of these assets as they continue to go up in price. This growth comes with the opportunity for people to start new businesses to
-                    create and capture value. The market is open for players in every kind of field. Are you a collector.
-                  </Caption>
-                  <Caption className="leading-7">
-                    If you’ve been following the crypto space, you’ve likely heard of Non-Fungible Tokens (Biddings), more popularly referred to as ‘Crypto Collectibles.’ The world of Biddings is
-                    growing rapidly. It seems there is no slowing down of these assets as they continue to go up in price. This growth comes with the opportunity for people to start new businesses to
-                    create and capture value. The market is open for players in every kind of field. Are you a collector.
-                  </Caption>
-                  <br />
-                  {/* <Title level={4}>Product Overview</Title>
-                  <div className="flex justify-between gap-5">
-                    <div className="mt-4 capitalize w-1/2">
-                      <div className="flex justify-between border-b py-3">
-                        <Title>category</Title>
-                        <Caption>Category</Caption>
-                      </div>
-                      <div className="flex justify-between border-b py-3">
-                        <Title>height</Title>
-                        <Caption> 200 (cm)</Caption>
-                      </div>
-                      <div className="flex justify-between border-b py-3">
-                        <Title>length</Title>
-                        <Caption> 300 (cm)</Caption>
-                      </div>
-                      <div className="flex justify-between border-b py-3">
-                        <Title>width</Title>
-                        <Caption> 400 (cm)</Caption>
-                      </div>
-                      <div className="flex justify-between border-b py-3">
-                        <Title>weigth</Title>
-                        <Caption> 50 (kg)</Caption>
-                      </div>
-                      <div className="flex justify-between py-3 border-b">
-                        <Title>medium used</Title>
-                        <Caption> Gold </Caption>
-                      </div>
-                      <div className="flex justify-between py-3 border-b">
-                        <Title>Price</Title>
-                        <Caption> $50000 </Caption>
-                      </div>
-                      <div className="flex justify-between py-3 border-b">
-                        <Title>Sold out</Title>
-                        Yes
-                      </div>
-                      <div className="flex justify-between py-3 border-b">
-                        <Title>verify</Title>
-                        No
-                      </div>
-                      <div className="flex justify-between py-3 border-b">
-                        <Title>Create At</Title>
-                        <Caption>December 31, 2024 12:00 am</Caption>
-                      </div>
-                      <div className="flex justify-between py-3">
-                        <Title>Update At</Title>
-                        <Caption>December 31, 2024 12:00 am</Caption>
-                      </div>
-                    </div>
-                    <div className="w-1/2">
-                      <div className="h-[60vh] p-2 bg-green rounded-xl">
-                        <img src="https://bidout-wp.b-cdn.net/wp-content/uploads/2022/10/Image-14.jpg" alt="" className="w-full h-full object-cover rounded-xl" />
-                      </div>
-                    </div>
-                  </div> */}
+                  <p>{productDetail.description || "Không có mô tả."}</p>
                 </div>
               )}
-              {activeTab === "auctionHistory" && <AuctionHistory />}
+
               {activeTab === "reviews" && (
-                <div className="reviews-tab shadow-s3 p-8 rounded-md">
-                  <Title level={5} className=" font-normal">
-                    Reviews
-                  </Title>
+                <div className="shadow-s3 p-8 rounded-md">
+                  <Title level={5}>Reviews</Title>
                   <hr className="my-5" />
-                  <Title level={5} className=" font-normal text-red-500">
-                    Cooming Soon!
-                  </Title>
+
+                  {/* ✅ Hiển thị danh sách bình luận */}
+                  <div className="comment-list">
+                    {comments.length === 0 ? (
+                      <p className="text-gray-500">Chưa có bình luận nào.</p>
+                    ) : (
+                      comments.map((comment, index) => (
+                        <div key={index} className="comment-item p-3 border-b">
+                          <p className="font-bold">{comment.userName}</p>
+                          <p>{comment.content}</p>
+                        </div>
+                      ))
+                    )}
+                  </div>
+
+                  {/* ✅ Form nhập bình luận */}
+                  <div className="comment-form mt-5">
+                    <textarea
+                      className="w-full p-3 border rounded-md"
+                      rows="3"
+                      placeholder="Viết bình luận..."
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                    ></textarea>
+                    <button className="btn-primary mt-2" onClick={handleCommentSubmit}>
+                      Gửi Bình Luận
+                    </button>
+                  </div>
                 </div>
               )}
+
               {activeTab === "moreProducts" && (
-                <div className="more-products-tab shadow-s3 p-8 rounded-md">
+                <div className="shadow-s3 p-8 rounded-md">
                   <h1>More Products</h1>
                 </div>
               )}
             </div>
+
+            {/* ✅ CSS Styles */}
+            <style>
+              {`
+          .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-right: 10px;
+            background-color: #f0f0f0;
+          }
+          .tab-btn.active {
+            background-color: green;
+            color: white;
+          }
+          .comment-item {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+          }
+          .btn-primary {
+            background-color: green;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+          }
+          .btn-primary:hover {
+            background-color: darkgreen;
+          }
+        `}
+            </style>
           </div>
         </Container>
       </section >

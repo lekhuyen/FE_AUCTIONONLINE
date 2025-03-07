@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
+import axios from "axios";
+
 import { CiEdit } from 'react-icons/ci';
 import { PiPlus } from "react-icons/pi";
 import { TiEyeOutline } from 'react-icons/ti';
@@ -117,20 +119,41 @@ const ManagerPost = () => {
     setVisibleCountIsActive(5);
   };
 
-  const handlePayment = (id) => {
-    const uniqueOrderId = `order_${id}_${Date.now()}`;
-    const product = Array.isArray(productsOfBuyer) && productsOfBuyer.length > 0
-      ? productsOfBuyer.find(product => product.item_id === id)
-      : null; console.log(productsOfBuyer);
-    if (product?.bidding?.price) {
-      checkout(id, product?.bidding?.price, uniqueOrderId)
-        .then((res) => {
-          // setUrl(res.data.data?.paymentUrl)
-          window.location.href = res.data.data?.paymentUrl
-        })
-        .catch((err) => console.error(err));
+  // const handlePayment = (id) => {
+  //   const uniqueOrderId = `order_${id}_${Date.now()}`;
+  //   const product = Array.isArray(productsOfBuyer) && productsOfBuyer.length > 0
+  //     ? productsOfBuyer.find(product => product.item_id === id)
+  //     : null; console.log(productsOfBuyer);
+  //   if (product?.bidding?.price) {
+  //     checkout(id, product?.bidding?.price, uniqueOrderId)
+  //       .then((res) => {
+  //         // setUrl(res.data.data?.paymentUrl)
+  //         window.location.href = res.data.data?.paymentUrl
+  //       })
+  //       .catch((err) => console.error(err));
+  //   }
+  // }
+  const handlePayment = async (id) => {
+    console.log("🔍 Đang gửi yêu cầu thanh toán cho productId:", id);
+
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/api/stripe/create-checkout-session/${id}`,
+        {},
+        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+      );
+
+      if (response.data.url) {
+        window.location.href = response.data.url; // Chuyển đến trang thanh toán Stripe
+      } else {
+        console.error("❌ Không lấy được URL thanh toán từ API");
+      }
+    } catch (error) {
+      console.error("❌ Lỗi khi tạo session Stripe:", error);
     }
-  }
+  };
+
+
 
   // add product
 
@@ -335,9 +358,14 @@ const ManagerPost = () => {
                               </td>
                               <td className="px-0 py-5">
                                 <div className="w-[100px] h-[40px] bg-green border rounded-md flex justify-center items-center">
-                                  <button onClick={() => handlePayment(product.item_id)} type="button" className="font-medium text-white">
-                                    {product.paid === false ? "Payment" : "Paid"}
+                                  <button onClick={() => handlePayment(product.item_id)} type="button"
+                                    className={`font-medium px-4 py-2 rounded ${product.paid ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 text-white"}`}
+                                    disabled={product.paid}>
+                                    {product.paid ? "Paid" : "Pay with Stripe 💳"}
                                   </button>
+
+
+
                                 </div>
                               </td>
                             </tr>
@@ -382,14 +410,14 @@ const ManagerPost = () => {
             {clickMenu === 2 && visibleCountIsCheck < isCheck.length && (
               <div className="text-center mt-4 pb-1">
                 <button onClick={handleShowMoreisCheck} className="px-4 py-0 bg-blue-500 text-white rounded-md">
-                View More
+                  View More
                 </button>
               </div>
             )}
             {clickMenu === 2 && visibleCountIsCheck > 5 && (
               <div className="text-center mt-4 pb-1">
                 <button onClick={handleShowLessIsCheck} className="px-4 py-0 bg-red-500 text-white rounded-md">
-                Show Less
+                  Show Less
                 </button>
               </div>
             )}
@@ -405,7 +433,7 @@ const ManagerPost = () => {
             {clickMenu === 0 && visibleCountIsActive > 5 && (
               <div className="text-center mt-4 pb-1">
                 <button onClick={handleShowLessIsActive} className="px-4 py-0 bg-red-500 text-white rounded-md">
-                Show Less
+                  Show Less
                 </button>
               </div>
             )}
