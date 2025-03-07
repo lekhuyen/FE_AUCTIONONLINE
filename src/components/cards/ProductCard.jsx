@@ -25,25 +25,35 @@ export const ProductCard = ({ item }) => {
 
   // ✅ Xử lý yêu thích sản phẩm
   const handleFavorite = async () => {
+    console.log("📌 Bắt đầu xử lý yêu thích:", { userId, item });
+
     if (!userId) {
       alert("Vui lòng đăng nhập để lưu sản phẩm vào danh sách yêu thích!");
       return;
     }
 
-    if (isFavorite) {
-      const response = await removeFavoriteItem(userId, item.item_id);
-      if (response) {
-        setIsFavorite(false);
-        alert("Đã hủy yêu thích sản phẩm!");
+    try {
+      let response;
+      if (isFavorite) {
+        response = await removeFavoriteItem(userId, item.item_id);
+        if (response) {
+          setIsFavorite(false);
+          alert("Đã hủy yêu thích sản phẩm!");
+        }
+      } else {
+        response = await addFavoriteItem(userId, item.item_id);
+        if (response) {
+          setIsFavorite(true);
+          alert("Sản phẩm đã được thêm vào yêu thích!");
+        }
       }
-    } else {
-      const response = await addFavoriteItem(userId, item.item_id);
-      if (response) {
-        setIsFavorite(true);
-        alert("Sản phẩm đã được thêm vào yêu thích!");
-      }
+      console.log("📌 API Response:", response);
+    } catch (error) {
+      console.error("❌ Lỗi khi gọi API yêu thích:", error);
     }
   };
+
+
 
   useEffect(() => {
     if (item?.start_date) {

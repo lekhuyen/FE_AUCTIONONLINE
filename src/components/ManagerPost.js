@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import axios from "axios";
 // import MyFavorites from "./MyFavorites";
+import MyFavorites from "../MyFavorites";
 
 import { CiEdit } from 'react-icons/ci';
 import { PiPlus } from "react-icons/pi";
@@ -54,7 +55,7 @@ const ManagerPost = () => {
     { name: 'Pending' },
     { name: 'Opending' },
     { name: 'Sold' },
-    // { name: 'Sold' }
+    { name: 'My Favorites' }
   ]
   const [isLogin] = useState(localStorage.getItem('isIntrospect') || false)
   useEffect(() => {
@@ -124,14 +125,14 @@ const ManagerPost = () => {
   const handlePayment = (id) => {
     const uniqueOrderId = `order_${id}_${Date.now()}`;
     const product = productsOfBuyer?.find(product => product.item_id === id);
-  
+
     if (product?.bidding?.price) {
       // Lưu thông tin thanh toán
       localStorage.setItem("paymentInfo", JSON.stringify({
         productName: product.name,
         amount: product.bidding.price,
       }));
-  
+
       checkout(id, product?.bidding?.price, uniqueOrderId)
         .then((res) => {
           if (res.data.data?.paymentUrl) {
@@ -147,8 +148,8 @@ const ManagerPost = () => {
         });
     }
   };
-  
-  
+
+
   // const handlePayment = async (id) => {
   //   console.log("🔍 Đang gửi yêu cầu thanh toán cho productId:", id);
 
@@ -374,7 +375,7 @@ const ManagerPost = () => {
                               </td>
                               <td className="px-0 py-5">
                                 <div className="w-[100px] h-[40px] bg-green border rounded-md flex justify-center items-center">
-                                  
+
                                   <button onClick={() => handlePayment(product.item_id)} type="button"
                                     className={`font-medium px-4 py-2 rounded ${product.paid ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 text-white"}`}
                                     disabled={product.paid}>
@@ -407,6 +408,7 @@ const ManagerPost = () => {
                   </div>
                 ))
               }
+
               {clickMenu === 4 && visibleCountIsActive < isActive.length && (
                 <div className="text-center mt-4 pb-1">
                   <button onClick={handleShowMoreisActive} className="px-4 py-0 bg-blue-500 text-white rounded-md">
@@ -421,6 +423,7 @@ const ManagerPost = () => {
                   </button>
                 </div>
               )}
+          
             </div>
 
             {/* cho duyet */}
@@ -454,6 +457,9 @@ const ManagerPost = () => {
                 </button>
               </div>
             )}
+                {
+                clickMenu === 5 && <MyFavorites /> // ✅ Hiển thị MyFavorites khi click vào "My Favorites"
+              }
           </>
         )
       }

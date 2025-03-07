@@ -13,11 +13,13 @@ const ProfilePage = () => {
   useEffect(() => {
     axios.get("http://localhost:8080/api/stripe/balance", {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+      
     })
-      .then(response => setBalance(response.data))
+      .then(response => { setBalance(response.data)
+        console.log(response  );
+      })
       .catch(error => console.error("❌ Lỗi khi lấy số dư:", error));
   }, []);
-  
 
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -111,18 +113,25 @@ const ProfilePage = () => {
             <p>📍 Address: {userInfo?.address}</p>
             <p>📩 Email: {userInfo?.email}</p>
             <p>📞 Phone: {userInfo?.phone}</p>
+   
+
             <p className="mt-3 text-xl font-bold">
               {userInfo?.money?.toLocaleString("vi-VN")} VNĐ
             </p>
-            <div>
-              <h2>Số dư tài khoản</h2>
+            <div className="container mx-auto mt-10 p-6">
+              <h2 className="text-2xl font-bold mb-4">Số dư tài khoản</h2>
               {balance ? (
-                <p><strong>${balance.available[0].amount / 100}</strong> USD</p>
+                <p className="text-lg"><strong>${balance.available[0].amount / 100}</strong> USD</p>
               ) : (
                 <p>Đang tải...</p>
               )}
             </div>
-
+            {/* <a href="/favorites" isActive={location.pathname === "/favorites"} className={className}>
+            <span>
+              <IoIosHeartEmpty size={22} />
+            </span>
+            <span>My Favorites</span>
+          </a> */}
           </div>
 
           {/* Hộp hồ sơ xin việc */}
