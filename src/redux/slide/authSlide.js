@@ -77,10 +77,10 @@ export const authSlide = createSlice({
       state.isLoggedIn = false;
       state.message = "";
     },
-    logout(state) {
-      localStorage.removeItem("token");
-      state.isLoggedIn = false;
-    }
+    // logout(state) {
+    //   localStorage.removeItem("token");
+    //   state.isLoggedIn = false;
+    // }
   },
   extraReducers: (builder) => {
 

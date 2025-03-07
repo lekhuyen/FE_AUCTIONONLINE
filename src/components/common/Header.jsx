@@ -44,8 +44,9 @@ export const Header = () => {
   const [notificationProductLenght, setNotificationProductLenght] = useState([])
   const [notificationAdminLenght, setNotificationAdminLenght] = useState([])
 
-
   const { isLoggedIn, token } = useSelector(state => state.auth)
+
+  const [userEmail, setUserEmail] = useState('')
 
 
   const menuRef = useRef(null);
@@ -93,6 +94,7 @@ export const Header = () => {
     if (token) {
       try {
         const tokenInfo = jwtDecode(token)
+        setUserEmail(tokenInfo.email)
         setUserId(tokenInfo.userid)
         setCurrentUser(tokenInfo)
       } catch (error) {
@@ -372,7 +374,7 @@ export const Header = () => {
                   </CustomNavLink>
                 )} */}
                 {
-                  isLoggedIn && (
+                  isLoggedIn && userEmail !== "admin@gmail.com" && (
                     <CustomNavLink href="/chat" className={`${isScrolled || !isHomePage ? "text-black" : "text-white"}`}>
                       <MdOutlineMessage />
                     </CustomNavLink>
@@ -380,7 +382,7 @@ export const Header = () => {
                 }
                 {/* quan ly sp cua user */}
                 {
-                  isLoggedIn && (
+                  isLoggedIn && userEmail !== "admin@gmail.com" && (
                     <CustomNavLink href="/profile-page" className={`${isScrolled || !isHomePage ? "text-black" : "text-white"}`} >
                       <FaRegListAlt />
                     </CustomNavLink>
@@ -511,7 +513,7 @@ export const Header = () => {
                     setshowNotifiProduct(false)
                     setNotificationsLength([])
                   }} className="relative cursor-pointer">
-                  {isLoggedIn && <IoMdNotificationsOutline size={23} className={`${isScrolled || !isHomePage ? "text-black" : "text-white"}`} />}
+                  {isLoggedIn && userEmail !== "admin@gmail.com" && <IoMdNotificationsOutline size={23} className={`${isScrolled || !isHomePage ? "text-black" : "text-white"}`} />}
                   {
                     notificationsLength?.filter(notification => notification.sellerIsRead === false && notification.sellerId === userId).length > 0 && (
                       <div className="absolute top-[-10px] right-[-10px] w-5 h-5 border rounded-full bg-red-600 
@@ -638,7 +640,7 @@ export const Header = () => {
                 }
 
                 {
-                  isLoggedIn && (
+                  isLoggedIn && userEmail === "admin@gmail.com" && (
                     <CustomNavLink href="/dashboard">
                       <ProfileCard>
                         <img src={User1} alt="" className="w-full h-full object-cover" />
