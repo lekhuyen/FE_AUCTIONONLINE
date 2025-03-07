@@ -45,12 +45,12 @@ export const validateForm = (data, setInvalidFields) => {
           setInvalidFields(prev => [...prev, { name: arr[0], message: 'Starting price must be greater than 0' }])
         }
         break;
-      case "bid_step":
-        if (arr[1] <= 0) {
-          invalid++
-          setInvalidFields(prev => [...prev, { name: arr[0], message: 'Bid step must be greater than 0' }])
-        }
-        break;
+      // case "bid_step":
+      //   if (arr[1] <= 0) {
+      //     invalid++
+      //     setInvalidFields(prev => [...prev, { name: arr[0], message: 'Bid step must be greater than 0' }])
+      //   }
+      //   break;
 
       default:
         break;
