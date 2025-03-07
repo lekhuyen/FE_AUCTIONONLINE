@@ -63,6 +63,8 @@ import ProductSalesPage from "./ProductSalesPage.jsx";
 import StripeCheckoutButton from "./StripeCheckoutButton.js";
 import Paymentfaild from "./components/Paymentfaild.js";
 
+
+
 function App() {
   const navigate = useNavigate()
   const dispatch = useDispatch()

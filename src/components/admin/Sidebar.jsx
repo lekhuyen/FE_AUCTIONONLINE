@@ -74,12 +74,12 @@ export const Sidebar = () => {
           </CustomNavLink>
           {(role === "seller" || role === "admin") && (
             <>
-              <CustomNavLink href="/product" isActive={location.pathname === "/product"} className={className}>
+              {/* <CustomNavLink href="/product" isActive={location.pathname === "/product"} className={className}>
                 <span>
                   <MdOutlineCategory size={22} />
                 </span>
                 <span>My Products</span>
-              </CustomNavLink>
+              </CustomNavLink> */}
               <CustomNavLink href="/add" isActive={location.pathname === "/add"} className={className}>
                 <span>
                   <FaPlusCircle size={22} />
@@ -119,12 +119,12 @@ export const Sidebar = () => {
                 </span>
                 <span>Categories</span>
               </CustomNavLink>
-              <CustomNavLink href="/admin/income" isActive={location.pathname === "/admin/income"} className={className}>
-                <span>
+              {/* <CustomNavLink href="/admin/income" isActive={location.pathname === "/admin/income"} className={className}> */}
+                {/* <span>
                   <TbCurrencyDollar size={22} />
                 </span>
-                <span>Income</span>
-              </CustomNavLink>
+                <span>Income</span> */}
+              {/* </CustomNavLink> */}
 
               <CustomNavLink href="/admin-contact" isActive={location.pathname === "/admin-contact"} className={className}>
                 <span>
@@ -144,19 +144,20 @@ export const Sidebar = () => {
           )}
 
           <CustomNavLink href="/winning-products" isActive={location.pathname === "/winning-products"} className={className}>
-            <span>
+            {/* <span>
               <RiAuctionLine size={22} />
             </span>
-            <span>Winning Bids</span>
+            <span>Winning Bids</span> */}
           </CustomNavLink>
           <CustomNavLink href="/favorites" isActive={location.pathname === "/favorites"} className={className}>
-            <span>
+            {/* <span>
               <IoIosHeartEmpty size={22} />
             </span>
-            <span>My Favorites</span>
+            <span>My Favorites</span> */}
           </CustomNavLink>
 
           <CustomNavLink href="/thongke" isActive={location.pathname === "/thongke"} className={className}>
+
             <span>
               <IoBarChartOutline size={22} />
             </span>
@@ -165,11 +166,21 @@ export const Sidebar = () => {
 
 
 
+//           <CustomNavLink href="/profile" isActive={location.pathname === "/profile"} className={className}>
+
+//             <span>
+//               <IoBarChartOutline size={22} />
+//             </span>
+//             <span>Thống kê</span>
+//           </CustomNavLink>
+
+
+
           <CustomNavLink href="/profile" isActive={location.pathname === "/profile"} className={className}>
-            <span>
+            {/* <span>
               <IoSettingsOutline size={22} />
             </span>
-            <span>Personal Profile</span>
+            <span>Personal Profile</span> */}
           </CustomNavLink>
           {
             isLogin &&

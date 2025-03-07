@@ -41,6 +41,11 @@ export const Register = () => {
   const [wardName, setWardName] = useState("");
   const [addressDetail, setAddressDetail] = useState("");
 
+  //Term
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [showTerms, setShowTerms] = useState(false); // Track whether terms are shown
+
+  const [showModal, setShowModal] = useState(false); // State for showing Terms modal
 
 
   const handleInputChange = e => {
@@ -60,6 +65,10 @@ export const Register = () => {
     if (password !== confirmPassword) {
       return toast.error('Password does not match')
     }
+
+    if (!agreedToTerms) {
+      return toast.error("You must agree to the Terms and Conditions!");
+    }
     const address = removeVietnameseAccents(addressDetail)
 
     const userData = { name, email, password, address, phone }
@@ -68,7 +77,41 @@ export const Register = () => {
 
   }
 
+  const handleTermsToggle = () => {
+    setShowModal(!showModal);
+  };
 
+  const handleCheckboxChange = (e) => {
+    e.preventDefault(); // Prevent any default behavior
+    setAgreedToTerms(e.target.checked);
+  };
+
+  const TermsAndConditionsModal = () => (
+      <div className="modal-overlay">
+        <div className="modal-content">
+          <header>
+            <button onClick={handleTermsToggle} className="close-btn">×</button>
+            <h1>Terms & Conditions</h1>
+          </header>
+          <div className="modal-body">
+            <TermsAndConditionsPage /> {/* This should show the full terms */}
+
+            {/* Checkbox inside modal */}
+            <div className="py-2 flex items-center">
+              <input
+                  type="checkbox"
+                  checked={agreedToTerms}
+                  onChange={handleCheckboxChange}
+              />
+              <span className="ml-2">I agree to the Terms & Conditions</span>
+            </div>
+          </div>
+          <footer>
+            <button onClick={handleTermsToggle}>Close</button>
+          </footer>
+        </div>
+      </div>
+  );
 
   useEffect(() => {
     if (isRegister) {
@@ -83,6 +126,20 @@ export const Register = () => {
       dispatch(RESET())
     }
   }, [dispatch, isRegister, isError, message, navigate])
+
+  useEffect(() => {
+    if (showTerms) {
+      // Lock scroll when the modal is open
+      document.body.style.overflow = 'hidden';
+    } else {
+      // Re-enable scroll when the modal is closed
+      document.body.style.overflow = 'auto';
+    }
+
+    return () => {
+      document.body.style.overflow = 'auto'; // Reset to default when the component is unmounted
+    };
+  }, [showTerms]);
 
   // Lấy danh sách tỉnh/thành
   useEffect(() => {
@@ -202,54 +259,56 @@ export const Register = () => {
           </div>
           <div className="py-2">
             <Caption className="mb-2">Username *</Caption>
-            <input type="text" name="name" value={name} onChange={handleInputChange} className={commonClassNameOfInput} placeholder="First Name" />
+            <input type="text" name="name" value={name} onChange={handleInputChange} className={commonClassNameOfInput}
+                   placeholder="First Name"/>
           </div>
           <div className="py-2">
             <Caption className="mb-2">Enter Your Email *</Caption>
-            <input type="email" name="email" value={email} onChange={handleInputChange} className={commonClassNameOfInput} placeholder="Enter Your Email" />
+            <input type="email" name="email" value={email} onChange={handleInputChange}
+                   className={commonClassNameOfInput} placeholder="Enter Your Email"/>
           </div>
           <div className="py-2 font-[500] text-gray_100">
             <label>Province/City:</label>
             <select
-              value={selectedProvince}
-              onChange={handleProvinceChange}
-              className={clsx(commonClassNameOfInput)}
+                value={selectedProvince}
+                onChange={handleProvinceChange}
+                className={clsx(commonClassNameOfInput)}
             >
               <option value="">-- Select province/city--</option>
               {provinces.map(province => (
-                <option key={province.code} value={province.code}>
-                  {province.name}
-                </option>
+                  <option key={province.code} value={province.code}>
+                    {province.name}
+                  </option>
               ))}
             </select>
 
             <label>District:</label>
             <select
-              value={selectedDistrict}
-              onChange={handleDistrictChange}
-              disabled={!selectedProvince}
-              className={clsx(commonClassNameOfInput)}
+                value={selectedDistrict}
+                onChange={handleDistrictChange}
+                disabled={!selectedProvince}
+                className={clsx(commonClassNameOfInput)}
             >
               <option value="">-- Select District --</option>
               {districts.map(district => (
-                <option key={district.code} value={district.code}>
-                  {district.name}
-                </option>
+                  <option key={district.code} value={district.code}>
+                    {district.name}
+                  </option>
               ))}
             </select>
 
             <label>Commune/Ward:</label>
             <select
-              value={selectedWard}
-              onChange={handleWardChange}
-              disabled={!selectedDistrict}
-              className={clsx(commonClassNameOfInput)}
+                value={selectedWard}
+                onChange={handleWardChange}
+                disabled={!selectedDistrict}
+                className={clsx(commonClassNameOfInput)}
             >
               <option value="">-- Select Commune/Ward --</option>
               {wards.map(ward => (
-                <option key={ward.code} value={ward.code}>
-                  {ward.name}
-                </option>
+                  <option key={ward.code} value={ward.code}>
+                    {ward.name}
+                  </option>
               ))}
             </select>
 
@@ -258,32 +317,46 @@ export const Register = () => {
           <div className="py-2">
             <Caption className="mb-2">Address Detail</Caption>
             <textarea
-              name="address"
-              value={addressDetail}
-              onChange={handleAddressChange}
-              className={commonClassNameOfInput}
-              placeholder="Enter detailed address (house number, street...)"
+                name="address"
+                value={addressDetail}
+                onChange={handleAddressChange}
+                className={commonClassNameOfInput}
+                placeholder="Enter detailed address (house number, street...)"
             />
           </div>
 
 
           <div>
             <Caption className="mb-2">Number Phone *</Caption>
-            <input type="number" name="phone" value={phone} onChange={handleInputChange} className={commonClassNameOfInput} placeholder="Enter Your Password" />
+            <input type="number" name="phone" value={phone} onChange={handleInputChange}
+                   className={commonClassNameOfInput} placeholder="Enter Your Password"/>
           </div>
           <div>
             <Caption className="mb-2">Password *</Caption>
-            <input type="password" name="password" value={password} onChange={handleInputChange} className={commonClassNameOfInput} placeholder="Enter Your Password" />
+            <input type="password" name="password" value={password} onChange={handleInputChange}
+                   className={commonClassNameOfInput} placeholder="Enter Your Password"/>
           </div>
           <div>
             <Caption className="mb-2">Confirm Password *</Caption>
-            <input type="password" name="confirmPassword" value={confirmPassword} onChange={handleInputChange} className={commonClassNameOfInput} placeholder="Confirm password" />
+            <input type="password" name="confirmPassword" value={confirmPassword} onChange={handleInputChange}
+                   className={commonClassNameOfInput} placeholder="Confirm password"/>
           </div>
-          <div className="flex items-center gap-2 py-4">
-            <input type="checkbox" />
-            <Caption>I agree to the Terms & Policy</Caption>
+
+          {/* Link to open Terms Modal */}
+          <div className="py-2 text-center">
+            <button
+                type="button"
+                onClick={handleTermsToggle}
+                className="text-blue-600 hover:underline"
+            >
+              View Terms & Conditions
+            </button>
           </div>
-          <PrimaryButton className="w-full rounded-none my-5">CREATE ACCOUNT</PrimaryButton>
+
+          <PrimaryButton className="w-full rounded-none my-5" disabled={!agreedToTerms}>
+            CREATE ACCOUNT
+          </PrimaryButton>
+
           <div className="text-center border py-4 rounded-lg mt-4">
             <Title>OR SIGN UP WITH</Title>
             <div className="flex items-center justify-center gap-5 mt-5">
@@ -292,18 +365,145 @@ export const Register = () => {
                 <p className="text-sm">SIGNUP WHIT GOOGLE</p>
               </button>
               <button className="flex items-center gap-2 bg-indigo-500 text-white p-3 px-5 rounded-sm">
-                <FaFacebook />
+                <FaFacebook/>
                 <p className="text-sm">SIGN UP WITH FACEBOOK</p>
               </button>
             </div>
           </div>
           <p className="text-center mt-5">
-            By clicking the signup button, you create a Cobiro account, and you agree to Cobiros <span className="text-green underline">Terms & Conditions</span> &
+            By clicking the signup button, you create a Biddora account, and you agree to Biddora <span className="text-green underline">Terms & Conditions</span> &
             <span className="text-green underline"> Privacy Policy </span> .
           </p>
         </form>
         <div className="bg-green w-96 h-96 rounded-full opacity-20 blur-3xl absolute bottom-96 right-0"></div>
+        {showModal && <TermsAndConditionsModal />}
       </section>
+
+      {/* Modal Styles */}
+
+      {/* Modal Styles */}
+      <style jsx>{`
+        .modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: rgba(0, 0, 0, 0.7);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 9999;
+        }
+
+        .modal-content {
+          background-color: white;
+          padding: 20px;
+          border-radius: 8px;
+          width: 80%;
+          max-width: 600px;
+          max-height: 70%;
+          overflow-y: auto;
+        }
+
+        .modal-content header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .modal-content footer {
+          text-align: right;
+          margin-top: 20px;
+        }
+
+        .close-btn {
+          background: none;
+          border: none;
+          font-size: 24px;
+          cursor: pointer;
+        }
+
+        .modal-body {
+          padding: 10px;
+        }
+
+        .modal-body h2 {
+          font-size: 18px;
+          font-weight: bold;
+          margin-top: 20px;
+        }
+
+        .modal-body p {
+          font-size: 16px;
+          margin-top: 10px;
+        }
+      `}</style>
     </>
+  );
+
+};
+
+
+const TermsAndConditionsPage = () => {
+  return (
+      <div style={{fontFamily: 'Arial, sans-serif'}}>
+        <div style={{ padding: '16px' }}>
+          <div>
+            <h2 style={{ fontSize: '24px', fontWeight: 'bold' }}>Terms & Conditions</h2>
+            <p style={{ fontSize: '16px', marginTop: '20px' }}>
+              By using this application, you agree to the terms and conditions set forth in this document.
+              Please read them carefully before using the services provided by us.
+            </p>
+
+            <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginTop: '20px' }}>
+              1. Introduction
+            </h3>
+            <p style={{ fontSize: '16px', marginTop: '10px' }}>
+              By using this application, you agree to the terms and conditions set forth in this document.
+              Please read them carefully before using the services provided by us.
+            </p>
+
+            <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginTop: '20px' }}>
+              2. User Responsibilities
+            </h3>
+            <p style={{ fontSize: '16px', marginTop: '10px' }}>
+              You are responsible for maintaining the confidentiality of your account and password, and for all activities
+              that occur under your account. You agree to notify us immediately of any unauthorized use of your account.
+            </p>
+
+            <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginTop: '20px' }}>
+              3. Privacy Policy
+            </h3>
+            <p style={{ fontSize: '16px', marginTop: '10px' }}>
+              We value your privacy. Your personal information will only be used in accordance with our privacy policy, which
+              is available on our website.
+            </p>
+
+            <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginTop: '20px' }}>
+              4. Limitations of Liability
+            </h3>
+            <p style={{ fontSize: '16px', marginTop: '10px' }}>
+              We are not liable for any damages or losses that result from your use of the application, including but not limited
+              to financial loss, reputational damage, or legal issues.
+            </p>
+
+            <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginTop: '20px' }}>
+              5. Amendments
+            </h3>
+            <p style={{ fontSize: '16px', marginTop: '10px' }}>
+              We reserve the right to amend these terms at any time. Any changes will be effective immediately upon posting on
+              this page. You are responsible for reviewing these terms periodically.
+            </p>
+
+            <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginTop: '20px' }}>
+              6. Contact Us
+            </h3>
+            <p style={{ fontSize: '16px', marginTop: '10px' }}>
+              If you have any questions or concerns about our Terms & Conditions, please contact us at support@example.com.
+            </p>
+          </div>
+        </div>
+      </div>
   );
 };

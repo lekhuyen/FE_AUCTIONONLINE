@@ -13,6 +13,7 @@ const ProfilePage = () => {
   useEffect(() => {
     axios.get("http://localhost:8080/api/stripe/balance", {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+
       
     })
       .then(response => { setBalance(response.data)
@@ -20,6 +21,7 @@ const ProfilePage = () => {
       })
       .catch(error => console.error("❌ Lỗi khi lấy số dư:", error));
   }, []);
+
 
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -85,14 +87,14 @@ const ProfilePage = () => {
           </div>
 
           {/* Các nút */}
-          <div className="mt-4 space-y-3">
+           <div className="mt-4 space-y-3">
             <button className="w-full bg-orange-500 text-white py-2 rounded-lg font-semibold hover:bg-orange-600">
               Share Your Profile
             </button>
             <button className="w-full border py-2 rounded-lg font-semibold hover:bg-gray-100">
               Reset Password
             </button>
-          </div>
+          </div> 
 
           {/* Thông tin khác */}
           <div className="mt-4 text-sm space-y-2 text-gray-600">
@@ -113,7 +115,7 @@ const ProfilePage = () => {
             <p>📍 Address: {userInfo?.address}</p>
             <p>📩 Email: {userInfo?.email}</p>
             <p>📞 Phone: {userInfo?.phone}</p>
-   
+
 
             <p className="mt-3 text-xl font-bold">
               {userInfo?.money?.toLocaleString("vi-VN")} VNĐ
@@ -122,16 +124,12 @@ const ProfilePage = () => {
               <h2 className="text-2xl font-bold mb-4">Số dư tài khoản</h2>
               {balance ? (
                 <p className="text-lg"><strong>${balance.available[0].amount / 100}</strong> USD</p>
+
               ) : (
                 <p>Đang tải...</p>
               )}
             </div>
-            {/* <a href="/favorites" isActive={location.pathname === "/favorites"} className={className}>
-            <span>
-              <IoIosHeartEmpty size={22} />
-            </span>
-            <span>My Favorites</span>
-          </a> */}
+
           </div>
 
           {/* Hộp hồ sơ xin việc */}

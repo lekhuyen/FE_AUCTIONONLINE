@@ -19,7 +19,7 @@ const cx = classNames.bind(styles)
 const Chat = () => {
   const navigate = useNavigate()
   const location = useLocation();
-  const { isCreate, sellerName, room } = location.state || {}
+  const { isCreate, sellerName, room, seller } = location.state || {}
   const endOfMessagesRef = useRef(null)
   // const textareaRef = useRef(null);
   const searchParams = new URLSearchParams(location.search);
@@ -35,6 +35,7 @@ const Chat = () => {
   const [notiMessage, setNotiMessage] = useState([])
   const [notiMessageChat, setNotiMessageChat] = useState(null)
   const [indexChat, setIndexChat] = useState(null)
+  const [product, setProduct] = useState(null)
 
   const [messages, setMessages] = useState([{
     content: "",
@@ -54,6 +55,24 @@ const Chat = () => {
   // const [typing, setTyping] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [userIdInput, setUserIdInput] = useState(null)
+  const [reciverId, setReciverId] = useState('')
+
+
+  const [userName, setUserName] = useState(null)
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      try {
+        const tokenInfo = jwtDecode(token)
+
+        setUserName(tokenInfo.username)
+      } catch (error) {
+        console.error("Error decoding token:", error.message);
+      }
+    }
+  }, [])
+
 
   useEffect(() => {
     // Tính toán và cập nhật notificationQuantities một lần cho tất cả các phòng chat
@@ -204,6 +223,14 @@ const Chat = () => {
     }
   }
 
+
+  useEffect(() => {
+    console.log(product);
+
+    setReciverId(product?.userId === userId ? product?.sellerId : product?.userId)
+  }, [product])
+
+
   useEffect(() => {
     const getMessageOfRoom = async () => {
       try {
@@ -300,16 +327,20 @@ const Chat = () => {
       }
     })
 
+    console.log({ reciverId, seller });
+
 
     if (response) {
       const data = {
         content: response.content,
         roomId: response.roomId,
-        sender: response.senderId,
+        sender: userId,
+        receiver: reciverId ? reciverId : seller,
         imagess: response.images.map((image) => image.toString()),
-        timestamp: response.timestamp
+        timestamp: response.timestamp,
+        senderName: userName
       }
-      // console.log(data);
+      console.log(data);
 
       if (stompClient) {
         stompClient.send('/app/sendMessage', { Authorization: `Bearer ${token}` }, JSON.stringify(data));
@@ -450,7 +481,10 @@ const Chat = () => {
                   const hasSentMessageRecently = messages.some(msg => msg.senderId === userId && msg.roomId === item.roomId);  // Kiểm tra người dùng có gửi tin nhắn chưa
 
                   return (
-                    <div key={index} onClick={() => handleClickUserChat(item, userId !== item?.userId ? item?.sellerName : item?.buyerName, index)}
+                    <div key={index} onClick={() => {
+                      handleClickUserChat(item, userId !== item?.userId ? item?.sellerName : item?.buyerName, index)
+                      setProduct(item)
+                    }}
                       className={cx(`flex justify-between h-[85px] items-center border-b-[1px] cursor-pointer ${indexChat === index ? 'bg-[#33ecbe]' : ''}`)}>
                       <div className="flex items-center">
                         <div className="w-[46px] relative mr-1">
