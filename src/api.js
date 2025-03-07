@@ -18,6 +18,7 @@ export const getFollowersCount = async (auctioneerId) => {
 
 // Follow người bán
 export const followAuctioneer = async (userId, auctioneerId) => {
+
   try {
     const response = await axios.post(
       `${API_BASE_URL}/follow-auctioneer`,
@@ -34,6 +35,7 @@ export const followAuctioneer = async (userId, auctioneerId) => {
     return null;
   }
 };
+
 export const unfollowAuctioneer = async (userId, auctioneerId) => {
   try {
     const response = await axios.delete(
@@ -52,6 +54,7 @@ export const unfollowAuctioneer = async (userId, auctioneerId) => {
   }
 };
 export const getFollowedAuctioneers = async (userId) => {
+
   try {
     const response = await axios.get(
       `http://localhost:8080/api/favorites/get-followed-auctioneers/${userId}`,
@@ -67,6 +70,7 @@ export const getFollowedAuctioneers = async (userId) => {
     return [];
   }
 };
+
 export const checkIfFollowing = async (userId, auctioneerId) => {
   try {
     const response = await axios.get(
@@ -86,14 +90,17 @@ export const checkIfFollowing = async (userId, auctioneerId) => {
 
 // ✅ Thêm sản phẩm vào danh sách yêu thích
 export const addFavoriteItem = async (userId, itemId) => {
+
+  console.log("📌 Gửi request thêm yêu thích:", { userId, itemId });
+
   try {
-    const response = await axios.post(`${API_BASE_URL}/add-favorite-item`, null, {
-      params: { userId, itemId },
-    });
-    return response.data;
+      const response = await axios.post(`http://localhost:8080/api/favorites/add-favorite-item`, 
+          null, { params: { userId, itemId } }
+      );
+      return response.data;
   } catch (error) {
-    console.error("❌ Lỗi khi thêm sản phẩm vào yêu thích:", error);
-    return null;
+      console.error("❌ Lỗi khi thêm sản phẩm yêu thích:", error);
+      throw error;
   }
 };
 
@@ -123,19 +130,15 @@ export const removeFavoriteItem = async (userId, itemId) => {
   }
 };// ✅ Lấy danh sách sản phẩm yêu thích
 export const getFavoriteItems = async (userId) => {
+
+  console.log("📌 Gửi request lấy danh sách yêu thích với userId:", userId);
+
   try {
-    const response = await axios.get(
-      `http://localhost:8080/api/favorites/get-favorite-items/${userId}`,
-      {
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("token"),
-        },
-      }
-    );
-    return response.data;
+      const response = await axios.get(`http://localhost:8080/api/favorites/get-favorite-items/${userId}`);
+      return response.data;
   } catch (error) {
-    console.error("❌ Lỗi khi lấy danh sách sản phẩm yêu thích:", error);
-    return [];
+      console.error("❌ Lỗi khi lấy danh sách sản phẩm yêu thích:", error);
+      throw error;
   }
 };
 

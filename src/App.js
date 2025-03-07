@@ -33,6 +33,7 @@ import {
   AdminAboutUs, BlogPage, BlogDetail, AdminBlog, AdminBlogDetail, AdminBlogAdd,
 
 } from "./router/index.js";
+
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { introspect, logout } from "./redux/slide/authSlide.js";
@@ -60,6 +61,9 @@ import CreateRoom from "./components/videocall/CreateRoom.js";
 import MyFavorites from "./MyFavorites.jsx";
 import ProductSalesPage from "./ProductSalesPage.jsx";
 import StripeCheckoutButton from "./StripeCheckoutButton.js";
+import Paymentfaild from "./components/Paymentfaild.js";
+
+
 
 function App() {
   const navigate = useNavigate()
@@ -411,7 +415,14 @@ function App() {
             </Layout>
           }
         />
-
+              <Route
+          path="/payment-failed"
+          element={
+            <Layout>
+              <Paymentfaild />
+            </Layout>
+          }
+        />
         <Route
           path="/about"
           element={

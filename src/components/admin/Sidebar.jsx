@@ -157,11 +157,22 @@ export const Sidebar = () => {
           </CustomNavLink>
 
           <CustomNavLink href="/thongke" isActive={location.pathname === "/thongke"} className={className}>
+
             <span>
               <IoBarChartOutline size={22} />
             </span>
             <span>Thống kê</span>
           </CustomNavLink>
+
+
+
+//           <CustomNavLink href="/profile" isActive={location.pathname === "/profile"} className={className}>
+
+//             <span>
+//               <IoBarChartOutline size={22} />
+//             </span>
+//             <span>Thống kê</span>
+//           </CustomNavLink>
 
 
 

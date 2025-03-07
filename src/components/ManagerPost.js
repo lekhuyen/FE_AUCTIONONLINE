@@ -1,4 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
+import axios from "axios";
+// import MyFavorites from "./MyFavorites";
+import MyFavorites from "../MyFavorites";
+
 import { CiEdit } from 'react-icons/ci';
 import { PiPlus } from "react-icons/pi";
 import { TiEyeOutline } from 'react-icons/ti';
@@ -46,11 +50,12 @@ const ManagerPost = () => {
 
 
   const listMenu = [
-    { name: 'Opening' },
+    { name: 'Success bidding' },
     { name: 'Expired' },
     { name: 'Pending' },
-    { name: 'Success bidding' },
+    { name: 'Opending' },
     { name: 'Sold' },
+    { name: 'My Favorites' }
   ]
   const [isLogin] = useState(localStorage.getItem('isIntrospect') || false)
   useEffect(() => {
@@ -119,18 +124,53 @@ const ManagerPost = () => {
 
   const handlePayment = (id) => {
     const uniqueOrderId = `order_${id}_${Date.now()}`;
-    const product = Array.isArray(productsOfBuyer) && productsOfBuyer.length > 0
-      ? productsOfBuyer.find(product => product.item_id === id)
-      : null; console.log(productsOfBuyer);
+    const product = productsOfBuyer?.find(product => product.item_id === id);
+
     if (product?.bidding?.price) {
+      // Lưu thông tin thanh toán
+      localStorage.setItem("paymentInfo", JSON.stringify({
+        productName: product.name,
+        amount: product.bidding.price,
+      }));
+
       checkout(id, product?.bidding?.price, uniqueOrderId)
         .then((res) => {
-          // setUrl(res.data.data?.paymentUrl)
-          window.location.href = res.data.data?.paymentUrl
+          if (res.data.data?.paymentUrl) {
+            window.location.href = res.data.data.paymentUrl;
+          } else {
+            // Nếu không có paymentUrl, chuyển hướng đến trang thất bại
+            window.location.href = "/payment-failure";
+          }
         })
-        .catch((err) => console.error(err));
+        .catch(() => {
+          // Nếu có lỗi, chuyển hướng đến trang thất bại
+          window.location.href = "/payment-failure";
+        });
     }
-  }
+  };
+
+
+  // const handlePayment = async (id) => {
+  //   console.log("🔍 Đang gửi yêu cầu thanh toán cho productId:", id);
+
+  //   try {
+  //     const response = await axios.post(
+  //       `http://localhost:8080/api/stripe/create-checkout-session/${id}`,
+  //       {},
+  //       { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+  //     );
+
+  //     if (response.data.url) {
+  //       window.location.href = response.data.url; // Chuyển đến trang thanh toán Stripe
+  //     } else {
+  //       console.error("❌ Không lấy được URL thanh toán từ API");
+  //     }
+  //   } catch (error) {
+  //     console.error("❌ Lỗi khi tạo session Stripe:", error);
+  //   }
+  // };
+
+
 
   // add product
 
@@ -353,7 +393,7 @@ const ManagerPost = () => {
                         )
                       }
                       {
-                        clickMenu === 3 && (
+                        clickMenu === 0 && (
                           productsOfBuyer &&
                           productsOfBuyer?.length > 0 &&
                           productsOfBuyer?.filter(product => product?.buyer?.id === userId)?.map((product) => (
@@ -370,9 +410,15 @@ const ManagerPost = () => {
                               </td>
                               <td className="px-0 py-5">
                                 <div className="w-[100px] h-[40px] bg-green border rounded-md flex justify-center items-center">
-                                  <button onClick={() => handlePayment(product.item_id)} type="button" className="font-medium text-white">
-                                    {product.paid === false ? "Payment" : "Paid"}
+
+                                  <button onClick={() => handlePayment(product.item_id)} type="button"
+                                    className={`font-medium px-4 py-2 rounded ${product.paid ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 text-white"}`}
+                                    disabled={product.paid}>
+                                    {product.paid ? "Paid" : "Pay with Stripe 💳"}
                                   </button>
+
+
+
                                 </div>
                               </td>
                             </tr>
@@ -397,6 +443,7 @@ const ManagerPost = () => {
                   </div>
                 ))
               }
+
               {clickMenu === 4 && visibleCountIsActive < isActive.length && (
                 <div className="text-center mt-4 pb-1">
                   <button onClick={handleShowMoreisActive} className="px-4 py-0 bg-blue-500 text-white rounded-md">
@@ -411,6 +458,7 @@ const ManagerPost = () => {
                   </button>
                 </div>
               )}
+          
             </div>
 
             {/* cho duyet */}
@@ -444,6 +492,9 @@ const ManagerPost = () => {
                 </button>
               </div>
             )}
+                {
+                clickMenu === 5 && <MyFavorites /> // ✅ Hiển thị MyFavorites khi click vào "My Favorites"
+              }
           </>
         )
       }
