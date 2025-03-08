@@ -9,7 +9,7 @@ export const AdminBlog = () => {
     useEffect(() => {
         const fetchBlogs = async () => {
             try {
-                const response = await axios.get('https://be-pjhk4.onrender.com/api/blog');  // Replace with actual API endpoint
+                const response = await axios.get('http://localhost:8080/api/blog');  // Replace with actual API endpoint
                 setBlogs(response.data);  // Set blogs into state
             } catch (error) {
                 setError('Error fetching blog data');
@@ -21,7 +21,7 @@ export const AdminBlog = () => {
 
     const handleDelete = async (id) => {
         try {
-            await axios.delete(`https://be-pjhk4.onrender.com/api/blog/${id}`);  // Adjust the URL based on your backend
+            await axios.delete(`http://localhost:8080/api/blog/${id}`);  // Adjust the URL based on your backend
             setBlogs(blogs.filter((blog) => blog.id !== id));  // Remove deleted blog from state
         } catch (error) {
             setError('Error deleting blog');

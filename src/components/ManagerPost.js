@@ -156,7 +156,7 @@ const ManagerPost = () => {
 
   //   try {
   //     const response = await axios.post(
-  //       `https://be-pjhk4.onrender.com/api/stripe/create-checkout-session/${id}`,
+  //       `http://localhost:8080/api/stripe/create-checkout-session/${id}`,
   //       {},
   //       { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
   //     );

@@ -275,7 +275,7 @@ export const ProductsDetailsPage = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     const socketFactory = () => {
-      return new SockJS('https://be-pjhk4.onrender.com/ws', null, {
+      return new SockJS('http://localhost:8080/ws', null, {
         withCredentials: true,
       });
     };

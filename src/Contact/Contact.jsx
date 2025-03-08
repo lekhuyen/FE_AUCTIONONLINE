@@ -24,8 +24,8 @@ export const Contact = () => {
         const fetchOptions = async () => {
             try {
                 const [countryCodesResponse, interestedInResponse] = await Promise.all([
-                    axios.get('https://be-pjhk4.onrender.com/api/contact/countryCodes'),
-                    axios.get('https://be-pjhk4.onrender.com/api/contact/interestedInOptions')
+                    axios.get('http://localhost:8080/api/contact/countryCodes'),
+                    axios.get('http://localhost:8080/api/contact/interestedInOptions')
                 ]);
 
                 const countryData = countryCodesResponse.data.map((code) => ({
@@ -91,7 +91,7 @@ export const Contact = () => {
         setIsSubmitting(true);
         setFormError('');
         try {
-            const response = await axios.post('https://be-pjhk4.onrender.com/api/contact', formData);
+            const response = await axios.post('http://localhost:8080/api/contact', formData);
             setFormSubmitted(true);
         } catch (error) {
             if (error.response) {

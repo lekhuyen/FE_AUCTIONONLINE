@@ -21,7 +21,7 @@ const VideoChat = () => {
 
   const joinChannel = async () => {
     try {
-      const response = await axios.get("https://be-pjhk4.onrender.com/api/agora/token", {
+      const response = await axios.get("http://localhost:8080/api/agora/token", {
         params: { channelName, uid: Math.floor(Math.random() * 1000) },
       });
 

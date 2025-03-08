@@ -1,13 +1,14 @@
-/* @import url("https://fonts.googleapis.com/css?family=DM+Sans:100,200,300,regular,500,600,700,800,900,100italic,200italic,300italic,italic,500italic,600italic,700italic,800italic,900italic"); */
-/* @tailwind base;
+@import url(https://fonts.googleapis.com/css?family=DM+Sans:100,200,300,regular,500,600,700,800,900,100italic,200italic,300italic,italic,500italic,600italic,700italic,800italic,900italic);
+@tailwind base;
 @tailwind components;
-@tailwind utilities; */
+@tailwind utilities;
 
-/* body {
+body {
   font-family: "DM Sans", sans-serif;
-} */
+  /* background-color: #fafafa; */
+}
 /*    Navbar   */
-/* .menu-container {
+.menu-container {
   background-color: #24262b;
   opacity: 0;
   transform: translateX(-100%);
@@ -24,26 +25,26 @@
   transform: translateX(-100%);
 }
 /* Add the sticky class to make the header sticky */
-/* .header {
+.header {
   position: fixed;
   width: 100%;
   top: 0;
   z-index: 4;
   transition: background-color 0.3s ease;
-} */
+}
 /* Add the animation class when scrolling down */
-/* .header.scrolled {
+.header.scrolled {
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   animation: fadeInDown 0.5s ease;
   z-index: 100;
-} */
+}
 
-/* .active-link {
+.active-link {
   color: #0d775e !important;
-} */
+}
 /* Keyframes for fadeInDown animation */
-/* @keyframes fadeInDown {
+@keyframes fadeInDown {
   from {
     transform: translateY(-50px);
     opacity: 0;
@@ -52,10 +53,10 @@
     transform: translateY(0);
     opacity: 1;
   }
-} */
+}
 
 /* Up Down animation effect  */
-/* .vert-move {
+.vert-move {
   animation: mover 1s infinite alternate ease-in-out;
 }
 .horiz-move {
@@ -78,8 +79,8 @@
   100% {
     transform: translateX(-10px);
   }
-} */
-/* 
+}
+
 .regsiter .content {
   position: relative;
 }
@@ -93,8 +94,8 @@
   background-image: url("../../public/images/common/bg.png");
   background-size: cover;
   background-repeat: no-repeat;
-} */
-/* 
+}
+
 @keyframes float {
   0% {
     transform: translateY(0);
@@ -109,4 +110,4 @@
 
 .floating {
   animation: float 3s ease-in-out infinite;
-} */
+}

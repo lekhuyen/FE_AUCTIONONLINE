@@ -35,7 +35,7 @@ export const AdminBlogAdd = () => {
 
         try {
             setIsSubmitting(true); // Disable form while submitting
-            const response = await axios.post('https://be-pjhk4.onrender.com/api/blog', formData, {
+            const response = await axios.post('http://localhost:8080/api/blog', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

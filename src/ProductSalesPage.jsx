@@ -48,7 +48,7 @@ const ProductSalesPage = () => {
 
   useEffect(() => {
     // Gọi API thống kê số lượt đặt giá
-    axios.get('https://be-pjhk4.onrender.com/api/bidding/statistics')
+    axios.get('http://localhost:8080/api/bidding/statistics')
       .then(response => {
         const data = response.data;
         const labels = Object.keys(data);
@@ -78,7 +78,7 @@ const ProductSalesPage = () => {
       .catch(error => console.error('Lỗi khi lấy dữ liệu:', error));
 
     // Gọi API thống kê tổng số tiền đấu giá thành công
-    axios.get('https://be-pjhk4.onrender.com/api/bidding/successful-bidding')
+    axios.get('http://localhost:8080/api/bidding/successful-bidding')
       .then(response => {
         const data = response.data;
         const labels = Object.keys(data);
@@ -112,7 +112,7 @@ const ProductSalesPage = () => {
 
   useEffect(() => {
     // Gọi API lấy tổng tiền admin nhận được
-    axios.get('https://be-pjhk4.onrender.com/api/bidding/admin-earnings')
+    axios.get('http://localhost:8080/api/bidding/admin-earnings')
       .then(response => {
         setTotalAdminEarnings(response.data.totalAdminEarnings);
       })

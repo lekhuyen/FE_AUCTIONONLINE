@@ -19,7 +19,7 @@ function CreateRoom() {
 
   useEffect(() => {
     const getAllRoom = async () => {
-      const response = await axios.get('https://be-pjhk4.onrender.com/api/room-video-call', {
+      const response = await axios.get('http://localhost:8080/api/room-video-call', {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -59,7 +59,7 @@ function CreateRoom() {
     //   userId, userName
     // }
 
-    // const response = await axios.post('https://be-pjhk4.onrender.com/api/room-video-call', newRoom, {
+    // const response = await axios.post('http://localhost:8080/api/room-video-call', newRoom, {
     //   headers: {
     //     'Content-Type': 'application/json',
     //   },
