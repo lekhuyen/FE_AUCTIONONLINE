@@ -265,7 +265,7 @@ function App() {
 
   return (
     <>
-      {isLoading && <Loading />}
+      {/* {isLoading && <Loading />} */}
       <ToastContainer />
       <ScrollToTop />
       <Routes>
@@ -415,7 +415,7 @@ function App() {
             </Layout>
           }
         />
-              <Route
+        <Route
           path="/payment-failed"
           element={
             <Layout>

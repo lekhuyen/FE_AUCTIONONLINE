@@ -44,8 +44,9 @@ export const Header = () => {
   const [notificationProductLenght, setNotificationProductLenght] = useState([])
   const [notificationAdminLenght, setNotificationAdminLenght] = useState([])
 
-
   const { isLoggedIn, token } = useSelector(state => state.auth)
+
+  const [userEmail, setUserEmail] = useState('')
 
 
   const menuRef = useRef(null);
@@ -93,6 +94,7 @@ export const Header = () => {
     if (token) {
       try {
         const tokenInfo = jwtDecode(token)
+        setUserEmail(tokenInfo.email)
         setUserId(tokenInfo.userid)
         setCurrentUser(tokenInfo)
       } catch (error) {
@@ -372,7 +374,7 @@ export const Header = () => {
                   </CustomNavLink>
                 )} */}
                 {
-                  isLoggedIn && (
+                  isLoggedIn && userEmail !== "admin@gmail.com" && (
                     <CustomNavLink href="/chat" className={`${isScrolled || !isHomePage ? "text-black" : "text-white"}`}>
                       <MdOutlineMessage />
                     </CustomNavLink>
@@ -380,7 +382,7 @@ export const Header = () => {
                 }
                 {/* quan ly sp cua user */}
                 {
-                  isLoggedIn && (
+                  isLoggedIn && userEmail !== "admin@gmail.com" && (
                     <CustomNavLink href="/profile-page" className={`${isScrolled || !isHomePage ? "text-black" : "text-white"}`} >
                       <FaRegListAlt />
                     </CustomNavLink>
@@ -511,7 +513,7 @@ export const Header = () => {
                     setshowNotifiProduct(false)
                     setNotificationsLength([])
                   }} className="relative cursor-pointer">
-                  {isLoggedIn && <IoMdNotificationsOutline size={23} className={`${isScrolled || !isHomePage ? "text-black" : "text-white"}`} />}
+                  {isLoggedIn && userEmail !== "admin@gmail.com" && <IoMdNotificationsOutline size={23} className={`${isScrolled || !isHomePage ? "text-black" : "text-white"}`} />}
                   {
                     notificationsLength?.filter(notification => notification.sellerIsRead === false && notification.sellerId === userId).length > 0 && (
                       <div className="absolute top-[-10px] right-[-10px] w-5 h-5 border rounded-full bg-red-600 
@@ -536,7 +538,7 @@ export const Header = () => {
                   {
                     showNotification && (
                       <div className="absolute w-[360px] top-[33px] right-1 overflow-hidden bg-white shadow-lg rounded-sm p-2">
-                        <div className="w-full"><h3 className="text-[24px]">Thong bao</h3></div>
+                        <div className="w-full"><h3 className="text-[24px]">Notification</h3></div>
                         <div className={clsx(styles.custom_scroll, 'overflow-y-auto max-h-[400px]')}>
                           {userId && notifications?.length > 0 && notifications?.map((notifi, index) => {
                             return (
@@ -636,7 +638,7 @@ export const Header = () => {
                     </CustomNavLink>
                   )
                 }
-
+                {/* && userEmail === "admin@gmail.com" */}
                 {
                   isLoggedIn && (
                     <CustomNavLink href="/dashboard">

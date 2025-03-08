@@ -12,7 +12,7 @@ import {
     TextField,
     Typography
 } from "@mui/material";
-import {DeleteForever, Edit} from "@mui/icons-material";
+import { DeleteForever, Edit } from "@mui/icons-material";
 
 
 

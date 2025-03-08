@@ -264,12 +264,12 @@ export const Contact = () => {
                     <p style={mapStyles.infoText}><strong>Email:</strong> Biddora@gmail.com</p>
                     <div style={mapStyles.socialLinks}>
                         <a href="https://facebook.com" style={mapStyles.socialLink} target="_blank"
-                           rel="noopener noreferrer">
-                            <FiFacebook size={30}/>
+                            rel="noopener noreferrer">
+                            <FiFacebook size={30} />
                         </a>
                         <a href="https://google.com" style={mapStyles.socialLink} target="_blank"
-                           rel="noopener noreferrer">
-                            <FiGlobe size={30}/>
+                            rel="noopener noreferrer">
+                            <FiGlobe size={30} />
                         </a>
                     </div>
                 </div>
