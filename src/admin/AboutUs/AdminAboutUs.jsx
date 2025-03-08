@@ -12,7 +12,7 @@ import {
     TextField,
     Typography
 } from "@mui/material";
-import {DeleteForever, Edit} from "@mui/icons-material";
+import { DeleteForever, Edit } from "@mui/icons-material";
 
 
 
@@ -89,7 +89,7 @@ const AdminAboutUsfirst = () => {
     const [hasChanges, setHasChanges] = useState(false);
 
     useEffect(() => {
-        axios.get('http://localhost:8080/api/aboutus')
+        axios.get('https://be-pjhk4.onrender.com/api/aboutus')
             .then((response) => {
                 if (response.data && response.data.length > 0) {
                     const data = response.data[0];
@@ -137,8 +137,8 @@ const AdminAboutUsfirst = () => {
         }
 
         const url = isEditMode
-            ? `http://localhost:8080/api/aboutus/${aboutUsData.id}`
-            : 'http://localhost:8080/api/aboutus';
+            ? `https://be-pjhk4.onrender.com/api/aboutus/${aboutUsData.id}`
+            : 'https://be-pjhk4.onrender.com/api/aboutus';
 
         const method = isEditMode ? 'put' : 'post';
 
@@ -198,7 +198,7 @@ const AdminAboutUsfirst = () => {
                         />
                         {image1 && typeof image1 === 'string' ? (
                             <img
-                                src={`http://localhost:8080/api/aboutus/AboutUsImages/${image1}`}
+                                src={`https://be-pjhk4.onrender.com/api/aboutus/AboutUsImages/${image1}`}
                                 alt="Image 1 preview"
                                 style={styles.imagePreview}
                             />
@@ -221,7 +221,7 @@ const AdminAboutUsfirst = () => {
                         />
                         {image2 && typeof image2 === 'string' ? (
                             <img
-                                src={`http://localhost:8080/api/aboutus/AboutUsImages/${image2}`}
+                                src={`https://be-pjhk4.onrender.com/api/aboutus/AboutUsImages/${image2}`}
                                 alt="Image 2 preview"
                                 style={styles.imagePreview}
                             />
@@ -266,7 +266,7 @@ const AdminAboutUsCard = () => {
 
     useEffect(() => {
         // Fetch data for the About Us Cards
-        axios.get('http://localhost:8080/api/aboutuscard')
+        axios.get('https://be-pjhk4.onrender.com/api/aboutuscard')
             .then((response) => {
                 setAboutUsCardData(response.data);
             })
@@ -301,8 +301,8 @@ const AdminAboutUsCard = () => {
         }
 
         const url = isEditMode
-            ? `http://localhost:8080/api/aboutuscard/${editingCardId}`
-            : 'http://localhost:8080/api/aboutuscard';
+            ? `https://be-pjhk4.onrender.com/api/aboutuscard/${editingCardId}`
+            : 'https://be-pjhk4.onrender.com/api/aboutuscard';
 
         const method = isEditMode ? 'put' : 'post';
 
@@ -351,7 +351,7 @@ const AdminAboutUsCard = () => {
     };
 
     const handleDelete = () => {
-        axios.delete(`http://localhost:8080/api/aboutuscard/${cardToDelete?.id}`)
+        axios.delete(`https://be-pjhk4.onrender.com/api/aboutuscard/${cardToDelete?.id}`)
             .then(() => {
                 alert("Card deleted successfully!");
                 fetchAboutUsCardData();
@@ -364,7 +364,7 @@ const AdminAboutUsCard = () => {
     };
 
     const fetchAboutUsCardData = () => {
-        axios.get('http://localhost:8080/api/aboutuscard')
+        axios.get('https://be-pjhk4.onrender.com/api/aboutuscard')
             .then((response) => {
                 setAboutUsCardData(response.data);
             })
@@ -412,7 +412,7 @@ const AdminAboutUsCard = () => {
                             <CardMedia
                                 component="img"
                                 height="200"
-                                image={card.aboutCardImage ? `http://localhost:8080/api/aboutuscard/AboutUsImages/${card.aboutCardImage}` : ''}
+                                image={card.aboutCardImage ? `https://be-pjhk4.onrender.com/api/aboutuscard/AboutUsImages/${card.aboutCardImage}` : ''}
                                 alt={card.title}
                                 style={aboutusstyles.cardImage}
                             />
@@ -468,7 +468,7 @@ const AdminAboutUsCard = () => {
                     {initialImage && (
                         <div>
                             <img
-                                src={`http://localhost:8080/api/aboutuscard/AboutUsImages/${initialImage}`}
+                                src={`https://be-pjhk4.onrender.com/api/aboutuscard/AboutUsImages/${initialImage}`}
                                 alt="Current About Us Image"
                                 style={{ width: '100%', height: 'auto', marginBottom: '10px' }}
                             />

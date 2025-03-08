@@ -16,7 +16,7 @@ export const ContactDetailPage = () => {
     useEffect(() => {
         const fetchContactDetails = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/contact/${id}`);
+                const response = await axios.get(`https://be-pjhk4.onrender.com/api/contact/${id}`);
                 console.log('Received Contact:', response.data); // Log the received data
                 setContact(response.data);
                 setLoading(false);
@@ -39,7 +39,7 @@ export const ContactDetailPage = () => {
         };
 
         try {
-            await axios.put(`http://localhost:8080/api/contact/${id}`, updatedContact);
+            await axios.put(`https://be-pjhk4.onrender.com/api/contact/${id}`, updatedContact);
             setContact(updatedContact); // Update the contact with the new reply time and message
             toast.success('Reply sent successfully!'); // Display success toast
             setReplyMessage(''); // Clear the reply message input

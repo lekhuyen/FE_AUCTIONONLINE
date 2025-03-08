@@ -11,7 +11,7 @@ export const BlogDetail = () => {
     useEffect(() => {
         const fetchBlogDetail = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/blog/${id}`); // Adjust the URL based on your backend
+                const response = await axios.get(`https://be-pjhk4.onrender.com/api/blog/${id}`); // Adjust the URL based on your backend
                 setBlog(response.data);  // Set the fetched blog in state
             } catch (error) {
                 setError('Error fetching blog details');
@@ -20,7 +20,7 @@ export const BlogDetail = () => {
 
         const fetchRecentPosts = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/blog');  // Fetch recent blogs
+                const response = await axios.get('https://be-pjhk4.onrender.com/api/blog');  // Fetch recent blogs
                 // Filter out the current blog from recent posts
                 const filteredPosts = response.data.filter(post => post.id !== parseInt(id));
                 setRecentPosts(filteredPosts.slice(0, 5));  // Get the 5 most recent posts, excluding the current one
@@ -57,7 +57,7 @@ export const BlogDetail = () => {
                 {blog.blogImage && (
                     <div style={styles.mainImageContainer}>
                         <img
-                            src={`http://localhost:8080/api/blog/BlogImages/${blog.blogImage.split(',')[0]}`} // First image
+                            src={`https://be-pjhk4.onrender.com/api/blog/BlogImages/${blog.blogImage.split(',')[0]}`} // First image
                             alt="Main Blog Image"
                             style={styles.mainImage}
                         />
@@ -83,7 +83,7 @@ export const BlogDetail = () => {
                                 {blog.blogImage.split(',').slice(1).map((imageName, index) => (
                                     <img
                                         key={index}
-                                        src={`http://localhost:8080/api/blog/BlogImages/${imageName}`}
+                                        src={`https://be-pjhk4.onrender.com/api/blog/BlogImages/${imageName}`}
                                         alt={`Blog Image ${index + 1}`}
                                         style={styles.additionalImage}
                                     />
@@ -104,7 +104,7 @@ export const BlogDetail = () => {
                                 {/* Post Image */}
                                 {post.blogImage && (
                                     <img
-                                        src={`http://localhost:8080/api/blog/BlogImages/${post.blogImage.split(',')[0]}`}
+                                        src={`https://be-pjhk4.onrender.com/api/blog/BlogImages/${post.blogImage.split(',')[0]}`}
                                         alt={`Image for ${post.title}`}
                                         style={styles.recentPostImage}
                                     />

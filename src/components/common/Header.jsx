@@ -163,7 +163,7 @@ export const Header = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     const socketFactory = () => {
-      return new SockJS('http://localhost:8080/ws', null, {
+      return new SockJS('https://be-pjhk4.onrender.com/ws', null, {
         withCredentials: true,
         timeout: 5000,
       });
@@ -638,9 +638,9 @@ export const Header = () => {
                     </CustomNavLink>
                   )
                 }
-
+                {/* && userEmail === "admin@gmail.com" */}
                 {
-                  isLoggedIn && userEmail === "admin@gmail.com" && (
+                  isLoggedIn && (
                     <CustomNavLink href="/dashboard">
                       <ProfileCard>
                         <img src={User1} alt="" className="w-full h-full object-cover" />

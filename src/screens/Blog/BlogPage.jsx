@@ -15,7 +15,7 @@ export const BlogPage = () => {
     // Fetching all blogs from the backend
     const fetchBlogs = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/blog'); // Adjust URL based on backend
+            const response = await axios.get('https://be-pjhk4.onrender.com/api/blog'); // Adjust URL based on backend
             setBlogs(response.data);
             setFilteredBlogs(response.data); // Initially no filter, show all blogs
             setTotalPages(Math.ceil(response.data.length / blogsPerPage)); // Calculate total pages
@@ -179,7 +179,7 @@ export const BlogPage = () => {
                             <div style={styles.blogImageContainer}>
                                 {/* Split the blogImage string into an array and get the first image */}
                                 <img
-                                    src={`http://localhost:8080/api/blog/BlogImages/${blog.blogImage.split(',')[0]}`} // Get the first image from the list
+                                    src={`https://be-pjhk4.onrender.com/api/blog/BlogImages/${blog.blogImage.split(',')[0]}`} // Get the first image from the list
                                     alt={blog.title}
                                     style={styles.blogImage}
                                 />

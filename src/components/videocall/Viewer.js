@@ -98,7 +98,7 @@ const Viewer = ({ username, roomId, isCreator }) => {
     const maxWsRetries = 5;
 
     const connectWebSocket = () => {
-      ws.current = new WebSocket(`ws://localhost:8080/signaling?roomId=${roomId}&username=${username}&isCreator=${isCreator}`);
+      ws.current = new WebSocket(`wss://be-pjhk4.onrender.com/signaling?roomId=${roomId}&username=${username}&isCreator=${isCreator}`);
 
       const setupWebSocket = () => {
         const initiateConnection = (peerId) => {

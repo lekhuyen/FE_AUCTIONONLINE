@@ -67,9 +67,9 @@ export const Login = () => {
 
   return (
     <>
-      <section className="regsiter pt-16 relative">
+      <section className=" pt-16 relative">
         <div className="bg-green w-96 h-96 rounded-full opacity-20 blur-3xl absolute top-2/3"></div>
-        <div className="bg-[#241C37] pt-8 h-[40vh] relative content">
+        <div className="bg-[#241C37] pt-8 h-[40vh] relative">
           <Container>
             <div>
               <Title level={3} className="text-white">

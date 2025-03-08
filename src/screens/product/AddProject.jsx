@@ -90,7 +90,7 @@ export const AddProduct = () => {
 
   const fetchUploadedFile = async (auctionItemId) => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/files/auctionItem/${auctionItemId}`, {
+      const response = await axios.get(`https://be-pjhk4.onrender.com/api/files/auctionItem/${auctionItemId}`, {
         responseType: 'blob' // Important for handling PDF files
       });
 

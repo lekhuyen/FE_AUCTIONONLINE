@@ -9,7 +9,7 @@ export const AdminBlog = () => {
     useEffect(() => {
         const fetchBlogs = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/blog');  // Replace with actual API endpoint
+                const response = await axios.get('https://be-pjhk4.onrender.com/api/blog');  // Replace with actual API endpoint
                 setBlogs(response.data);  // Set blogs into state
             } catch (error) {
                 setError('Error fetching blog data');
@@ -21,7 +21,7 @@ export const AdminBlog = () => {
 
     const handleDelete = async (id) => {
         try {
-            await axios.delete(`http://localhost:8080/api/blog/${id}`);  // Adjust the URL based on your backend
+            await axios.delete(`https://be-pjhk4.onrender.com/api/blog/${id}`);  // Adjust the URL based on your backend
             setBlogs(blogs.filter((blog) => blog.id !== id));  // Remove deleted blog from state
         } catch (error) {
             setError('Error deleting blog');
@@ -44,37 +44,37 @@ export const AdminBlog = () => {
             {/* Blog Table */}
             <table style={styles.table}>
                 <thead>
-                <tr>
-                    <th style={styles.tableHeader}>ID</th>
-                    <th style={styles.tableHeader}>Title</th>
-                    <th style={styles.tableHeader}>Author</th>
-                    <th style={styles.tableHeader}>Blog Date</th>
-                    <th style={styles.tableHeader}>Actions</th>
-                </tr>
+                    <tr>
+                        <th style={styles.tableHeader}>ID</th>
+                        <th style={styles.tableHeader}>Title</th>
+                        <th style={styles.tableHeader}>Author</th>
+                        <th style={styles.tableHeader}>Blog Date</th>
+                        <th style={styles.tableHeader}>Actions</th>
+                    </tr>
                 </thead>
                 <tbody>
-                {blogs.map((blog, index) => (
-                    <tr key={blog.id} style={index % 2 === 0 ? styles.evenRow : styles.oddRow}>
-                        <td style={styles.tableCell}>{blog.id}</td>
-                        <td style={styles.tableCell}>{blog.title}</td>
-                        <td style={styles.tableCell}>{blog.author}</td>
-                        <td style={styles.tableCell}>{new Date(blog.blogDate).toLocaleDateString()}</td>
-                        <td style={styles.tableCell}>
-                            {/* Detail Button */}
-                            <Link to={`/admin-blog/detail/${blog.id}`} style={styles.button}>
-                                Detail
-                            </Link>
+                    {blogs.map((blog, index) => (
+                        <tr key={blog.id} style={index % 2 === 0 ? styles.evenRow : styles.oddRow}>
+                            <td style={styles.tableCell}>{blog.id}</td>
+                            <td style={styles.tableCell}>{blog.title}</td>
+                            <td style={styles.tableCell}>{blog.author}</td>
+                            <td style={styles.tableCell}>{new Date(blog.blogDate).toLocaleDateString()}</td>
+                            <td style={styles.tableCell}>
+                                {/* Detail Button */}
+                                <Link to={`/admin-blog/detail/${blog.id}`} style={styles.button}>
+                                    Detail
+                                </Link>
 
-                            {/* Delete Button */}
-                            <button
-                                onClick={() => handleDelete(blog.id)}
-                                style={styles.deleteButton}
-                            >
-                                Delete
-                            </button>
-                        </td>
-                    </tr>
-                ))}
+                                {/* Delete Button */}
+                                <button
+                                    onClick={() => handleDelete(blog.id)}
+                                    style={styles.deleteButton}
+                                >
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
         </div>

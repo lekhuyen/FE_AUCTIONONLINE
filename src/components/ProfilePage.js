@@ -11,7 +11,7 @@ const ProfilePage = () => {
   const [balance, setBalance] = useState(null);
 
   // useEffect(() => {
-  //   axios.get("http://localhost:8080/api/stripe/balance", {
+  //   axios.get("https://be-pjhk4.onrender.com/api/stripe/balance", {
   //     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
 
 
@@ -38,7 +38,7 @@ const ProfilePage = () => {
 
   useEffect(() => {
     const getuserById = (userId) => {
-      axios.get(`http://localhost:8080/api/users/${userId}`)
+      axios.get(`https://be-pjhk4.onrender.com/api/users/${userId}`)
         .then((response) => {
           setUserInfo(response);
         })

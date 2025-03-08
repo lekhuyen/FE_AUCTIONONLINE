@@ -8,7 +8,7 @@ const StripeCheckoutButton = ({ productId }) => {
   const handleCheckout = async () => {
     try {
       // Gọi API backend để tạo session thanh toán cho sản phẩm dựa trên productId
-      const response = await axios.post(`http://localhost:8080/api/stripe/create-checkout-session/${productId}`);
+      const response = await axios.post(`https://be-pjhk4.onrender.com/api/stripe/create-checkout-session/${productId}`);
 
       // Chuyển hướng đến trang thanh toán Stripe
       window.location.href = response.data.url;

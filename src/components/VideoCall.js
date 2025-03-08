@@ -16,7 +16,7 @@ const VideoCall = () => {
   useEffect(() => {
     // Lấy token từ backend
     const tokens = localStorage.getItem('token')
-    fetch(`http://localhost:8080/api/video-call/join?channelName=${channelName}&uid=${uid}`, {
+    fetch(`https://be-pjhk4.onrender.com/api/video-call/join?channelName=${channelName}&uid=${uid}`, {
       method: 'GET', // or 'POST' if needed
       headers: {
         'Content-Type': 'application/json',

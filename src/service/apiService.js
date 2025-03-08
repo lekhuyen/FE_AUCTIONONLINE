@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:8080/api/v1";
+const API_BASE_URL = "https://be-pjhk4.onrender.com/api/v1";
 
 export const checkout = async (id, price, orderId) => {
   console.log({ id, price, orderId });

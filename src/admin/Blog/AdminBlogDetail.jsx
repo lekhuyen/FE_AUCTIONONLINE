@@ -12,7 +12,7 @@ export const AdminBlogDetail = () => {
     useEffect(() => {
         const fetchBlogDetail = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/blog/${id}`);
+                const response = await axios.get(`https://be-pjhk4.onrender.com/api/blog/${id}`);
                 setBlog(response.data);
             } catch (error) {
                 setError('Error fetching blog details');
@@ -42,7 +42,7 @@ export const AdminBlogDetail = () => {
         }
 
         try {
-            const response = await axios.put(`http://localhost:8080/api/blog/${id}`, formData, {
+            const response = await axios.put(`https://be-pjhk4.onrender.com/api/blog/${id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -111,7 +111,7 @@ export const AdminBlogDetail = () => {
                             {blog.blogImage.split(',').map((imageName, index) => (
                                 <img
                                     key={index}
-                                    src={`http://localhost:8080/api/blog/BlogImages/${imageName}`}
+                                    src={`https://be-pjhk4.onrender.com/api/blog/BlogImages/${imageName}`}
                                     alt={`Blog Image ${index + 1}`}
                                     style={styles.blogImage}
                                 />

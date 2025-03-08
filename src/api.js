@@ -1,12 +1,12 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:8080/api/favorites"; // Điều chỉnh nếu cần
+const API_BASE_URL = "https://be-pjhk4.onrender.com/api/favorites"; // Điều chỉnh nếu cần
 
 // ✅ API lấy số lượng người theo dõi một nhà bán hàng
 export const getFollowersCount = async (auctioneerId) => {
   try {
     const response = await axios.get(
-      `http://localhost:8080/api/favorites/get-followers-count/${auctioneerId}`
+      `https://be-pjhk4.onrender.com/api/favorites/get-followers-count/${auctioneerId}`
     );
     return response.data; // Trả về số lượng followers
   } catch (error) {
@@ -21,7 +21,7 @@ export const followAuctioneer = async (userId, auctioneerId) => {
   console.log("📌 Gửi request follow:", { userId, auctioneerId });
 
   try {
-    const response = await axios.post(`http://localhost:8080/api/favorites/follow-auctioneer`,
+    const response = await axios.post(`https://be-pjhk4.onrender.com/api/favorites/follow-auctioneer`,
       { userId, auctioneerId }
     );
     return response.data;
@@ -35,7 +35,7 @@ export const followAuctioneer = async (userId, auctioneerId) => {
 export const unfollowAuctioneer = async (userId, auctioneerId) => {
   try {
     const response = await axios.delete(
-      `http://localhost:8080/api/favorites/unfollow-auctioneer`,
+      `https://be-pjhk4.onrender.com/api/favorites/unfollow-auctioneer`,
       {
         params: { userId, auctioneerId },
         headers: {
@@ -54,7 +54,7 @@ export const getFollowedAuctioneers = async (userId) => {
 
   try {
     const response = await axios.get(
-      `http://localhost:8080/api/favorites/get-followed-auctioneers/${userId}`,
+      `https://be-pjhk4.onrender.com/api/favorites/get-followed-auctioneers/${userId}`,
       {
         headers: {
           Authorization: "Bearer " + localStorage.getItem("token"),
@@ -72,7 +72,7 @@ export const getFollowedAuctioneers = async (userId) => {
 export const checkIfFollowing = async (userId, auctioneerId) => {
   try {
     const response = await axios.get(
-      `http://localhost:8080/api/favorites/is-following`,
+      `https://be-pjhk4.onrender.com/api/favorites/is-following`,
       {
         params: { userId, auctioneerId },
         headers: { Authorization: "Bearer " + localStorage.getItem("token") },
@@ -91,7 +91,7 @@ export const addFavoriteItem = async (userId, itemId) => {
   console.log("📌 Gửi request thêm yêu thích:", { userId, itemId });
 
   try {
-    const response = await axios.post(`http://localhost:8080/api/favorites/add-favorite-item`,
+    const response = await axios.post(`https://be-pjhk4.onrender.com/api/favorites/add-favorite-item`,
       null, { params: { userId, itemId } }
     );
     return response.data;
@@ -131,7 +131,7 @@ export const getFavoriteItems = async (userId) => {
   console.log("📌 Gửi request lấy danh sách yêu thích với userId:", userId);
 
   try {
-    const response = await axios.get(`http://localhost:8080/api/favorites/get-favorite-items/${userId}`);
+    const response = await axios.get(`https://be-pjhk4.onrender.com/api/favorites/get-favorite-items/${userId}`);
     return response.data;
   } catch (error) {
     console.error("❌ Lỗi khi lấy danh sách sản phẩm yêu thích:", error);
@@ -144,7 +144,7 @@ export const getFavoriteItems = async (userId) => {
 // ✅ API lấy danh sách bình luận cho sản phẩm
 export const getComments = async (auctioneerId) => {
   try {
-    const response = await axios.get(`http://localhost:8080/api/favorites/get-comments/${auctioneerId}`);
+    const response = await axios.get(`https://be-pjhk4.onrender.com/api/favorites/get-comments/${auctioneerId}`);
     return response.data; // Trả về danh sách bình luận
   } catch (error) {
     console.error("❌ Lỗi khi lấy danh sách bình luận:", error);
@@ -165,7 +165,7 @@ export const addComment = async (userId, auctioneerId, content) => {
 
   try {
     const response = await axios.post(
-      `http://localhost:8080/api/favorites/add-comment`,
+      `https://be-pjhk4.onrender.com/api/favorites/add-comment`,
       {
         userId,
         auctioneerId, // Gửi auctioneerId đúng

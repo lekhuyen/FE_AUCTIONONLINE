@@ -223,7 +223,7 @@ function App() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     const socketFactory = () => {
-      return new SockJS('http://localhost:8080/ws', null, {
+      return new SockJS('https://be-pjhk4.onrender.com/ws', null, {
         withCredentials: true,
       });
     };
@@ -265,7 +265,7 @@ function App() {
 
   return (
     <>
-      {isLoading && <Loading />}
+      {/* {isLoading && <Loading />} */}
       <ToastContainer />
       <ScrollToTop />
       <Routes>
@@ -415,7 +415,7 @@ function App() {
             </Layout>
           }
         />
-              <Route
+        <Route
           path="/payment-failed"
           element={
             <Layout>

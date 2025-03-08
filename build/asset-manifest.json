@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/FE_AUCTIONONLINE/static/css/main.8c268813.css",
+    "main.js": "/FE_AUCTIONONLINE/static/js/main.96ae1712.js",
+    "static/js/496.00ca179d.chunk.js": "/FE_AUCTIONONLINE/static/js/496.00ca179d.chunk.js",
+    "static/media/Contact_Hammer.jpg": "/FE_AUCTIONONLINE/static/media/Contact_Hammer.22284a6b66b1e203c4d4.jpg",
+    "index.html": "/FE_AUCTIONONLINE/index.html",
+    "main.8c268813.css.map": "/FE_AUCTIONONLINE/static/css/main.8c268813.css.map",
+    "main.96ae1712.js.map": "/FE_AUCTIONONLINE/static/js/main.96ae1712.js.map",
+    "496.00ca179d.chunk.js.map": "/FE_AUCTIONONLINE/static/js/496.00ca179d.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.8c268813.css",
+    "static/js/main.96ae1712.js"
+  ]
+}
