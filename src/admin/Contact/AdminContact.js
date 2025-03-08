@@ -103,36 +103,36 @@ export const AdminContact = () => {
 
             <table style={styles.table}>
                 <thead>
-                <tr style={styles.tableHeader}>
-                    <th style={styles.tableHeaderCell}>Id</th>
-                    <th style={styles.tableHeaderCell}>Name</th>
-                    <th style={styles.tableHeaderCell}>Email</th>
-                    <th style={styles.tableHeaderCell}>Phone</th>
-                    <th style={styles.tableHeaderCell}>Country Code</th>
-                    <th style={styles.tableHeaderCell}>Interested In</th>
-                    <th style={styles.tableHeaderCell}>Receive Time</th>
-                    <th style={styles.tableHeaderCell}>Reply Time</th>
-                    <th style={styles.tableHeaderCell}>Detail</th>
-                </tr>
+                    <tr style={styles.tableHeader}>
+                        <th style={styles.tableHeaderCell}>Id</th>
+                        <th style={styles.tableHeaderCell}>Name</th>
+                        <th style={styles.tableHeaderCell}>Email</th>
+                        <th style={styles.tableHeaderCell}>Phone</th>
+                        <th style={styles.tableHeaderCell}>Country Code</th>
+                        <th style={styles.tableHeaderCell}>Interested In</th>
+                        <th style={styles.tableHeaderCell}>Receive Time</th>
+                        <th style={styles.tableHeaderCell}>Reply Time</th>
+                        <th style={styles.tableHeaderCell}>Detail</th>
+                    </tr>
                 </thead>
                 <tbody>
-                {currentContacts.map((contact) => (
-                    <tr key={contact.id} style={styles.tableRow}>
-                        <td style={styles.tableCell}>{contact.id}</td>
-                        <td style={styles.tableCell}>{contact.name}</td>
-                        <td style={styles.tableCell}>{contact.email}</td>
-                        <td style={styles.tableCell}>{contact.phone}</td>
-                        <td style={styles.tableCell}>{contact.formattedCountryCode}</td>
-                        <td style={styles.tableCell}>{contact.interestedIn}</td>
-                        <td style={styles.tableCell}>{parseDateArray(contact.receivetime)}</td>
-                        <td style={styles.tableCell}>
-                            {contact.replyMessage === "" ? "Not Reply" : parseDateArray(contact.replyTime)}
-                        </td>
-                        <td style={styles.tableCell}>
-                            <Link to={`/adminContact/${contact.id}`} style={styles.button}>Detail</Link>
-                        </td>
-                    </tr>
-                ))}
+                    {currentContacts.map((contact) => (
+                        <tr key={contact.id} style={styles.tableRow}>
+                            <td style={styles.tableCell}>{contact.id}</td>
+                            <td style={styles.tableCell}>{contact.name}</td>
+                            <td style={styles.tableCell}>{contact.email}</td>
+                            <td style={styles.tableCell}>{contact.phone}</td>
+                            <td style={styles.tableCell}>{contact.formattedCountryCode}</td>
+                            <td style={styles.tableCell}>{contact.interestedIn}</td>
+                            <td style={styles.tableCell}>{parseDateArray(contact.receivetime)}</td>
+                            <td style={styles.tableCell}>
+                                {contact.replyMessage === "" ? "Not Reply" : parseDateArray(contact.replyTime)}
+                            </td>
+                            <td style={styles.tableCell}>
+                                <Link to={`/adminContact/${contact.id}`} style={styles.button}>Detail</Link>
+                            </td>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
 

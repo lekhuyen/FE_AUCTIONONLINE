@@ -9,7 +9,7 @@
     "@mui/material": "^6.4.1",
     "@reduxjs/toolkit": "^2.4.0",
     "@stomp/stompjs": "^7.0.0",
-    "@stripe/stripe-js": "^5.9.2",
+    "@stripe/stripe-js": "^5.10.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -22,6 +22,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.7",
+    "gh-pages": "^6.3.0",
     "html5-qrcode": "^2.3.8",
     "jwt-decode": "^4.0.0",
     "lodash": "^4.17.21",
@@ -49,7 +50,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [

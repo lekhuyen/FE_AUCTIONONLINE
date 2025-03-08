@@ -15,26 +15,22 @@ export const getFollowersCount = async (auctioneerId) => {
   }
 };
 
-
+//
 // Follow người bán
 export const followAuctioneer = async (userId, auctioneerId) => {
+  console.log("📌 Gửi request follow:", { userId, auctioneerId });
 
   try {
-    const response = await axios.post(
-      `${API_BASE_URL}/follow-auctioneer`,
-      { userId, auctioneerId },
-      {
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("token"), // Nếu có xác thực
-        },
-      }
+    const response = await axios.post(`http://localhost:8080/api/favorites/follow-auctioneer`,
+      { userId, auctioneerId }
     );
     return response.data;
   } catch (error) {
-    console.error("Lỗi khi theo dõi người bán:", error);
-    return null;
+    console.error("❌ Lỗi khi follow:", error);
+    throw error;
   }
 };
+
 
 export const unfollowAuctioneer = async (userId, auctioneerId) => {
   try {
@@ -54,6 +50,7 @@ export const unfollowAuctioneer = async (userId, auctioneerId) => {
   }
 };
 export const getFollowedAuctioneers = async (userId) => {
+  console.log("📌 Gửi request lấy danh sách người bán đã follow với userId:", userId);
 
   try {
     const response = await axios.get(
@@ -71,6 +68,7 @@ export const getFollowedAuctioneers = async (userId) => {
   }
 };
 
+
 export const checkIfFollowing = async (userId, auctioneerId) => {
   try {
     const response = await axios.get(
@@ -85,24 +83,24 @@ export const checkIfFollowing = async (userId, auctioneerId) => {
     console.error("Lỗi khi kiểm tra follow:", error);
     return false;
   }
-};  
+};
 
 
 // ✅ Thêm sản phẩm vào danh sách yêu thích
 export const addFavoriteItem = async (userId, itemId) => {
-
   console.log("📌 Gửi request thêm yêu thích:", { userId, itemId });
 
   try {
-      const response = await axios.post(`http://localhost:8080/api/favorites/add-favorite-item`, 
-          null, { params: { userId, itemId } }
-      );
-      return response.data;
+    const response = await axios.post(`http://localhost:8080/api/favorites/add-favorite-item`,
+      null, { params: { userId, itemId } }
+    );
+    return response.data;
   } catch (error) {
-      console.error("❌ Lỗi khi thêm sản phẩm yêu thích:", error);
-      throw error;
+    console.error("❌ Lỗi khi thêm sản phẩm yêu thích:", error);
+    throw error;
   }
 };
+
 
 // ✅ Kiểm tra sản phẩm đã được yêu thích chưa
 export const checkFavoriteItem = async (userId, itemId) => {
@@ -130,17 +128,18 @@ export const removeFavoriteItem = async (userId, itemId) => {
   }
 };// ✅ Lấy danh sách sản phẩm yêu thích
 export const getFavoriteItems = async (userId) => {
-
   console.log("📌 Gửi request lấy danh sách yêu thích với userId:", userId);
 
   try {
-      const response = await axios.get(`http://localhost:8080/api/favorites/get-favorite-items/${userId}`);
-      return response.data;
+    const response = await axios.get(`http://localhost:8080/api/favorites/get-favorite-items/${userId}`);
+    return response.data;
   } catch (error) {
-      console.error("❌ Lỗi khi lấy danh sách sản phẩm yêu thích:", error);
-      throw error;
+    console.error("❌ Lỗi khi lấy danh sách sản phẩm yêu thích:", error);
+    throw error;
   }
 };
+
+
 
 // ✅ API lấy danh sách bình luận cho sản phẩm
 export const getComments = async (auctioneerId) => {

@@ -113,19 +113,6 @@ export const Catgeorylist = () => {
               {categories?.data?.length && categories?.data?.map((category, index) => (
                 <tr key={category.category_id} className="bg-white border-b hover:bg-gray-50">
                   <td className="px-6 py-4">{(categories?.currentPage - 1) * categories?.pageSize + index + 1}</td>
-                  {/* <td className="px-6 py-4">
-                    <div className="flex items-center px-6 text-gray-900 whitespace-nowrap">
-                      <div>
-                        <ProfileCard>
-                          <img src={User2} alt="" />
-                        </ProfileCard>
-                      </div>
-                      <div className="pl-3">
-                        <div className="text-base font-semibold capitalize"> Sunil BK</div>
-                        <div className="font-normal text-gray-500"> example@gmail.com</div>
-                      </div>
-                    </div>
-                  </td> */}
                   <td className="px-6 py-4">{category.category_name}</td>
                   <td className="px-6 py-4 text-center flex items-center justify-end gap-3 mt-1">
                     <NavLink to="#" type="button" className="font-medium text-indigo-500">
@@ -134,9 +121,9 @@ export const Catgeorylist = () => {
                     <NavLink to={`/category/update/${category.category_id}`} className="font-medium text-green">
                       <CiEdit size={25} />
                     </NavLink>
-                    <button className="font-medium text-red-500" onClick={() => handeDeleteCategory(category.category_id)}>
+                    {/* <button className="font-medium text-red-500" onClick={() => handeDeleteCategory(category.category_id)}>
                       <MdOutlineDeleteOutline size={25} />
-                    </button>
+                    </button> */}
                   </td>
                 </tr>
               ))}

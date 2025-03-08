@@ -121,39 +121,39 @@ const ProductSalesPage = () => {
 
   return (
     <div className="product-sales">
-      <h1>Thống kê Đấu Giá</h1>
+      <h1>Auction Statistics</h1>
 
       {/* Biểu đồ số lượt đặt giá */}
-      <Bar 
-        data={biddingChartData} 
-        options={{ 
+      <Bar
+        data={biddingChartData}
+        options={{
           responsive: true,
           plugins: {
             title: { display: true, text: 'Số lượt đặt giá & Giá trung bình' }
           }
-        }} 
+        }}
       />
 
       {/* Biểu đồ tổng số tiền đấu giá thành công */}
-      <h2>Thống kê Tiền Đấu Giá Thành Công</h2>
-      <Bar 
-        data={biddingSuccessChartData} 
-        options={{ 
+      <h2>Successful Bid Statistics</h2>
+      <Bar
+        data={biddingSuccessChartData}
+        options={{
           responsive: true,
           plugins: {
             title: { display: true, text: 'Tổng số tiền đấu giá & 2% phí admin' }
           }
-        }} 
+        }}
       />
-        <div className="product-sales">
-      <h1>Thống kê Đấu Giá</h1>
+      <div className="product-sales">
+        <h1>Auction Statistics</h1>
 
-      {/* Hiển thị tổng số tiền admin nhận được */}
-      <div className="admin-earnings">
-        <h2>Tổng số tiền Admin đã nhận được:</h2>
-        <p><strong>{totalAdminEarnings.toLocaleString()} VNĐ</strong></p>
+        {/* Hiển thị tổng số tiền admin nhận được */}
+        <div className="admin-earnings">
+          <h2>Total amount Admin received:</h2>
+          <p><strong>{totalAdminEarnings.toLocaleString()} VNĐ</strong></p>
+        </div>
       </div>
-    </div>
     </div>
   );
 };

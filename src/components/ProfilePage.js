@@ -10,17 +10,17 @@ const ProfilePage = () => {
 
   const [balance, setBalance] = useState(null);
 
-  useEffect(() => {
-    axios.get("http://localhost:8080/api/stripe/balance", {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+  // useEffect(() => {
+  //   axios.get("http://localhost:8080/api/stripe/balance", {
+  //     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
 
-      
-    })
-      .then(response => { setBalance(response.data)
-        console.log(response  );
-      })
-      .catch(error => console.error("❌ Lỗi khi lấy số dư:", error));
-  }, []);
+
+  //   })
+  //     .then(response => { setBalance(response.data)
+  //       console.log(response  );
+  //     })
+  //     .catch(error => console.error("❌ Lỗi khi lấy số dư:", error));
+  // }, []);
 
 
   useEffect(() => {
@@ -87,18 +87,18 @@ const ProfilePage = () => {
           </div>
 
           {/* Các nút */}
-           <div className="mt-4 space-y-3">
+          {/* <div className="mt-4 space-y-3">
             <button className="w-full bg-orange-500 text-white py-2 rounded-lg font-semibold hover:bg-orange-600">
               Share Your Profile
             </button>
             <button className="w-full border py-2 rounded-lg font-semibold hover:bg-gray-100">
               Reset Password
             </button>
-          </div> 
+          </div> */}
 
           {/* Thông tin khác */}
           <div className="mt-4 text-sm space-y-2 text-gray-600">
-            <p>📩 Reply chat: ...</p>
+            {/* <p>📩 Reply chat: ...</p> */}
             <p>📅 Enrolled: <span className="font-medium">1 year 4 months</span></p>
             <p>
               {userInfo?.isVerify ? (
@@ -120,7 +120,7 @@ const ProfilePage = () => {
             <p className="mt-3 text-xl font-bold">
               {userInfo?.money?.toLocaleString("vi-VN")} VNĐ
             </p>
-            <div className="container mx-auto mt-10 p-6">
+            {/* <div className="container mx-auto mt-10 p-6">
               <h2 className="text-2xl font-bold mb-4">Số dư tài khoản</h2>
               {balance ? (
                 <p className="text-lg"><strong>${balance.available[0].amount / 100}</strong> USD</p>
@@ -128,7 +128,7 @@ const ProfilePage = () => {
               ) : (
                 <p>Đang tải...</p>
               )}
-            </div>
+            </div> */}
 
           </div>
 

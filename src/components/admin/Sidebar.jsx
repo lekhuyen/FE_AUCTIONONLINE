@@ -55,9 +55,9 @@ export const Sidebar = () => {
 
   return (
     <>
-      <section className="sidebar flex flex-col justify-between h-full">
+      <section className="sidebar flex flex-col justify-between h-[70%]">
         {isLogin &&
-          <div className="profile flex items-center text-center justify-center gap-8 flex-col mb-8">
+          <div className="profile flex items-center text-center justify-center gap-8 flex-col ">
             <img src={User1} alt="" className="w-32 h-32 rounded-full object-cover" />
             <div>
               <Title className="capitalize">{isLogin && userInfo?.username}</Title>
@@ -66,20 +66,9 @@ export const Sidebar = () => {
           </div>
         }
         <div>
-          <CustomNavLink href="/dashboard" isActive={location.pathname === "/dashboard"} className={className}>
-            <span>
-              <CiGrid41 size={22} />
-            </span>
-            <span>Dashboard</span>
-          </CustomNavLink>
           {(role === "seller" || role === "admin") && (
             <>
-              {/* <CustomNavLink href="/product" isActive={location.pathname === "/product"} className={className}>
-                <span>
-                  <MdOutlineCategory size={22} />
-                </span>
-                <span>My Products</span>
-              </CustomNavLink> */}
+
               <CustomNavLink href="/add" isActive={location.pathname === "/add"} className={className}>
                 <span>
                   <FaPlusCircle size={22} />
@@ -99,12 +88,6 @@ export const Sidebar = () => {
                 </span>
                 <span>All User</span>
               </CustomNavLink>
-              <CustomNavLink href="/payment" isActive={location.pathname === "/payment"} className={className}>
-                <span>
-                  <FiUser size={22} />
-                </span>
-                <span>Payment</span>
-              </CustomNavLink>
 
               <CustomNavLink href="/product/admin" isActive={location.pathname === "/product/admin"} className={className}>
                 <span>
@@ -120,7 +103,7 @@ export const Sidebar = () => {
                 <span>Categories</span>
               </CustomNavLink>
               {/* <CustomNavLink href="/admin/income" isActive={location.pathname === "/admin/income"} className={className}> */}
-                {/* <span>
+              {/* <span>
                   <TbCurrencyDollar size={22} />
                 </span>
                 <span>Income</span> */}
@@ -143,38 +126,12 @@ export const Sidebar = () => {
             </>
           )}
 
-          <CustomNavLink href="/winning-products" isActive={location.pathname === "/winning-products"} className={className}>
-            {/* <span>
-              <RiAuctionLine size={22} />
-            </span>
-            <span>Winning Bids</span> */}
-          </CustomNavLink>
-          <CustomNavLink href="/favorites" isActive={location.pathname === "/favorites"} className={className}>
-            {/* <span>
-              <IoIosHeartEmpty size={22} />
-            </span>
-            <span>My Favorites</span> */}
-          </CustomNavLink>
-
           <CustomNavLink href="/thongke" isActive={location.pathname === "/thongke"} className={className}>
-
             <span>
               <IoBarChartOutline size={22} />
             </span>
-            <span>Thống kê</span>
+            <span>Statistis</span>
           </CustomNavLink>
-
-
-
-//           <CustomNavLink href="/profile" isActive={location.pathname === "/profile"} className={className}>
-
-//             <span>
-//               <IoBarChartOutline size={22} />
-//             </span>
-//             <span>Thống kê</span>
-//           </CustomNavLink>
-
-
 
           <CustomNavLink href="/profile" isActive={location.pathname === "/profile"} className={className}>
             {/* <span>

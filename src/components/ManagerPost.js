@@ -53,7 +53,7 @@ const ManagerPost = () => {
     { name: 'Success bidding' },
     { name: 'Expired' },
     { name: 'Pending' },
-    { name: 'Opending' },
+    { name: 'Opening' },
     { name: 'Sold' },
     { name: 'My Favorites' }
   ]
@@ -80,23 +80,24 @@ const ManagerPost = () => {
       const productExprise = Array.isArray(productsOfCreator)
         ? productsOfCreator?.filter(product => {
           const [year, month, day] = product?.end_date || [];
+
           if (!year || !month || !day) return false; // Kiểm tra nếu end_date không hợp lệ
 
           const endDate = new Date(year, month - 1, day);
+
           return !product.bidding && product.status && endDate <= new Date();
         })
         : [];
-
-
       const isactiveProducts = Array.isArray(productsOfCreator) ? productsOfCreator?.filter(product => product.status === false) : [];
       const productsSoldOut = Array.isArray(productsOfCreator) ? productsOfCreator?.filter(product => product.soldout === true) : [];
+
       // setExprise(expiredProducts);
       setIsCheck(check || []);
       setProductExprise(productExprise || []);
       setIsActive(isactiveProducts || []);
       setProductSoldOut(productsSoldOut || []);
     }
-  }, [productsOfCreator]);
+  }, [productsOfCreator, userId]);
 
   useEffect(() => {
     if (userId) dispatch(getAllProductByCreator(userId))
@@ -393,6 +394,56 @@ const ManagerPost = () => {
                         )
                       }
                       {
+                        clickMenu === 3 && (
+                          (
+                            isCheck?.length > 0 && isCheck?.map((product, index) => (
+                              <tr key={product.item_id} className="bg-white border-b hover:bg-gray-50">
+                                {/* <td className="px-6 py-4">{(productsbycategory.currentPage - 1) * productsbycategory.pageSize + index + 1}</td> */}
+                                <td className="px-6 py-4">{product?.item_name}</td>
+                                <td className="px-6 py-4">{product?.starting_price}</td>
+                                <td className="px-6 py-4">{!product?.bidding?.price ? product?.starting_price : product?.bidding?.price}</td>
+                                <td className="px-6 py-4">{moment(product.start_date).format("DD/MM/YYYY")}</td>
+                                <td className="px-6 py-4">{moment(product.end_date).format("DD/MM/YYYY")}</td>
+                                <td className="px-6 py-4">
+                                  {product?.images.map((img, index) => (
+                                    <img key={index} className="w-10 h-10" src={img} alt="Jeseimage" />
+                                  ))}
+                                </td>
+                                <td className="px-6 py-4 text-center flex items-center gap-3 mt-1">
+                                  <NavLink to="#" type="button" className="font-medium text-indigo-500">
+                                    <TiEyeOutline size={25} />
+                                  </NavLink>
+                                  <NavLink to={`/product/update/${product?.item_id}`} type="button" className="font-medium text-green">
+                                    <CiEdit size={25} />
+                                  </NavLink>
+                                </td>
+                              </tr>
+                            ))
+                          )
+                        )
+                      }
+                      {
+                        clickMenu === 2 && (
+                          (
+                            isActive?.length > 0 && isActive?.map((product, index) => (
+                              <tr key={product.item_id} className="bg-white border-b hover:bg-gray-50">
+                                {/* <td className="px-6 py-4">{(productsbycategory.currentPage - 1) * productsbycategory.pageSize + index + 1}</td> */}
+                                <td className="px-6 py-4">{product?.item_name}</td>
+                                <td className="px-6 py-4">{product?.starting_price}</td>
+                                <td className="px-6 py-4">{!product?.bidding?.price ? product?.starting_price : product?.bidding?.price}</td>
+                                <td className="px-6 py-4">{moment(product.start_date).format("DD/MM/YYYY")}</td>
+                                <td className="px-6 py-4">{moment(product.end_date).format("DD/MM/YYYY")}</td>
+                                <td className="px-6 py-4">
+                                  {product?.images.map((img, index) => (
+                                    <img key={index} className="w-10 h-10" src={img} alt="Jeseimage" />
+                                  ))}
+                                </td>
+                              </tr>
+                            ))
+                          )
+                        )
+                      }
+                      {
                         clickMenu === 0 && (
                           productsOfBuyer &&
                           productsOfBuyer?.length > 0 &&
@@ -416,8 +467,6 @@ const ManagerPost = () => {
                                     disabled={product.paid}>
                                     {product.paid ? "Paid" : "Pay with Stripe 💳"}
                                   </button>
-
-
 
                                 </div>
                               </td>
@@ -458,7 +507,7 @@ const ManagerPost = () => {
                   </button>
                 </div>
               )}
-          
+
             </div>
 
             {/* cho duyet */}
@@ -492,9 +541,9 @@ const ManagerPost = () => {
                 </button>
               </div>
             )}
-                {
-                clickMenu === 5 && <MyFavorites /> // ✅ Hiển thị MyFavorites khi click vào "My Favorites"
-              }
+            {
+              clickMenu === 5 && <MyFavorites userId={userId} /> // ✅ Hiển thị MyFavorites khi click vào "My Favorites"
+            }
           </>
         )
       }
@@ -508,59 +557,42 @@ const ManagerPost = () => {
             <form onSubmit={handleCreateProduct} encType="multipart/form-data">
               <div className="w-full">
                 <Caption className="mb-2">Name *</Caption>
-                <input type="text" name="item_name" value={item_name} onChange={handleChangeAuction}
-                       className={`${commonClassNameOfInput}`} placeholder="Name"/>
+                <input type="text" name="item_name" value={item_name} onChange={handleChangeAuction} className={`${commonClassNameOfInput}`} placeholder="Name" />
                 {
-                    invalidFields?.some(el => el.name === "item_name") && productValue.item_name === '' &&
-                    <small style={{color: 'red'}}>{invalidFields?.find(el => el.name === "item_name").message}</small>
+                  invalidFields?.some(el => el.name === "item_name") && productValue.item_name === '' &&
+                  <small style={{ color: 'red' }}>{invalidFields?.find(el => el.name === "item_name").message}</small>
                 }
               </div>
               <div className="py-5">
                 <Caption className="mb-2">Category *</Caption>
                 <CategoryDropDown
-                    value={selectedCategory}
-                    options={categories.data?.map((category) => ({
-                      label: category.category_name,
-                      value: category.category_id,
-                    }))}
-                    placeholder="Select a category"
-                    handleCategoryChange={handleCategoryChange}
-                    className={`${commonClassNameOfInput}`}/>
+                  value={selectedCategory}
+                  options={categories.data?.map((category) => ({
+                    label: category.category_name,
+                    value: category.category_id,
+                  }))}
+                  placeholder="Select a category"
+                  handleCategoryChange={handleCategoryChange}
+                  className={`${commonClassNameOfInput}`} />
               </div>
-              <div className="w-full">
-                <Caption className="mb-2">Start price</Caption>
-                <input
-                    type="number"
-                    name="starting_price"
-                    value={starting_price}
-                    onChange={handleChangeAuction}
-                    placeholder="Start price"
-                    className={`${commonClassNameOfInput}`}
-                />
-                {invalidFields?.some(el => el.name === "starting_price") &&
-                    <small style={{ color: 'red' }}>
-                      {invalidFields?.find(el => el.name === "starting_price").message}
-                    </small>
-                }
-              </div>
-
-              {/*Start date*/}
-
-              {/*
+              <div className="flex items-center gap-5 my-4">
                 <div className="w-1/2">
-                  <Caption className="mb-2">Start date</Caption>
-                  <input onFocus={() => setInvalidFields([])} type="date" name="start_date" value={start_date}
-                         onChange={handleChangeAuction} placeholder="Start date"
-                         className={`${commonClassNameOfInput}`}/>
+                  <Caption className="mb-2">Start price </Caption>
+                  <input type="number" name="starting_price" value={starting_price} onChange={handleChangeAuction} placeholder="Start price" className={`${commonClassNameOfInput}`} />
                   {
-                      invalidFields?.some(el => el.name === "start_date") &&
-                      <small style={{ color: 'red' }}>
-                        {invalidFields?.find(el => el.name === "start_date").message}
-                      </small>
+                    invalidFields?.some(el => el.name === "starting_price") &&
+                    <small style={{ color: 'red' }}>{invalidFields?.find(el => el.name === "starting_price").message}</small>
                   }
                 </div>
-                */
-              }
+                <div className="w-1/2">
+                  <Caption className="mb-2">Start date </Caption>
+                  <input onFocus={() => setInvalidFields([])} type="date" name="start_date" value={start_date} onChange={handleChangeAuction} placeholder="Start date" className={`${commonClassNameOfInput}`} />
+                  {
+                    invalidFields?.some(el => el.name === "start_date") &&
+                    <small style={{ color: 'red' }}>{invalidFields?.find(el => el.name === "start_date").message}</small>
+                  }
+                </div>
+              </div>
               <div className="flex items-center gap-5 my-4">
                 {/* <div className="w-1/2">
                   <Caption className="mb-2">Bid step</Caption>
@@ -570,65 +602,47 @@ const ManagerPost = () => {
                     <small style={{ color: 'red' }}>{invalidFields?.find(el => el.name === "bid_step").message}</small>
                   }
                 </div> */}
-                {/*<div className="w-full">*/}
-                {/*  <Caption className="mb-2">End date </Caption>*/}
-                {/*  <input onFocus={() => setInvalidFields([])} type="date" name="end_date" value={end_date}*/}
-                {/*         onChange={handleChangeAuction} placeholder="End date" className={`${commonClassNameOfInput}`}/>*/}
-                {/*  {*/}
-                {/*      invalidFields?.some(el => el.name === "end_date") &&*/}
-                {/*      <small style={{color: 'red'}}>{invalidFields?.find(el => el.name === "end_date").message}</small>*/}
-                {/*  }*/}
-                {/*</div>*/}
+                <div className="w-full">
+                  <Caption className="mb-2">End date </Caption>
+                  <input onFocus={() => setInvalidFields([])} type="date" name="end_date" value={end_date} onChange={handleChangeAuction} placeholder="End date" className={`${commonClassNameOfInput}`} />
+                  {
+                    invalidFields?.some(el => el.name === "end_date") &&
+                    <small style={{ color: 'red' }}>{invalidFields?.find(el => el.name === "end_date").message}</small>
+                  }
+                </div>
               </div>
 
               <div>
                 <Caption className="mb-2">Description *</Caption>
-                <textarea name="description" value={description} onChange={handleChangeAuction}
-                          className={`${commonClassNameOfInput}`} cols="30" rows="5"></textarea>
+                <textarea name="description" value={description} onChange={handleChangeAuction} className={`${commonClassNameOfInput}`} cols="30" rows="5"></textarea>
                 {
-                    invalidFields?.some(el => el.name === "description") && productValue.description === '' &&
-                    <small style={{color: 'red'}}>{invalidFields?.find(el => el.name === "description").message}</small>
+                  invalidFields?.some(el => el.name === "description") && productValue.description === '' &&
+                  <small style={{ color: 'red' }}>{invalidFields?.find(el => el.name === "description").message}</small>
                 }
               </div>
-              <div className="flex items-center gap-5 my-4">
-                {/* Image Upload */}
-                <div className="w-1/2">
-                  <Caption className="mb-2">Upload Product Image</Caption>
-                  <input
-                      type="file"
-                      multiple="multiple"
-                      accept="image/*"
-                      onChange={handleImagesChange}
-                      className={`${commonClassNameOfInput}`}
-                      name="images"
-                      ref={fileInputRef}
-                  />
-                  {invlidImages && <small style={{color: "red"}}>This field is invalid</small>}
-                </div>
-
-                {/* File Upload (PDF) */}
-                <div className="w-1/2">
-                  <Caption className="mb-2">Upload Certification (PDF)</Caption>
-                  <input
-                      type="file"
-                      multiple
-                      accept="file/*"
-                      onChange={handleFileUpload}
-                      ref={fileInputRef}
-                  />
-                  {invlidImages && <small style={{ color: 'red' }}>Invalid image file(s). Please upload valid images.</small>}
-                </div>
+              <div>
+                <Caption className="mb-2">Image </Caption>
+                <input type="file"
+                  multiple="multiple"
+                  onChange={handleImagesChange}
+                  className={`${commonClassNameOfInput}`}
+                  name="images"
+                  ref={fileInputRef}
+                />
+                {
+                  invlidImages &&
+                  <small style={{ color: 'red' }}>This field is invalid</small>
+                }
               </div>
-
               {
-                  isLogin &&
-                  <PrimaryButton type="submit" className="rounded-none my-5">
-                    CREATE
-                  </PrimaryButton>
+                isLogin &&
+                <PrimaryButton type="submit" className="rounded-none my-5">
+                  CREATE
+                </PrimaryButton>
               }
             </form>
           </div>
-          )
+        )
       }
     </>
   );
